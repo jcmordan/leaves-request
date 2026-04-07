@@ -1,0 +1,42 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using LeaveManagement.Domain.Entities;
+
+namespace LeaveManagement.Infrastructure.Data.Configurations;
+
+public class AbsenceRequestConfiguration : IEntityTypeConfiguration<AbsenceRequest>
+{
+    public void Configure(EntityTypeBuilder<AbsenceRequest> builder)
+    {
+        builder.HasKey(ar => ar.Id);
+        builder.Property(ar => ar.Id).HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(ar => ar.Status).HasConversion<string>();
+
+        builder.HasOne(ar => ar.Employee)
+            .WithMany()
+            .HasForeignKey(ar => ar.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(ar => ar.RequesterEmployee)
+            .WithMany()
+            .HasForeignKey(ar => ar.RequesterEmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(ar => ar.AbsenceType)
+            .WithMany()
+            .HasForeignKey(ar => ar.AbsenceTypeId);
+        
+        builder.HasMany(ar => ar.Attachments)
+            .WithOne()
+            .HasForeignKey(a => a.AbsenceRequestId);
+        
+        builder.HasMany(ar => ar.ApprovalHistories)
+            .WithOne()
+            .HasForeignKey(ah => ah.AbsenceRequestId);
+
+        builder.Property(ar => ar.Reason).HasMaxLength(500);
+        builder.Property(ar => ar.Diagnosis).HasMaxLength(256);
+        builder.Property(ar => ar.TreatingDoctor).HasMaxLength(128);
+        builder.Property(ar => ar.TotalDaysRequested).IsRequired();
+    }
+}

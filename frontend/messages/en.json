@@ -1,0 +1,56 @@
+{
+  "Index": {
+    "title": "Welcome to Leave Request"
+  },
+  "Metadata": {
+    "title": "Absenteeism and Leave Management",
+    "description": "Manage employee leaves and absences."
+  },
+  "Navigation": {
+    "dashboard": "Dashboard",
+    "vacations": "Vacations",
+    "teams": "Teams",
+    "approvals": "Approvals",
+    "allRequests": "All Requests",
+    "employees": "Employees"
+  },
+  "Layout": {
+    "workspace": "Sovereign Workspace",
+    "adminPortal": "Sovereign Admin",
+    "memberPortal": "Sovereign Portal",
+    "access": "Access",
+    "signout": "Sign out",
+    "breadcrumb": "Workspace"
+  },
+  "Roles": {
+    "Employee": "Employee",
+    "Supervisor": "Supervisor",
+    "Coordinator": "Coordinator",
+    "HR_Admin": "HR Admin",
+    "Member": "Member"
+  },
+  "Common": {
+    "newRequest": "New Request",
+    "review": "Review",
+    "none": "None",
+    "viewAll": "View All"
+  },
+  "Dashboard": {
+    "welcome": "Welcome back, {name}",
+    "subtitle": "Here's what's happening with your leave requests.",
+    "pendingApprovals": "Pending Approvals",
+    "pendingDescription": "You have {count} requests waiting for your approval",
+    "reviewApprovals": "Review Approvals",
+    "vacationBalance": "Vacation Balance",
+    "sickLeave": "Sick Leave",
+    "daysAvailable": "Available to use this year",
+    "upcomingLeaves": "Upcoming Leaves",
+    "noneScheduled": "None scheduled",
+    "recentRequests": "Recent Requests",
+    "recentDescription": "Your recently submitted leave requests",
+    "noRecentRequests": "You don't have any recent requests.",
+    "noRecentDescription": "Any leave applications you submit will appear here in high-density detail.",
+    "daysCount": "{count, plural, =1 {# Day} other {# Days}}",
+    "days": "Days"
+  }
+}

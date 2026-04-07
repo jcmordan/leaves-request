@@ -1,0 +1,56 @@
+{
+  "Index": {
+    "title": "Bienvenido a Solicitudes de Permisos"
+  },
+  "Metadata": {
+    "title": "Gestión de Ausentismo y Permisos",
+    "description": "Gestionar los permisos y ausencias de los empleados."
+  },
+  "Navigation": {
+    "dashboard": "Panel de Control",
+    "requests": "Solicitudes",
+    "teams": "Equipos",
+    "approvals": "Aprobaciones",
+    "allRequests": "Todas las Solicitudes",
+    "employees": "Empleados"
+  },
+  "Layout": {
+    "workspace": "Espacio de Trabajo Soberano",
+    "adminPortal": "Admin Soberano",
+    "memberPortal": "Portal Soberano",
+    "access": "Acceso",
+    "signout": "Cerrar Sesión",
+    "breadcrumb": "Espacio de Trabajo"
+  },
+  "Roles": {
+    "Employee": "Empleado",
+    "Supervisor": "Supervisor",
+    "Coordinator": "Coordinador",
+    "HR_Admin": "Administrador de RRHH",
+    "Member": "Miembro"
+  },
+  "Common": {
+    "newRequest": "Nueva Solicitud",
+    "review": "Revisar",
+    "none": "Ninguno",
+    "viewAll": "Ver Todo"
+  },
+  "Dashboard": {
+    "welcome": "Bienvenido de nuevo, {name}",
+    "subtitle": "Aquí tienes un resumen de tus solicitudes de permisos.",
+    "pendingApprovals": "Aprobaciones Pendientes",
+    "pendingDescription": "Tienes {count} solicitudes esperando tu aprobación",
+    "reviewApprovals": "Revisar Aprobaciones",
+    "vacationBalance": "Balance de Vacaciones",
+    "sickLeave": "Permiso por Enfermedad",
+    "daysAvailable": "Disponible para usar este año",
+    "upcomingLeaves": "Próximos Permisos",
+    "noneScheduled": "Ninguno programado",
+    "recentRequests": "Solicitudes Recientes",
+    "recentDescription": "Tus solicitudes de permisos enviadas recientemente",
+    "noRecentRequests": "No tienes solicitudes recientes.",
+    "noRecentDescription": "Cualquier solicitud de permiso que envíes aparecerá aquí con detalle de alta densidad.",
+    "daysCount": "{count, plural, =1 {# Día} other {# Días}}",
+    "days": "Días"
+  }
+}

@@ -1,0 +1,4 @@
+- keep es.json and en.json synced
+- keep files as flat as possible
+- avoid duplicated keys across groups
+- move commont keyes to the common group

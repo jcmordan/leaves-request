@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using LeaveManagement.Application.Interfaces;
+using LeaveManagement.Domain.Constants;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Enums;
-using LeaveManagement.Domain.Constants;
 using LeaveManagement.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagement.Application.Services;
 
@@ -31,7 +31,8 @@ public class LeaveRequestService : ILeaveRequestService
         string? diagnosis = null,
         string? treatingDoctor = null,
         byte[]? attachment = null,
-        string? fileName = null)
+        string? fileName = null
+    )
     {
         if (startDate.Date < DateTime.UtcNow.Date)
         {
@@ -43,12 +44,18 @@ public class LeaveRequestService : ILeaveRequestService
             throw new ArgumentException("Start date must be before or equal to end date.");
         }
 
-        var absenceType = await _context.AbsenceTypes.FindAsync(absenceTypeId) 
+        var absenceType =
+            await _context.AbsenceTypes.FindAsync(absenceTypeId)
             ?? throw new Exception("Absence type not found.");
 
-        if (absenceType.RequiresDoctor && (string.IsNullOrWhiteSpace(diagnosis) || string.IsNullOrWhiteSpace(treatingDoctor)))
+        if (
+            absenceType.RequiresDoctor
+            && (string.IsNullOrWhiteSpace(diagnosis) || string.IsNullOrWhiteSpace(treatingDoctor))
+        )
         {
-            throw new ArgumentException("Diagnosis and Treating Doctor are mandatory for this leave type.");
+            throw new ArgumentException(
+                "Diagnosis and Treating Doctor are mandatory for this leave type."
+            );
         }
 
         if (absenceType.RequiresAttachment && (attachment == null || fileName == null))
@@ -62,13 +69,16 @@ public class LeaveRequestService : ILeaveRequestService
             var extension = System.IO.Path.GetExtension(fileName).ToLower();
             if (!allowedExtensions.Contains(extension))
             {
-                throw new ArgumentException("Invalid file format. Only PDF, JPG, and PNG are allowed.");
+                throw new ArgumentException(
+                    "Invalid file format. Only PDF, JPG, and PNG are allowed."
+                );
             }
         }
 
-        int totalDays = absenceType.CalculationType == CalculationType.CalendarDays
-            ? (endDate.Date - startDate.Date).Days + 1
-            : await _holidayService.CalculateWorkingDaysAsync(startDate, endDate);
+        int totalDays =
+            absenceType.CalculationType == CalculationType.CalendarDays
+                ? (endDate.Date - startDate.Date).Days + 1
+                : await _holidayService.CalculateWorkingDaysAsync(startDate, endDate);
 
         if (totalDays <= 0)
         {
@@ -77,22 +87,32 @@ public class LeaveRequestService : ILeaveRequestService
 
         if (absenceType.MaxDaysPerYear > 0 && totalDays > absenceType.MaxDaysPerYear)
         {
-            throw new Exception($"The requested {totalDays} days exceed the maximum of {absenceType.MaxDaysPerYear} days allowed for {absenceType.Name}.");
+            throw new Exception(
+                $"The requested {totalDays} days exceed the maximum of {absenceType.MaxDaysPerYear} days allowed for {absenceType.Name}."
+            );
         }
 
-        var balance = await _context.VacationBalances.FirstOrDefaultAsync(b => b.EmployeeId == employeeId && b.Year == startDate.Year) 
-            ?? throw new Exception("Vacation balance not found for this year.");
+        var balance =
+            await _context.VacationBalances.FirstOrDefaultAsync(b =>
+                b.EmployeeId == employeeId && b.Year == startDate.Year
+            ) ?? throw new Exception("Vacation balance not found for this year.");
 
         if (absenceType.DeductsFromBalance && balance.RemainingDays < totalDays)
         {
-            throw new Exception($"Insufficient balance. Remaining: {balance.RemainingDays}, Requested: {totalDays}.");
+            throw new Exception(
+                $"Insufficient balance. Remaining: {balance.RemainingDays}, Requested: {totalDays}."
+            );
         }
 
-        var overlapping = await _context.AbsenceRequests.AnyAsync(r => 
-            r.EmployeeId == employeeId && 
-            r.Status != RequestStatus.Cancelled && 
-            r.Status != RequestStatus.Rejected && 
-            ((startDate >= r.StartDate && startDate <= r.EndDate) || (endDate >= r.StartDate && endDate <= r.EndDate)));
+        var overlapping = await _context.AbsenceRequests.AnyAsync(r =>
+            r.EmployeeId == employeeId
+            && r.Status != RequestStatus.Cancelled
+            && r.Status != RequestStatus.Rejected
+            && (
+                (startDate >= r.StartDate && startDate <= r.EndDate)
+                || (endDate >= r.StartDate && endDate <= r.EndDate)
+            )
+        );
 
         if (overlapping)
         {
@@ -112,19 +132,21 @@ public class LeaveRequestService : ILeaveRequestService
             TreatingDoctor = treatingDoctor,
             TotalDaysRequested = totalDays,
             CreatedAt = DateTime.UtcNow,
-            RequesterEmployeeId = employeeId
+            RequesterEmployeeId = employeeId,
         };
 
         if (attachment != null && fileName != null)
         {
-            request.Attachments.Add(new Attachment
-            {
-                Id = Guid.NewGuid(),
-                FileName = fileName,
-                FileType = "application/octet-stream",
-                Data = attachment,
-                UploadedAt = DateTime.UtcNow
-            });
+            request.Attachments.Add(
+                new Attachment
+                {
+                    Id = Guid.NewGuid(),
+                    FileName = fileName,
+                    FileType = "application/octet-stream",
+                    Data = attachment,
+                    UploadedAt = DateTime.UtcNow,
+                }
+            );
         }
 
         await _context.AbsenceRequests.AddAsync(request);
@@ -147,17 +169,21 @@ public class LeaveRequestService : ILeaveRequestService
         string? diagnosis = null,
         string? treatingDoctor = null,
         byte[]? attachment = null,
-        string? fileName = null)
+        string? fileName = null
+    )
     {
-        var request = await _context.AbsenceRequests
-            .Include(r => r.AbsenceType)
-            .Include(r => r.Employee)
-            .FirstOrDefaultAsync(r => r.Id == requestId) 
+        var request =
+            await _context
+                .AbsenceRequests.Include(r => r.AbsenceType)
+                .Include(r => r.Employee)
+                .FirstOrDefaultAsync(r => r.Id == requestId)
             ?? throw new Exception("Request not found.");
 
         if (request.Status != RequestStatus.ModificationRequested)
         {
-            throw new Exception("Only requests where a modification was requested can be modified.");
+            throw new Exception(
+                "Only requests where a modification was requested can be modified."
+            );
         }
 
         var absenceType = request.AbsenceType!;
@@ -165,22 +191,24 @@ public class LeaveRequestService : ILeaveRequestService
 
         // Recalculate days
         int oldDays = request.TotalDaysRequested;
-        int newDays = absenceType.CalculationType == CalculationType.CalendarDays
-            ? (endDate.Date - startDate.Date).Days + 1
-            : await _holidayService.CalculateWorkingDaysAsync(startDate, endDate);
+        int newDays =
+            absenceType.CalculationType == CalculationType.CalendarDays
+                ? (endDate.Date - startDate.Date).Days + 1
+                : await _holidayService.CalculateWorkingDaysAsync(startDate, endDate);
 
         // Simple validation check
         if (absenceType.DeductsFromBalance)
         {
-            var balance = await _context.VacationBalances.FirstOrDefaultAsync(b => 
-                b.EmployeeId == employeeId && b.Year == startDate.Year) 
-                ?? throw new Exception("Vacation balance not found for this year.");
+            var balance =
+                await _context.VacationBalances.FirstOrDefaultAsync(b =>
+                    b.EmployeeId == employeeId && b.Year == startDate.Year
+                ) ?? throw new Exception("Vacation balance not found for this year.");
 
             if (balance.UsedDays - oldDays + newDays > balance.TotalDays)
             {
                 throw new Exception($"Insufficient balance. Requested: {newDays}.");
             }
-            
+
             balance.UsedDays = balance.UsedDays - oldDays + newDays;
         }
 
@@ -194,14 +222,16 @@ public class LeaveRequestService : ILeaveRequestService
 
         if (attachment != null && !string.IsNullOrEmpty(fileName))
         {
-            request.Attachments.Add(new Attachment
-            {
-                Id = Guid.NewGuid(),
-                FileName = fileName,
-                FileType = "application/octet-stream",
-                Data = attachment,
-                UploadedAt = DateTime.UtcNow
-            });
+            request.Attachments.Add(
+                new Attachment
+                {
+                    Id = Guid.NewGuid(),
+                    FileName = fileName,
+                    FileType = "application/octet-stream",
+                    Data = attachment,
+                    UploadedAt = DateTime.UtcNow,
+                }
+            );
         }
 
         await _context.SaveChangesAsync();
@@ -210,66 +240,92 @@ public class LeaveRequestService : ILeaveRequestService
 
     public async Task<bool> ApproveRequestAsync(Guid requestId, Guid approverId, string comment)
     {
-        var request = await _context.AbsenceRequests
-            .Include(r => r.AbsenceType)
-            .Include(r => r.Employee)
-            .FirstOrDefaultAsync(r => r.Id == requestId) 
+        var request =
+            await _context
+                .AbsenceRequests.Include(r => r.AbsenceType)
+                .Include(r => r.Employee)
+                .FirstOrDefaultAsync(r => r.Id == requestId)
             ?? throw new Exception("Request not found.");
 
-        var approver = await _context.Employees.FindAsync(approverId) 
+        var approver =
+            await _context
+                .Employees.Include(e => e.User)
+                .FirstOrDefaultAsync(e => e.Id == approverId)
             ?? throw new Exception("Approver not found.");
 
-        if (request.Status != RequestStatus.Pending && request.Status != RequestStatus.PendingCoordinatorApproval)
+        if (
+            request.Status != RequestStatus.Pending
+            && request.Status != RequestStatus.PendingCoordinatorApproval
+        )
         {
             throw new Exception("Only pending requests can be approved.");
         }
 
-        if (request.AbsenceType?.RequiresAttachment == true && approver.Role != Roles.HRAdmin)
+        if (
+            request.AbsenceType?.RequiresAttachment == true
+            && approver.User?.Role != UserRole.HRManager
+        )
         {
-             throw new Exception("Medical leaves must be validated and approved by an HR Administrator.");
+            throw new Exception(
+                "Medical leaves must be validated and approved by an HR Administrator."
+            );
         }
 
-        if (approver.Role == Roles.Supervisor && request.Status == RequestStatus.Pending)
+        if (approver.User?.Role == UserRole.Manager && request.Status == RequestStatus.Pending)
         {
             request.Status = RequestStatus.PendingCoordinatorApproval;
         }
-        else if (approver.Role == Roles.Coordinator || approver.Role == Roles.HRAdmin)
+        else if (
+            approver.User?.Role == UserRole.Manager
+            || approver.User?.Role == UserRole.HRManager
+        )
         {
             request.Status = RequestStatus.Approved;
         }
-        else 
+        else
         {
-            throw new Exception("You do not have sufficient permissions to approve this request at this stage.");
+            throw new Exception(
+                "You do not have sufficient permissions to approve this request at this stage."
+            );
         }
 
-        request.ApprovalHistories.Add(new ApprovalHistory
-        {
-            Id = Guid.NewGuid(),
-            ApproverEmployeeId = approverId,
-            Action = ApprovalAction.Approved,
-            Comment = comment,
-            ActionDate = DateTime.UtcNow
-        });
+        request.ApprovalHistories.Add(
+            new ApprovalHistory
+            {
+                Id = Guid.NewGuid(),
+                ApproverEmployeeId = approverId,
+                Action = ApprovalAction.Approved,
+                Comment = comment,
+                ActionDate = DateTime.UtcNow,
+            }
+        );
 
         await _context.SaveChangesAsync();
 
         return true;
     }
 
-    public async Task<bool> RequestModificationAsync(Guid requestId, Guid approverId, string comment)
+    public async Task<bool> RequestModificationAsync(
+        Guid requestId,
+        Guid approverId,
+        string comment
+    )
     {
-        var request = await _context.AbsenceRequests.FindAsync(requestId) 
+        var request =
+            await _context.AbsenceRequests.FindAsync(requestId)
             ?? throw new Exception("Request not found.");
-        
+
         request.Status = RequestStatus.ModificationRequested;
-        request.ApprovalHistories.Add(new ApprovalHistory
-        {
-            Id = Guid.NewGuid(),
-            ApproverEmployeeId = approverId,
-            Action = ApprovalAction.Rejected,
-            Comment = $"Modification requested: {comment}",
-            ActionDate = DateTime.UtcNow
-        });
+        request.ApprovalHistories.Add(
+            new ApprovalHistory
+            {
+                Id = Guid.NewGuid(),
+                ApproverEmployeeId = approverId,
+                Action = ApprovalAction.Rejected,
+                Comment = $"Modification requested: {comment}",
+                ActionDate = DateTime.UtcNow,
+            }
+        );
 
         await _context.SaveChangesAsync();
 
@@ -278,9 +334,10 @@ public class LeaveRequestService : ILeaveRequestService
 
     public async Task<bool> RejectRequestAsync(Guid requestId, Guid approverId, string comment)
     {
-        var request = await _context.AbsenceRequests
-            .Include(r => r.AbsenceType)
-            .FirstOrDefaultAsync(r => r.Id == requestId) 
+        var request =
+            await _context
+                .AbsenceRequests.Include(r => r.AbsenceType)
+                .FirstOrDefaultAsync(r => r.Id == requestId)
             ?? throw new Exception("Request not found.");
 
         if (request.Status != RequestStatus.Pending)
@@ -289,19 +346,22 @@ public class LeaveRequestService : ILeaveRequestService
         }
 
         request.Status = RequestStatus.Rejected;
-        request.ApprovalHistories.Add(new ApprovalHistory
-        {
-            Id = Guid.NewGuid(),
-            ApproverEmployeeId = approverId,
-            Action = ApprovalAction.Rejected,
-            Comment = comment,
-            ActionDate = DateTime.UtcNow
-        });
+        request.ApprovalHistories.Add(
+            new ApprovalHistory
+            {
+                Id = Guid.NewGuid(),
+                ApproverEmployeeId = approverId,
+                Action = ApprovalAction.Rejected,
+                Comment = comment,
+                ActionDate = DateTime.UtcNow,
+            }
+        );
 
         if (request.AbsenceType != null && request.AbsenceType.DeductsFromBalance)
         {
-            var balance = await _context.VacationBalances.FirstOrDefaultAsync(b => 
-                b.EmployeeId == request.EmployeeId && b.Year == request.StartDate.Year);
+            var balance = await _context.VacationBalances.FirstOrDefaultAsync(b =>
+                b.EmployeeId == request.EmployeeId && b.Year == request.StartDate.Year
+            );
             if (balance != null)
             {
                 balance.UsedDays -= request.TotalDaysRequested;
@@ -315,9 +375,10 @@ public class LeaveRequestService : ILeaveRequestService
 
     public async Task<bool> CancelRequestAsync(Guid requestId, string reason)
     {
-        var request = await _context.AbsenceRequests
-            .Include(r => r.AbsenceType)
-            .FirstOrDefaultAsync(r => r.Id == requestId) 
+        var request =
+            await _context
+                .AbsenceRequests.Include(r => r.AbsenceType)
+                .FirstOrDefaultAsync(r => r.Id == requestId)
             ?? throw new Exception("Request not found.");
 
         if (request.Status == RequestStatus.Rejected || request.Status == RequestStatus.Cancelled)
@@ -329,8 +390,9 @@ public class LeaveRequestService : ILeaveRequestService
 
         if (request.AbsenceType != null && request.AbsenceType.DeductsFromBalance)
         {
-            var balance = await _context.VacationBalances.FirstOrDefaultAsync(b => 
-                b.EmployeeId == request.EmployeeId && b.Year == request.StartDate.Year);
+            var balance = await _context.VacationBalances.FirstOrDefaultAsync(b =>
+                b.EmployeeId == request.EmployeeId && b.Year == request.StartDate.Year
+            );
             if (balance != null)
             {
                 balance.UsedDays -= request.TotalDaysRequested;

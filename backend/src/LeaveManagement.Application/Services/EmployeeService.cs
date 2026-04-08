@@ -9,14 +9,9 @@ using Microsoft.EntityFrameworkCore;
 namespace LeaveManagement.Application.Services;
 
 /// <summary>Concrete employee management service.</summary>
-public sealed class EmployeeService : IEmployeeService
+public sealed class EmployeeService(LeaveManagementDbContext context) : IEmployeeService
 {
-    private readonly LeaveManagementDbContext _context;
-
-    public EmployeeService(LeaveManagementDbContext context)
-    {
-        _context = context;
-    }
+    private readonly LeaveManagementDbContext _context = context;
 
     public async Task<Employee> CreateAsync(
         string firstName,
@@ -26,16 +21,19 @@ public sealed class EmployeeService : IEmployeeService
         string nationalId,
         Guid departmentId,
         DateTime hireDate,
-        string role,
-        CancellationToken ct = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var exists = await _context.Employees.AnyAsync(
             e => e.EmployeeCode == employeeCode || e.NationalId == nationalId,
-            ct);
+            cancellationToken
+        );
 
         if (exists)
         {
-            throw new InvalidOperationException("An employee with the same code or national ID already exists.");
+            throw new InvalidOperationException(
+                "An employee with the same code or national ID already exists."
+            );
         }
 
         var employee = new Employee
@@ -48,12 +46,11 @@ public sealed class EmployeeService : IEmployeeService
             NationalId = nationalId,
             DepartmentId = departmentId,
             HireDate = DateTime.SpecifyKind(hireDate, DateTimeKind.Utc),
-            Role = role,
             IsActive = true,
         };
 
-        await _context.Employees.AddAsync(employee, ct);
-        await _context.SaveChangesAsync(ct);
+        await _context.Employees.AddAsync(employee, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return employee;
     }
@@ -67,20 +64,24 @@ public sealed class EmployeeService : IEmployeeService
         string nationalId,
         Guid departmentId,
         DateTime hireDate,
-        string role,
         bool isActive,
-        CancellationToken ct = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        var employee = await _context.Employees.FindAsync([id], ct)
+        var employee =
+            await _context.Employees.FindAsync([id], cancellationToken)
             ?? throw new InvalidOperationException($"Employee {id} not found.");
 
         var duplicateExists = await _context.Employees.AnyAsync(
             e => e.Id != id && (e.EmployeeCode == employeeCode || e.NationalId == nationalId),
-            ct);
+            cancellationToken
+        );
 
         if (duplicateExists)
         {
-            throw new InvalidOperationException("Another employee with the same code or national ID already exists.");
+            throw new InvalidOperationException(
+                "Another employee with the same code or national ID already exists."
+            );
         }
 
         employee.FirstName = firstName;
@@ -90,21 +91,21 @@ public sealed class EmployeeService : IEmployeeService
         employee.NationalId = nationalId;
         employee.DepartmentId = departmentId;
         employee.HireDate = DateTime.SpecifyKind(hireDate, DateTimeKind.Utc);
-        employee.Role = role;
         employee.IsActive = isActive;
 
-        await _context.SaveChangesAsync(ct);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return employee;
     }
 
-    public async Task<bool> DeactivateAsync(Guid id, CancellationToken ct = default)
+    public async Task<bool> DeactivateAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var employee = await _context.Employees.FindAsync([id], ct)
+        var employee =
+            await _context.Employees.FindAsync([id], cancellationToken)
             ?? throw new InvalidOperationException($"Employee {id} not found.");
 
         employee.IsActive = false;
-        await _context.SaveChangesAsync(ct);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return true;
     }
@@ -112,20 +113,23 @@ public sealed class EmployeeService : IEmployeeService
     public async Task<EmployeeSupervisor> AssignSupervisorAsync(
         Guid employeeId,
         Guid supervisorId,
-        CancellationToken ct = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (employeeId == supervisorId)
         {
             throw new InvalidOperationException("An employee cannot be their own supervisor.");
         }
 
-        var existing = await _context.EmployeeSupervisors
-            .FirstOrDefaultAsync(es => es.EmployeeId == employeeId, ct);
+        var existing = await _context.EmployeeSupervisors.FirstOrDefaultAsync(
+            es => es.EmployeeId == employeeId,
+            cancellationToken
+        );
 
         if (existing != null)
         {
             existing.SupervisorId = supervisorId;
-            await _context.SaveChangesAsync(ct);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return existing;
         }
@@ -137,16 +141,21 @@ public sealed class EmployeeService : IEmployeeService
             SupervisorId = supervisorId,
         };
 
-        await _context.EmployeeSupervisors.AddAsync(assignment, ct);
-        await _context.SaveChangesAsync(ct);
+        await _context.EmployeeSupervisors.AddAsync(assignment, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return assignment;
     }
 
-    public async Task<bool> RemoveSupervisorAsync(Guid employeeId, CancellationToken ct = default)
+    public async Task<bool> RemoveSupervisorAsync(
+        Guid employeeId,
+        CancellationToken cancellationToken = default
+    )
     {
-        var assignment = await _context.EmployeeSupervisors
-            .FirstOrDefaultAsync(es => es.EmployeeId == employeeId, ct);
+        var assignment = await _context.EmployeeSupervisors.FirstOrDefaultAsync(
+            es => es.EmployeeId == employeeId,
+            cancellationToken
+        );
 
         if (assignment == null)
         {
@@ -154,7 +163,7 @@ public sealed class EmployeeService : IEmployeeService
         }
 
         _context.EmployeeSupervisors.Remove(assignment);
-        await _context.SaveChangesAsync(ct);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return true;
     }

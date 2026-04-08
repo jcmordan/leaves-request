@@ -1,27 +1,24 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using LeaveManagement.Domain.Interfaces;
 using LeaveManagement.Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagement.Infrastructure.Services;
 
-public class CurrentUserService : ICurrentUserService
+public class CurrentUserService(
+    IHttpContextAccessor httpContextAccessor,
+    LeaveManagementDbContext context
+) : ICurrentUserService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly LeaveManagementDbContext _context;
-
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor, LeaveManagementDbContext context)
-    {
-        _httpContextAccessor = httpContextAccessor;
-        _context = context;
-    }
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly LeaveManagementDbContext _context = context;
 
     public string GetUserEmail()
     {
-        return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email) 
-               ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue("preferred_username") 
-               ?? string.Empty;
+        return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email)
+            ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue("preferred_username")
+            ?? string.Empty;
     }
 
     public Guid GetCurrentEmployeeId()
@@ -32,19 +29,19 @@ public class CurrentUserService : ICurrentUserService
             return Guid.Empty;
         }
 
-        var employee = _context.Employees
-            .AsNoTracking()
+        var employee = _context
+            .Employees.AsNoTracking()
             .FirstOrDefault(e => e.User != null && e.User.Email == email);
 
         if (employee == null)
         {
             var adId = GetCurrentUserId();
-            
+
             if (!string.IsNullOrEmpty(adId))
             {
-                employee = _context.Employees
-                    .AsNoTracking()
-                    .FirstOrDefault(e => e.User != null && e.User.ActiveDirectoryObjectId == adId);
+                employee = _context
+                    .Employees.AsNoTracking()
+                    .FirstOrDefault(e => e.User != null && e.User.ExternalId == adId);
             }
         }
 
@@ -53,8 +50,10 @@ public class CurrentUserService : ICurrentUserService
 
     public string GetCurrentUserId()
     {
-        return _httpContextAccessor.HttpContext?.User?.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier") 
-               ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier) 
-               ?? string.Empty;
+        return _httpContextAccessor.HttpContext?.User?.FindFirstValue(
+                "http://schemas.microsoft.com/identity/claims/objectidentifier"
+            )
+            ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? string.Empty;
     }
 }

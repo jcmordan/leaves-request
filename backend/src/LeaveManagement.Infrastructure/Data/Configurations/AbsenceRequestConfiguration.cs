@@ -27,7 +27,7 @@ public class AbsenceRequestConfiguration : IEntityTypeConfiguration<AbsenceReque
             .HasForeignKey(ar => ar.AbsenceTypeId);
         
         builder.HasMany(ar => ar.Attachments)
-            .WithOne()
+            .WithOne(a => a.AbsenceRequest)
             .HasForeignKey(a => a.AbsenceRequestId);
         
         builder.HasMany(ar => ar.ApprovalHistories)

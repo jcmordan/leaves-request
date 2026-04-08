@@ -15,7 +15,6 @@ public class Employee
     public Guid DepartmentId { get; set; }
     public Department? Department { get; set; }
     public DateTime HireDate { get; set; }
-    public string Role { get; set; } = "Employee"; // Default role
     public Guid? UserId { get; set; }
     public User? User { get; set; }
     public Guid? ManagerId { get; set; }

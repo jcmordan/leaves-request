@@ -4,5 +4,6 @@
     <Project Path="src/LeaveManagement.Application/LeaveManagement.Application.csproj" />
     <Project Path="src/LeaveManagement.Domain/LeaveManagement.Domain.csproj" />
     <Project Path="src/LeaveManagement.Infrastructure/LeaveManagement.Infrastructure.csproj" />
+    <Project Path="src/LeaveManagement.UnitTests/LeaveManagement.UnitTests.csproj" />
   </Folder>
 </Solution>

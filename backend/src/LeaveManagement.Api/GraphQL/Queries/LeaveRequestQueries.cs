@@ -9,11 +9,14 @@ using LeaveManagement.Domain.Enums;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Infrastructure.Data;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace LeaveManagement.Api.GraphQL.Queries;
 
 [ExtendObjectType(typeof(Query))]
 public class LeaveRequestQueries
 {
+    [Authorize(Policy = "RequireManager")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]

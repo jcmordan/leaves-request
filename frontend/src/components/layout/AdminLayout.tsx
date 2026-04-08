@@ -6,19 +6,20 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, Calendar, Clock, Users, Building2, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
+import { Logo } from "@/components/layout/Logo";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const t = useTranslations('Navigation');
   const tLayout = useTranslations('Layout');
-  const tRoles = useTranslations('Roles');
+  const tRoles = useTranslations("Roles");
 
   const getNavigation = () => {
     const baseNav = [
-      { name: t('dashboard'), href: "/dashboard", icon: UserCircle },
-      { name: t('requests'), href: "/requests", icon: Clock },
+      { name: t("dashboard"), href: "/dashboard", icon: UserCircle },
+      { name: t("employees"), href: "/employees", icon: UserCircle },
+      { name: t("requests"), href: "/requests", icon: Clock },
     ];
 
     if (user?.role === "Supervisor") {
@@ -45,18 +46,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       {/* Sidebar Navigation */}
       <aside className="w-72 bg-sidebar-primary text-white flex flex-col shadow-ambient z-40 transition-all duration-300">
         <div className="p-8 mb-4">
-          <div className="flex flex-col gap-1">
-            <div className="p-4 mt-0 w-full bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.15)] self-start mb-6 group transition-all">
-              <Image
-                src="/logo-refidomsa.png"
-                alt="Logo"
-                width={140}
-                height={40}
-                className="h-auto w-full object-contain"
-                priority
-              />
-            </div>
-          </div>
+          <Logo />
         </div>
 
         <nav className="flex-1 px-4 space-y-2">
@@ -113,7 +103,9 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                   {user?.name}
                 </span>
                 <span className="px-2 py-0.5 bg-secondary-container text-on-secondary-container text-[9px] font-black uppercase tracking-widest rounded-full">
-                  {user?.role ? tRoles(user.role) : tRoles("Member")}
+                  {user?.role
+                    ? tRoles(user.role.toLowerCase())
+                    : tRoles("employee")}
                 </span>
               </div>
               <div className="h-10 w-10 bg-secondary/10 rounded-full flex items-center justify-center text-secondary font-bold border border-secondary/20 shadow-sm">

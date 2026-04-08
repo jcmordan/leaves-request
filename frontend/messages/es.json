@@ -1,4 +1,19 @@
 {
+  "Common": {
+    "active": "Activo",
+    "away": "Ausente",
+    "onLeave": "En Permiso",
+    "employee": "Empleado",
+    "department": "Departamento",
+    "role": "Cargo",
+    "status": "Estado",
+    "id": "ID",
+    "newRequest": "Nueva Solicitud",
+    "review": "Revisar",
+    "none": "Ninguno",
+    "viewAll": "Ver Todo",
+    "filters": "Filtros"
+  },
   "Index": {
     "title": "Bienvenido a Solicitudes de Permisos"
   },
@@ -15,25 +30,26 @@
     "employees": "Empleados"
   },
   "Layout": {
-    "workspace": "Espacio de Trabajo Soberano",
+    "workspace": "Portal de Servicios al Colaborador",
     "adminPortal": "Admin Soberano",
     "memberPortal": "Portal Soberano",
     "access": "Acceso",
     "signout": "Cerrar Sesión",
-    "breadcrumb": "Espacio de Trabajo"
+    "breadcrumb": "Portal de Servicios"
   },
   "Roles": {
-    "Employee": "Empleado",
-    "Supervisor": "Supervisor",
-    "Coordinator": "Coordinador",
-    "HR_Admin": "Administrador de RRHH",
-    "Member": "Miembro"
-  },
-  "Common": {
-    "newRequest": "Nueva Solicitud",
-    "review": "Revisar",
-    "none": "Ninguno",
-    "viewAll": "Ver Todo"
+    "employee": "Empleado",
+    "supervisor": "Supervisor",
+    "coordinator": "Coordinador",
+    "hr_admin": "RRHH",
+    "member": "Miembro",
+    "admin": "Administrador",
+    "seniorSoftwareEngineer": "Ingeniero de Software Senior",
+    "hrManager": "Gerente de RRHH",
+    "legalCounsel": "Asesor Legal",
+    "operationsLead": "Líder de Operaciones",
+    "technicalArchitect": "Arquitecto Técnico",
+    "departmentHead": "Jefe de Departamento"
   },
   "Dashboard": {
     "welcome": "Bienvenido de nuevo, {name}",
@@ -52,5 +68,35 @@
     "noRecentDescription": "Cualquier solicitud de permiso que envíes aparecerá aquí con detalle de alta densidad.",
     "daysCount": "{count, plural, =1 {# Día} other {# Días}}",
     "days": "Días"
+  },
+  "Auth": {
+    "loginTitle": "Bienvenido a Solicitudes de Permisos",
+    "microsoftSignIn": "Iniciar sesión con Microsoft",
+    "dividerOr": "O",
+    "emailLabel": "Correo Institucional",
+    "emailPlaceholder": "usuario@empresa.com",
+    "passwordLabel": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "signIn": "Iniciar Sesión",
+    "signingIn": "Iniciando sesión...",
+    "errorInvalidCredentials": "Credenciales inválidas. Por favor, inténtelo de nuevo.",
+    "errorGeneric": "Ocurrió un error al iniciar sesión. Por favor, inténtelo de nuevo."
+  },
+  "Employees": {
+    "title": "Directorio de Empleados",
+    "statsTotal": "Total Empleados",
+    "statsActive": "Activos Ahora",
+    "statsOnLeave": "En Permiso",
+    "statsTrend": "{value} desde el mes pasado",
+    "searchPlaceholder": "Buscar por nombre, cargo o ID...",
+    "newEmployee": "Nuevo Empleado"
+  },
+  "Departments": {
+    "engineering": "Ingeniería",
+    "management": "Gestión",
+    "legal": "Legal",
+    "humanResources": "Recursos Humanos",
+    "operations": "Operaciones"
   }
 }

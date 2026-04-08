@@ -1,4 +1,19 @@
 {
+  "Common": {
+    "active": "Active",
+    "away": "Away",
+    "onLeave": "On Leave",
+    "employee": "Employee",
+    "department": "Department",
+    "role": "Role",
+    "status": "Status",
+    "id": "ID",
+    "newRequest": "New Request",
+    "review": "Review",
+    "none": "None",
+    "viewAll": "View All",
+    "filters": "Filters"
+  },
   "Index": {
     "title": "Welcome to Leave Request"
   },
@@ -8,32 +23,33 @@
   },
   "Navigation": {
     "dashboard": "Dashboard",
-    "vacations": "Vacations",
+    "requests": "Requests",
     "teams": "Teams",
     "approvals": "Approvals",
     "allRequests": "All Requests",
     "employees": "Employees"
   },
   "Layout": {
-    "workspace": "Sovereign Workspace",
+    "workspace": "Employee Service Portal",
     "adminPortal": "Sovereign Admin",
     "memberPortal": "Sovereign Portal",
     "access": "Access",
     "signout": "Sign out",
-    "breadcrumb": "Workspace"
+    "breadcrumb": "Service Portal"
   },
   "Roles": {
-    "Employee": "Employee",
-    "Supervisor": "Supervisor",
-    "Coordinator": "Coordinator",
-    "HR_Admin": "HR Admin",
-    "Member": "Member"
-  },
-  "Common": {
-    "newRequest": "New Request",
-    "review": "Review",
-    "none": "None",
-    "viewAll": "View All"
+    "employee": "Employee",
+    "supervisor": "Supervisor",
+    "coordinator": "Coordinator",
+    "hr_admin": "HR Admin",
+    "member": "Member",
+    "admin": "Admin",
+    "seniorSoftwareEngineer": "Senior Software Engineer",
+    "hrManager": "HR Manager",
+    "legalCounsel": "Legal Counsel",
+    "operationsLead": "Operations Lead",
+    "technicalArchitect": "Technical Architect",
+    "departmentHead": "Department Head"
   },
   "Dashboard": {
     "welcome": "Welcome back, {name}",
@@ -52,5 +68,35 @@
     "noRecentDescription": "Any leave applications you submit will appear here in high-density detail.",
     "daysCount": "{count, plural, =1 {# Day} other {# Days}}",
     "days": "Days"
+  },
+  "Auth": {
+    "loginTitle": "Welcome to Leave Request",
+    "microsoftSignIn": "Sign in with Microsoft",
+    "dividerOr": "OR",
+    "emailLabel": "Work Email",
+    "emailPlaceholder": "name@company.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "forgotPassword": "Forgot?",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "errorInvalidCredentials": "Invalid credentials. Please try again.",
+    "errorGeneric": "An error occurred during sign in. Please try again."
+  },
+  "Employees": {
+    "title": "Employee Directory",
+    "statsTotal": "Total Employees",
+    "statsActive": "Active Now",
+    "statsOnLeave": "On Leave",
+    "statsTrend": "{value} since last month",
+    "searchPlaceholder": "Search by name, role or ID...",
+    "newEmployee": "New Employee"
+  },
+  "Departments": {
+    "engineering": "Engineering",
+    "management": "Management",
+    "legal": "Legal",
+    "humanResources": "Human Resources",
+    "operations": "Operations"
   }
 }

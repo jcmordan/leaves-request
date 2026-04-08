@@ -22,7 +22,5 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.HasOne(e => e.Department)
             .WithMany()
             .HasForeignKey(e => e.DepartmentId);
-        
-        builder.Property(e => e.Role).HasConversion<string>();
     }
 }

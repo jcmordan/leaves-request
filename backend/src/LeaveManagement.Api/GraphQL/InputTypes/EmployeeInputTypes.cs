@@ -10,8 +10,7 @@ public record CreateEmployeeInput(
     string EmployeeCode,
     string NationalId,
     Guid DepartmentId,
-    DateTime HireDate,
-    string Role);
+    DateTime HireDate);
 
 /// <summary>Input for updating an existing employee.</summary>
 public record UpdateEmployeeInput(
@@ -23,5 +22,4 @@ public record UpdateEmployeeInput(
     string NationalId,
     Guid DepartmentId,
     DateTime HireDate,
-    string Role,
     bool IsActive);

@@ -1,9 +1,17 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter, usePathname } from '@/i18n/navigation';
+import { createContext, useContext, ReactNode } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
-export type Role = 'Employee' | 'Supervisor' | 'Coordinator' | 'HR_Admin';
+
+export type Role =
+  | "Admin"
+  | "HRManager"
+  | "Manager"
+  | "Employee"
+  | "Supervisor"
+  | "HR_Admin"
+  | "Coordinator";
 
 export interface User {
   id: string;
@@ -15,8 +23,11 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (token: string, user: User) => void;
-  logout: () => void;
+  login: (
+    provider?: string,
+    credentials?: Record<string, string>,
+  ) => Promise<void>;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
@@ -24,74 +35,41 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
+  const isAuthenticated = status === "authenticated";
 
-  const router = useRouter();
-  const pathname = usePathname();
-
-  useEffect(() => {
-    // Client-side initialization
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
-    
-    if (storedUser && storedToken) {
-      try {
-        setUser(JSON.parse(storedUser));
-        setToken(storedToken);
-      } catch (err) {
-        console.error('Failed to parse stored user:', err);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+  const user: User | null = session?.user
+    ? {
+        id: session.oid || session.user.id || "",
+        name: session.user.name || "",
+        email: session.user.email || "",
+        role: (session.user.role as Role) || "Employee",
       }
-    }
-    
-    setIsLoading(false);
-  }, []);
+    : null;
 
-
-
-  useEffect(() => {
-    // Protect routes
-    if (!isLoading) {
-      const isLoginPage = pathname === '/auth/login';
-      if (!user && !isLoginPage) {
-        router.push('/auth/login');
-      } else if (user && isLoginPage) {
-        router.push('/dashboard');
-      }
-    }
-  }, [user, isLoading, pathname, router]);
-
-  const login = (newToken: string, newUser: User) => {
-    setToken(newToken);
-    setUser(newUser);
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(newUser));
+  const login = async (
+    provider: string = "microsoft-entra-id",
+    credentials?: Record<string, string>,
+  ) => {
+    await signIn(provider, { ...credentials, callbackUrl: "/" });
   };
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    router.push('/login');
+  const logout = async () => {
+    await signOut({ callbackUrl: "/es/auth/login" });
+  };
+
+  const contextValue: AuthContextType = {
+    user,
+    token: session?.accessToken || null,
+    login,
+    logout,
+    isAuthenticated,
+    isLoading,
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        login,
-        logout,
-        isAuthenticated: !!user,
-        isLoading,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 

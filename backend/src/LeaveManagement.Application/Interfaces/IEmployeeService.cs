@@ -17,7 +17,6 @@ public interface IEmployeeService
         string nationalId,
         Guid departmentId,
         DateTime hireDate,
-        string role,
         CancellationToken ct = default);
 
     Task<Employee> UpdateAsync(
@@ -29,7 +28,6 @@ public interface IEmployeeService
         string nationalId,
         Guid departmentId,
         DateTime hireDate,
-        string role,
         bool isActive,
         CancellationToken ct = default);
 

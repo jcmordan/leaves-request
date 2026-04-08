@@ -6,11 +6,14 @@ using HotChocolate.Types;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Infrastructure.Data;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace LeaveManagement.Api.GraphQL.Queries;
 
 [ExtendObjectType(typeof(Query))]
 public class EmployeeQueries
 {
+    [Authorize(Policy = "RequireHR")]
     /// <summary>Returns all employees. Supports projection, filtering and sorting.</summary>
     [UseProjection]
     [UseFiltering]

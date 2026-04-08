@@ -27,7 +27,6 @@ public class EmployeeMutations
             input.NationalId,
             input.DepartmentId,
             input.HireDate,
-            input.Role,
             ct);
     }
 
@@ -47,7 +46,6 @@ public class EmployeeMutations
             input.NationalId,
             input.DepartmentId,
             input.HireDate,
-            input.Role,
             input.IsActive,
             ct);
     }

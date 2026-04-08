@@ -36,6 +36,10 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Diagnosis")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uuid");
 
@@ -44,7 +48,8 @@ namespace LeaveManagement.Infrastructure.Migrations
 
                     b.Property<string>("Reason")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<Guid>("RequesterEmployeeId")
                         .HasColumnType("uuid");
@@ -58,6 +63,10 @@ namespace LeaveManagement.Infrastructure.Migrations
 
                     b.Property<int>("TotalDaysRequested")
                         .HasColumnType("integer");
+
+                    b.Property<string>("TreatingDoctor")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.HasKey("Id");
 
@@ -137,16 +146,16 @@ namespace LeaveManagement.Infrastructure.Migrations
                             MaxDaysPerYear = 30,
                             Name = "Licencia Médica",
                             RequiresAttachment = true,
-                            RequiresDoctor = false
+                            RequiresDoctor = true
                         },
                         new
                         {
                             Id = new Guid("a3333333-3333-3333-3333-333333333333"),
-                            CalculationType = "WorkingDays",
+                            CalculationType = "CalendarDays",
                             DeductsFromBalance = false,
-                            Description = "Licencia por matrimonio (5 días laborables)",
+                            Description = "Licencia por matrimonio (7 días consecutivos)",
                             IsActive = true,
-                            MaxDaysPerYear = 5,
+                            MaxDaysPerYear = 7,
                             Name = "Matrimonio",
                             RequiresAttachment = false,
                             RequiresDoctor = false
@@ -168,10 +177,22 @@ namespace LeaveManagement.Infrastructure.Migrations
                             Id = new Guid("a5555555-5555-5555-5555-555555555555"),
                             CalculationType = "WorkingDays",
                             DeductsFromBalance = false,
-                            Description = "Licencia por paternidad (2 días laborables)",
+                            Description = "Licencia por nacimiento (10 días laborables)",
                             IsActive = true,
-                            MaxDaysPerYear = 2,
-                            Name = "Paternidad",
+                            MaxDaysPerYear = 10,
+                            Name = "Nacimiento",
+                            RequiresAttachment = false,
+                            RequiresDoctor = false
+                        },
+                        new
+                        {
+                            Id = new Guid("a6666666-6666-6666-6666-666666666666"),
+                            CalculationType = "WorkingDays",
+                            DeductsFromBalance = false,
+                            Description = "Licencia por cambio de residencia (1 día laborable)",
+                            IsActive = true,
+                            MaxDaysPerYear = 1,
+                            Name = "Cambio de Residencia",
                             RequiresAttachment = false,
                             RequiresDoctor = false
                         });
@@ -224,9 +245,6 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.Property<Guid>("AbsenceRequestId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AbsenceRequestId1")
-                        .HasColumnType("uuid");
-
                     b.Property<byte[]>("Data")
                         .IsRequired()
                         .HasColumnType("bytea");
@@ -247,8 +265,6 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AbsenceRequestId");
-
-                    b.HasIndex("AbsenceRequestId1");
 
                     b.ToTable("Attachments");
                 });
@@ -332,6 +348,11 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<string>("AN8")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<Guid>("DepartmentId")
                         .HasColumnType("uuid");
 
@@ -357,11 +378,10 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("NationalId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid?>("ManagerId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("NationalId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -375,6 +395,8 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.HasIndex("EmployeeCode")
                         .IsUnique();
 
+                    b.HasIndex("ManagerId");
+
                     b.HasIndex("NationalId")
                         .IsUnique();
 
@@ -382,21 +404,6 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Employees");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("e1111111-1111-1111-1111-111111111111"),
-                            DepartmentId = new Guid("d2222222-2222-2222-2222-222222222222"),
-                            Email = "juan.perez@example.do",
-                            EmployeeCode = "EMP001",
-                            FirstName = "Juan",
-                            HireDate = new DateTime(2023, 11, 15, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            LastName = "Pérez",
-                            NationalId = "001-0000000-1",
-                            Role = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.EmployeeSupervisor", b =>
@@ -429,6 +436,10 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<string>("CountryCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
@@ -437,12 +448,13 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Date", "Year")
+                    b.HasIndex("Date", "CountryCode")
                         .IsUnique();
 
                     b.ToTable("PublicHolidays");
@@ -450,87 +462,99 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-000000000001"),
+                            Id = new Guid("019d695a-f45b-7f2f-bdf4-84ea708ef9ab"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Año Nuevo",
-                            Year = 2026
+                            Name = "Año Nuevo"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-000000000002"),
+                            Id = new Guid("019d695a-f45b-765f-968c-3812fafe6cd7"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 1, 6, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Día de Reyes",
-                            Year = 2026
+                            Name = "Día de Reyes"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-000000000003"),
+                            Id = new Guid("019d695a-f45b-75e6-8137-4775223b3f11"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Día de la Altagracia",
-                            Year = 2026
+                            Name = "Día de la Altagracia"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-000000000004"),
+                            Id = new Guid("019d695a-f45b-7db2-a2f9-f8272fc4bb14"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 1, 26, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Día de Duarte",
-                            Year = 2026
+                            Name = "Día de Duarte"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-000000000005"),
+                            Id = new Guid("019d695a-f45b-761f-b133-6d9b3e7bd5a0"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 2, 27, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Independencia Nacional",
-                            Year = 2026
+                            Name = "Independencia Nacional"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-000000000006"),
+                            Id = new Guid("019d695a-f45b-7719-abc1-0fe250e0aebc"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 4, 3, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Viernes Santo",
-                            Year = 2026
+                            Name = "Viernes Santo"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-000000000007"),
+                            Id = new Guid("019d695a-f45b-74d4-9a30-20f6fd4d1274"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Día del Trabajo",
-                            Year = 2026
+                            Name = "Día del Trabajo"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-000000000008"),
+                            Id = new Guid("019d695a-f45b-7c16-9009-52cfb8b7720a"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 6, 4, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Corpus Christi",
-                            Year = 2026
+                            Name = "Corpus Christi"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-000000000009"),
+                            Id = new Guid("019d695a-f45b-7144-b2ca-eb93d84cbf5f"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 8, 16, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Día de la Restauración",
-                            Year = 2026
+                            Name = "Día de la Restauración"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-00000000000a"),
+                            Id = new Guid("019d695a-f45b-7084-88bc-07ef92442906"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 9, 24, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Día de las Mercedes",
-                            Year = 2026
+                            Name = "Día de las Mercedes"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-00000000000b"),
+                            Id = new Guid("019d695a-f45b-7399-9b3d-2ba57d0d54e6"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 11, 6, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Día de la Constitución",
-                            Year = 2026
+                            Name = "Día de la Constitución"
                         },
                         new
                         {
-                            Id = new Guid("f0000000-0000-0000-0000-00000000000c"),
+                            Id = new Guid("019d695a-f45b-7361-a348-a3633406757e"),
+                            CountryCode = "DO",
                             Date = new DateTime(2026, 12, 25, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Día de Navidad",
-                            Year = 2026
+                            Name = "Día de Navidad"
                         });
                 });
 
@@ -541,10 +565,6 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
-                    b.Property<string>("ActiveDirectoryObjectId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -552,6 +572,10 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -561,13 +585,22 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActiveDirectoryObjectId")
-                        .IsUnique();
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasFilter("\"ExternalId\" IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -603,18 +636,6 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("VacationBalances");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("b1111111-1111-1111-1111-111111111111"),
-                            CarriedOverDays = 0,
-                            EmployeeId = new Guid("e1111111-1111-1111-1111-111111111111"),
-                            ExpiresAt = new DateTime(2027, 3, 31, 0, 0, 0, 0, DateTimeKind.Utc),
-                            TotalDays = 14,
-                            UsedDays = 0,
-                            Year = 2026
-                        });
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.AbsenceRequest", b =>
@@ -673,15 +694,11 @@ namespace LeaveManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.Attachment", b =>
                 {
-                    b.HasOne("LeaveManagement.Domain.Entities.AbsenceRequest", null)
+                    b.HasOne("LeaveManagement.Domain.Entities.AbsenceRequest", "AbsenceRequest")
                         .WithMany("Attachments")
                         .HasForeignKey("AbsenceRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("LeaveManagement.Domain.Entities.AbsenceRequest", "AbsenceRequest")
-                        .WithMany()
-                        .HasForeignKey("AbsenceRequestId1");
 
                     b.Navigation("AbsenceRequest");
                 });
@@ -694,11 +711,17 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LeaveManagement.Domain.Entities.Employee", "Manager")
+                        .WithMany("Subordinates")
+                        .HasForeignKey("ManagerId");
+
                     b.HasOne("LeaveManagement.Domain.Entities.User", "User")
                         .WithOne()
                         .HasForeignKey("LeaveManagement.Domain.Entities.Employee", "UserId");
 
                     b.Navigation("Department");
+
+                    b.Navigation("Manager");
 
                     b.Navigation("User");
                 });
@@ -743,6 +766,11 @@ namespace LeaveManagement.Infrastructure.Migrations
             modelBuilder.Entity("LeaveManagement.Domain.Entities.AbsenceType", b =>
                 {
                     b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("LeaveManagement.Domain.Entities.Employee", b =>
+                {
+                    b.Navigation("Subordinates");
                 });
 #pragma warning restore 612, 618
         }

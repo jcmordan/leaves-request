@@ -2,8 +2,8 @@ namespace LeaveManagement.Domain.Enums;
 
 public enum UserRole
 {
-    Employee,
-    Supervisor,
-    Coordinator,
-    HrAdmin,
+    Admin = 0,
+    Employee = 1,
+    Manager = 2,
+    HRManager = 3,
 }

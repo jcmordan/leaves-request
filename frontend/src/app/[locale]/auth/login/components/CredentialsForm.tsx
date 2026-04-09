@@ -56,7 +56,7 @@ export function CredentialsForm({
           name="email"
           label={t("emailLabel")}
           type="email"
-          placeholder={t("emailPlaceholder")}
+          placeholder="usuario@refidomsa.com.do"
           variant="refined"
           required
         />
@@ -74,7 +74,7 @@ export function CredentialsForm({
             name="password"
             label={t("passwordLabel")}
             type="password"
-            placeholder={t("passwordPlaceholder")}
+            placeholder="contraseña"
             variant="refined"
             required
           />
@@ -93,7 +93,7 @@ export function CredentialsForm({
           className={cn(
             "w-full h-14 rounded-xl text-base font-black tracking-tight transition-all duration-300",
             "bg-surface-container-highest text-primary hover:bg-surface-container-high active:scale-[0.98]",
-            "shadow-sm hover:shadow-md disabled:opacity-50"
+            "shadow-sm hover:shadow-md disabled:opacity-50",
           )}
         >
           {isLoading ? t("signingIn") : t("signIn")}

@@ -9,7 +9,7 @@ public class ApprovalHistoryConfiguration : IEntityTypeConfiguration<ApprovalHis
     public void Configure(EntityTypeBuilder<ApprovalHistory> builder)
     {
         builder.HasKey(ah => ah.Id);
-        builder.Property(ah => ah.Id).HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(ah => ah.Id).ValueGeneratedOnAdd().HasDefaultValueSql("uuidv7()");
         builder.Property(ah => ah.Action).HasConversion<string>();
         builder.Property(ah => ah.StatusAfterAction).HasConversion<string>();
 

@@ -88,9 +88,13 @@
     "statsTotal": "Total Employees",
     "statsActive": "Active Now",
     "statsOnLeave": "On Leave",
+    "statsInactive": "Inactive Now",
     "statsTrend": "{value} since last month",
     "searchPlaceholder": "Search by name, role or ID...",
-    "newEmployee": "New Employee"
+    "newEmployee": "New Employee",
+    "emptyStateTitle": "No employees found",
+    "emptyStateDescription": "We couldn't find any results matching your search or filters. Try adjusting your criteria.",
+    "clearSearch": "Clear Search"
   },
   "Departments": {
     "engineering": "Engineering",
@@ -98,5 +102,21 @@
     "legal": "Legal",
     "humanResources": "Human Resources",
     "operations": "Operations"
+  },
+  "table": {
+    "noDataAvailable": "No data available",
+    "noResults": "No results found",
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "items": "items",
+    "page": "Page"
+  },
+  "loading": {
+    "pleaseWait": "Please wait..."
+  },
+  "calendar": {
+    "previous": "Previous",
+    "next": "Next"
   }
 }

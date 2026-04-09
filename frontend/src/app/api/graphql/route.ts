@@ -4,7 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const session = await auth();
   
-  const backendUrl = "http://localhost:5148/graphql/";
+  const backendUrl =
+    process.env.GRAPHQL_ENDPOINT || "http://localhost:5005/graphql/";
   const body = await req.json();
 
   const headers: Record<string, string> = {
@@ -21,6 +22,15 @@ export async function POST(req: NextRequest) {
       headers,
       body: JSON.stringify(body),
     });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error("BFF Error:", errorData);
+      return NextResponse.json(
+        { error: response.statusText },
+        { status: response.status },
+      );
+    }
 
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });

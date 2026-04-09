@@ -3,9 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using HotChocolate;
 using HotChocolate.Types;
+using LeaveManagement.Api.GraphQL.InputTypes;
 using LeaveManagement.Application.Interfaces;
-using LeaveManagement.Domain.Interfaces;
 using LeaveManagement.Domain.Entities;
+using LeaveManagement.Domain.Interfaces;
 
 namespace LeaveManagement.Api.GraphQL.Mutations;
 
@@ -15,10 +16,7 @@ public class LeaveRequestMutations
     public async Task<AbsenceRequest> SubmitLeaveRequest(
         [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService,
-        Guid absenceTypeId,
-        DateTime startDate,
-        DateTime endDate,
-        string reason,
+        SubmitLeaveRequestInput input,
         CancellationToken ct
     )
     {
@@ -26,35 +24,36 @@ public class LeaveRequestMutations
 
         return await leaveRequestService.SubmitRequestAsync(
             employeeId,
-            absenceTypeId,
-            startDate,
-            endDate,
-            reason);
+            input.AbsenceTypeId,
+            input.StartDate,
+            input.EndDate,
+            input.Reason,
+            input.Diagnosis,
+            input.TreatingDoctor
+        );
     }
 
     public async Task<bool> ApproveLeaveRequest(
         [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService,
-        Guid requestId,
-        string comment,
+        ApproveLeaveRequestInput input,
         CancellationToken ct
     )
     {
         var approverId = currentUserService.GetCurrentEmployeeId();
 
-        return await leaveRequestService.ApproveRequestAsync(requestId, approverId, comment);
+        return await leaveRequestService.ApproveRequestAsync(input.RequestId, approverId, input.Comment);
     }
 
     public async Task<bool> RejectLeaveRequest(
         [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService,
-        Guid requestId,
-        string comment,
+        RejectLeaveRequestInput input,
         CancellationToken ct
     )
     {
         var approverId = currentUserService.GetCurrentEmployeeId();
 
-        return await leaveRequestService.RejectRequestAsync(requestId, approverId, comment);
+        return await leaveRequestService.RejectRequestAsync(input.RequestId, approverId, input.Comment);
     }
 }

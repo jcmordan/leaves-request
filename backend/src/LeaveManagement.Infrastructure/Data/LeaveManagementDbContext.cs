@@ -1,18 +1,19 @@
+using DotNetEnv;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Infrastructure.Data.Configurations;
 using LeaveManagement.Infrastructure.Data.Seeders;
 using Microsoft.EntityFrameworkCore;
-using DotNetEnv;
 
 namespace LeaveManagement.Infrastructure.Data;
 
-public class LeaveManagementDbContext : DbContext
+public class LeaveManagementDbContext(DbContextOptions<LeaveManagementDbContext> options)
+    : DbContext(options)
 {
-    public LeaveManagementDbContext(DbContextOptions<LeaveManagementDbContext> options)
-        : base(options) { }
-
     public DbSet<User> Users { get; set; }
     public DbSet<Department> Departments { get; set; }
+    public DbSet<DepartmentSection> DepartmentSections { get; set; }
+    public DbSet<Company> Companies { get; set; }
+    public DbSet<JobTitle> JobTitles { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<EmployeeSupervisor> EmployeeSupervisors { get; set; }
     public DbSet<PublicHoliday> PublicHolidays { get; set; }
@@ -36,9 +37,5 @@ public class LeaveManagementDbContext : DbContext
 
         modelBuilder.HasPostgresExtension("pgcrypto");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(LeaveManagementDbContext).Assembly);
-
-        DepartmentSeeder.Seed(modelBuilder);
-        AbsenceTypeSeeder.Seed(modelBuilder);
-        PublicHolidaySeeder.Seed(modelBuilder);
     }
 }

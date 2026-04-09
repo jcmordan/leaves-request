@@ -3,12 +3,14 @@ using System.Threading.Tasks;
 using HotChocolate;
 using HotChocolate.Data;
 using HotChocolate.Types;
+using HotChocolate.Types.Pagination;
+using LeaveManagement.Api.GraphQL.Pagination;
 using LeaveManagement.Application.Interfaces;
-using LeaveManagement.Domain.Interfaces;
-using LeaveManagement.Domain.Enums;
+using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
+using LeaveManagement.Domain.Enums;
+using LeaveManagement.Domain.Interfaces;
 using LeaveManagement.Infrastructure.Data;
-
 using Microsoft.AspNetCore.Authorization;
 
 namespace LeaveManagement.Api.GraphQL.Queries;
@@ -17,31 +19,36 @@ namespace LeaveManagement.Api.GraphQL.Queries;
 public class LeaveRequestQueries
 {
     [Authorize(Policy = "RequireManager")]
-    [UseProjection]
-    [UseFiltering]
-    [UseSorting]
-    public IQueryable<AbsenceRequest> GetTeamAbsences(
-        [Service] LeaveManagementDbContext context,
+    [UsePaging(IncludeTotalCount = true)]
+    public async Task<Connection<AbsenceRequest>> GetTeamAbsences(
+        int? first,
+        string? after,
+        int? last,
+        string? before,
+        [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService
     )
     {
         var managerId = currentUserService.GetCurrentEmployeeId();
-
-        return context.AbsenceRequests
-            .Where(r => r.Employee!.ManagerId == managerId);
+        var filter = new PaginationFilter(first, after, last, before);
+        var result = await leaveRequestService.GetTeamAbsencesAsync(managerId, filter);
+        return result.ToConnection();
     }
 
-    [UseProjection]
-    [UseFiltering]
-    [UseSorting]
-    public IQueryable<AbsenceRequest> GetMyRequests(
-        [Service] LeaveManagementDbContext context,
+    [UsePaging(IncludeTotalCount = true)]
+    public async Task<Connection<AbsenceRequest>> GetMyRequests(
+        int? first,
+        string? after,
+        int? last,
+        string? before,
+        [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService
     )
     {
         var employeeId = currentUserService.GetCurrentEmployeeId();
-
-        return context.AbsenceRequests.Where(r => r.EmployeeId == employeeId);
+        var filter = new PaginationFilter(first, after, last, before);
+        var result = await leaveRequestService.GetEmployeeRequestsAsync(employeeId, filter);
+        return result.ToConnection();
     }
 
     public async Task<VacationBalance> GetMyBalance(
@@ -54,20 +61,26 @@ public class LeaveRequestQueries
         return await balanceService.GetCurrentYearBalanceAsync(employeeId);
     }
 
-    [UseProjection]
-    public IQueryable<AbsenceType> GetAbsenceTypes([Service] LeaveManagementDbContext context)
+    [UsePaging(IncludeTotalCount = true)]
+    public async Task<Connection<AbsenceType>> GetAbsenceTypes(
+        int? first,
+        string? after,
+        int? last,
+        string? before,
+        [Service] ILeaveRequestService leaveRequestService
+    )
     {
-        return context.AbsenceTypes.Where(t => t.IsActive);
+        var filter = new PaginationFilter(first, after, last, before);
+        var result = await leaveRequestService.GetAbsenceTypesAsync(filter);
+        return result.ToConnection();
     }
 
     /// <summary>Returns a single leave request by ID.</summary>
-    [UseProjection]
-    [UseFirstOrDefault]
-    public IQueryable<AbsenceRequest> GetRequest(
-        [Service] LeaveManagementDbContext context,
+    public async Task<AbsenceRequest?> GetRequest(
+        [Service] ILeaveRequestService leaveRequestService,
         Guid id
     )
     {
-        return context.AbsenceRequests.Where(r => r.Id == id);
+        return await leaveRequestService.GetByIdAsync(id);
     }
 }

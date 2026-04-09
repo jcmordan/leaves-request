@@ -1,14 +1,23 @@
-import type { CodegenConfig } from '@graphql-codegen/cli';
+import type { CodegenConfig } from "@graphql-codegen/cli";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env" });
+dotenv.config({ path: "../.env" });
+
 
 const config: CodegenConfig = {
-  // If the backend isn't running, you could point to a local schema.graphql file
-  schema: 'schema.graphql',
-  documents: ['src/**/*.tsx', 'src/**/*.ts', 'src/**/*.graphql'],
-  ignoreNoDocuments: true, // for better experience with the watcher
+  schema: process.env.GRAPHQL_ENDPOINT,
+  documents: ["src/**/*.{ts,tsx,graphql}", "!src/**/*.test.{ts,tsx}"],
   generates: {
-    './src/gql/': {
-      preset: 'client',
+    "./src/__generated__/": {
+      preset: "client",
       plugins: [],
+    },
+    "./src/__generated__/possibleTypes.ts": {
+      plugins: ["fragment-matcher"],
+      config: {
+        useExplicitTypenames: true,
+      },
     },
   },
 };

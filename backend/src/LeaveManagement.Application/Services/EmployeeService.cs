@@ -1,8 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using LeaveManagement.Application.Common.Paging;
 using LeaveManagement.Application.Interfaces;
+using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
+using LeaveManagement.Domain.Enums;
 using LeaveManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +18,7 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
     private readonly LeaveManagementDbContext _context = context;
 
     public async Task<Employee> CreateAsync(
-        string firstName,
-        string lastName,
+        string fullName,
         string email,
         string employeeCode,
         string nationalId,
@@ -39,8 +42,7 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
         var employee = new Employee
         {
             Id = Guid.NewGuid(),
-            FirstName = firstName,
-            LastName = lastName,
+            FullName = fullName,
             Email = email,
             EmployeeCode = employeeCode,
             NationalId = nationalId,
@@ -57,8 +59,7 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
 
     public async Task<Employee> UpdateAsync(
         Guid id,
-        string firstName,
-        string lastName,
+        string fullName,
         string email,
         string employeeCode,
         string nationalId,
@@ -84,8 +85,7 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
             );
         }
 
-        employee.FirstName = firstName;
-        employee.LastName = lastName;
+        employee.FullName = fullName;
         employee.Email = email;
         employee.EmployeeCode = employeeCode;
         employee.NationalId = nationalId;
@@ -166,5 +166,75 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
         await _context.SaveChangesAsync(cancellationToken);
 
         return true;
+    }
+
+    /// <inheritdoc/>
+    public async Task<PaginationResult<Employee>> GetEmployeesAsync(
+        PaginationFilter filter,
+        string? search
+    )
+    {
+        IQueryable<Employee> query = _context.Employees;
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(e =>
+                EF.Functions.ILike(e.FullName, $"%{search}%")
+                || EF.Functions.ILike(e.EmployeeCode, $"%{search}%")
+                || EF.Functions.ILike(e.NationalId, $"%{search}%")
+            );
+        }
+
+        return await PagingHelper.ApplyPagingAsync(query, filter);
+    }
+
+    /// <inheritdoc/>
+    public async Task<Employee?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        return await _context.Employees.FindAsync([id], ct);
+    }
+
+    /// <inheritdoc/>
+    public async Task<IDictionary<Guid, Employee>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
+    {
+        return await _context.Employees
+            .Where(e => ids.Contains(e.Id))
+            .ToDictionaryAsync(e => e.Id, ct);
+    }
+
+    /// <inheritdoc/>
+    public async Task<ILookup<Guid, Employee>> GetSubordinatesByEmployeeIdsAsync(IEnumerable<Guid> employeeIds, CancellationToken ct = default)
+    {
+        var subordinates = await _context.Employees
+            .Join(_context.EmployeeSupervisors,
+                  e => e.Id,
+                  es => es.EmployeeId,
+                  (e, es) => new { Employee = e, SupervisorId = es.SupervisorId })
+            .Where(x => employeeIds.Contains(x.SupervisorId))
+            .ToListAsync(ct);
+
+        return subordinates.ToLookup(x => x.SupervisorId, x => x.Employee);
+    }
+
+    public async Task<EmployeeStats> GetEmployeeStatsAsync()
+    {
+        var allEmployees = await _context.Employees.ToListAsync();
+        var totalEmployees = allEmployees.Count;
+        var activeEmployees = allEmployees.Count(e => e.IsActive);
+        var inactiveEmployees = allEmployees.Count(e => !e.IsActive);
+
+        var onLeaveEmployees = await _context
+            .AbsenceRequests.Where(lr =>
+                lr.StartDate <= DateTime.UtcNow && lr.EndDate >= DateTime.UtcNow
+            )
+            .Where(lr => lr.Status == RequestStatus.Approved)
+            .CountAsync();
+
+        return new EmployeeStats(
+            totalEmployees,
+            activeEmployees,
+            inactiveEmployees,
+            onLeaveEmployees
+        );
     }
 }

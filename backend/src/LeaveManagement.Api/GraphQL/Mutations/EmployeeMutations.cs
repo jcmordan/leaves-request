@@ -20,14 +20,14 @@ public class EmployeeMutations
     )
     {
         return await employeeService.CreateAsync(
-            input.FirstName,
-            input.LastName,
+            input.FullName,
             input.Email,
             input.EmployeeCode,
             input.NationalId,
             input.DepartmentId,
             input.HireDate,
-            ct);
+            ct
+        );
     }
 
     /// <summary>Updates an existing employee record.</summary>
@@ -39,15 +39,15 @@ public class EmployeeMutations
     {
         return await employeeService.UpdateAsync(
             input.Id,
-            input.FirstName,
-            input.LastName,
+            input.FullName,
             input.Email,
             input.EmployeeCode,
             input.NationalId,
             input.DepartmentId,
             input.HireDate,
             input.IsActive,
-            ct);
+            ct
+        );
     }
 
     /// <summary>Soft-deletes an employee by marking them inactive.</summary>

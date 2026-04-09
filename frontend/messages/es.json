@@ -4,6 +4,8 @@
     "away": "Ausente",
     "onLeave": "En Permiso",
     "employee": "Empleado",
+    "employeeCode": "Ficha",
+    "nationalId": "Cédula",
     "department": "Departamento",
     "role": "Cargo",
     "status": "Estado",
@@ -12,7 +14,9 @@
     "review": "Revisar",
     "none": "Ninguno",
     "viewAll": "Ver Todo",
-    "filters": "Filtros"
+    "filters": "Filtros",
+    "next": "Siguiente",
+    "previous": "Anterior"
   },
   "Index": {
     "title": "Bienvenido a Solicitudes de Permisos"
@@ -88,9 +92,13 @@
     "statsTotal": "Total Empleados",
     "statsActive": "Activos Ahora",
     "statsOnLeave": "En Permiso",
+    "statsInactive": "Inactivos Ahora",
     "statsTrend": "{value} desde el mes pasado",
-    "searchPlaceholder": "Buscar por nombre, cargo o ID...",
-    "newEmployee": "Nuevo Empleado"
+    "searchPlaceholder": "Buscar por nombre, ficha o cédula...",
+    "newEmployee": "Nuevo Empleado",
+    "emptyStateTitle": "No se encontraron empleados",
+    "emptyStateDescription": "No pudimos encontrar ningún resultado que coincida con su búsqueda o filtros. Intente ajustar sus criterios.",
+    "clearSearch": "Limpiar Búsqueda"
   },
   "Departments": {
     "engineering": "Ingeniería",
@@ -98,5 +106,21 @@
     "legal": "Legal",
     "humanResources": "Recursos Humanos",
     "operations": "Operaciones"
+  },
+  "table": {
+    "noDataAvailable": "No hay datos disponibles",
+    "noResults": "No se encontraron resultados",
+    "showing": "Mostrando",
+    "to": "a",
+    "of": "de",
+    "items": "registros",
+    "page": "Página"
+  },
+  "loading": {
+    "pleaseWait": "Por favor espere..."
+  },
+  "calendar": {
+    "previous": "Anterior",
+    "next": "Siguiente"
   }
 }

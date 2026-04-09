@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import type { Metadata } from "next";
 import { Manrope, Inter } from "next/font/google";
-import "./globals.css";
 import { Providers } from "@/components/providers";
 import { AdminLayout } from '@/components/layout/AdminLayout';
 

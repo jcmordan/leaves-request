@@ -9,7 +9,7 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
     public void Configure(EntityTypeBuilder<Attachment> builder)
     {
         builder.HasKey(a => a.Id);
-        builder.Property(a => a.Id).HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(a => a.Id).ValueGeneratedOnAdd().HasDefaultValueSql("uuidv7()");
         builder.Property(a => a.FileName).IsRequired().HasMaxLength(256);
         builder.Property(a => a.FileType).IsRequired().HasMaxLength(128);
         builder.Property(a => a.Data).IsRequired();

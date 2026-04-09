@@ -1,0 +1,37 @@
+{
+  "errors": [
+    {
+      "message": "Unexpected Execution Error",
+      "locations": [
+        {
+          "line": 3,
+          "column": 5
+        }
+      ],
+      "path": [
+        "absenceRequests"
+      ],
+      "extensions": {
+        "message": "Cannot access a disposed context instance. A common cause of this error is disposing a context instance that was resolved from dependency injection and then later trying to use the same context instance elsewhere in your application. This may occur if you are calling 'Dispose' on the context instance, or wrapping it in a using statement. If you are using dependency injection, you should let the dependency injection container take care of disposing context instances.\nObject name: 'LeaveManagementDbContext'.",
+        "stackTrace": "   at Microsoft.EntityFrameworkCore.DbContext.CheckDisposed()\n   at Microsoft.EntityFrameworkCore.DbContext.get_ContextServices()\n   at Microsoft.EntityFrameworkCore.DbContext.get_InternalServiceProvider()\n   at Microsoft.EntityFrameworkCore.DbContext.get_ChangeTracker()\n   at Microsoft.EntityFrameworkCore.Query.CompiledQueryCacheKeyGenerator.GenerateCacheKeyCore(Expression query, Boolean async)\n   at Microsoft.EntityFrameworkCore.Query.RelationalCompiledQueryCacheKeyGenerator.GenerateCacheKeyCore(Expression query, Boolean async)\n   at Npgsql.EntityFrameworkCore.PostgreSQL.Query.Internal.NpgsqlCompiledQueryCacheKeyGenerator.GenerateCacheKey(Expression query, Boolean async)\n   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.ExecuteCore[TResult](Expression query, Boolean async, CancellationToken cancellationToken)\n   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.ExecuteAsync[TResult](Expression query, CancellationToken cancellationToken)\n   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.ExecuteAsync[TResult](Expression expression, CancellationToken cancellationToken)\n   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ExecuteAsync[TSource,TResult](MethodInfo operatorMethodInfo, IQueryable`1 source, Expression expression, CancellationToken cancellationToken)\n   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ExecuteAsync[TSource,TResult](MethodInfo operatorMethodInfo, IQueryable`1 source, CancellationToken cancellationToken)\n   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.CountAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)\n   at LeaveManagement.Application.Common.Paging.PagingHelper.ApplyPagingAsync[T](IQueryable`1 query, PagingArgs args) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application/Common/Paging/PagingHelper.cs:line 30\n   at LeaveManagement.Application.Services.LeaveRequestService.GetAbsenceRequestsAsync(PagingArgs args) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application/Services/LeaveRequestService.cs:line 410\n   at LeaveManagement.Api.GraphQL.Queries.LeaveRequestQueries.GetAbsenceRequests(Nullable`1 first, String after, Nullable`1 last, String before) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Api/GraphQL/Queries/LeaveRequestQueries.cs:line 29\n   at HotChocolate.Resolvers.Expressions.ExpressionHelper.AwaitTaskHelper[T](Task`1 task)\n   at HotChocolate.Types.Helpers.FieldMiddlewareCompiler.<>c__DisplayClass9_0.<<CreateResolverMiddleware>b__0>d.MoveNext()\n--- End of stack trace from previous location ---\n   at HotChocolate.Execution.Processing.Tasks.ResolverTask.ExecuteResolverPipelineAsync(CancellationToken cancellationToken)\n   at HotChocolate.Execution.Processing.Tasks.ResolverTask.TryExecuteAsync(CancellationToken cancellationToken)"
+      }
+    },
+    {
+      "message": "Unexpected Execution Error",
+      "locations": [
+        {
+          "line": 14,
+          "column": 5
+        }
+      ],
+      "path": [
+        "absenceTypes"
+      ],
+      "extensions": {
+        "message": "Cannot access a disposed context instance. A common cause of this error is disposing a context instance that was resolved from dependency injection and then later trying to use the same context instance elsewhere in your application. This may occur if you are calling 'Dispose' on the context instance, or wrapping it in a using statement. If you are using dependency injection, you should let the dependency injection container take care of disposing context instances.\nObject name: 'LeaveManagementDbContext'.",
+        "stackTrace": "   at Microsoft.EntityFrameworkCore.DbContext.CheckDisposed()\n   at Microsoft.EntityFrameworkCore.DbContext.get_ContextServices()\n   at Microsoft.EntityFrameworkCore.DbContext.get_InternalServiceProvider()\n   at Microsoft.EntityFrameworkCore.DbContext.get_ChangeTracker()\n   at Microsoft.EntityFrameworkCore.Query.CompiledQueryCacheKeyGenerator.GenerateCacheKeyCore(Expression query, Boolean async)\n   at Microsoft.EntityFrameworkCore.Query.RelationalCompiledQueryCacheKeyGenerator.GenerateCacheKeyCore(Expression query, Boolean async)\n   at Npgsql.EntityFrameworkCore.PostgreSQL.Query.Internal.NpgsqlCompiledQueryCacheKeyGenerator.GenerateCacheKey(Expression query, Boolean async)\n   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.ExecuteCore[TResult](Expression query, Boolean async, CancellationToken cancellationToken)\n   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.ExecuteAsync[TResult](Expression query, CancellationToken cancellationToken)\n   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.ExecuteAsync[TResult](Expression expression, CancellationToken cancellationToken)\n   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ExecuteAsync[TSource,TResult](MethodInfo operatorMethodInfo, IQueryable`1 source, Expression expression, CancellationToken cancellationToken)\n   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ExecuteAsync[TSource,TResult](MethodInfo operatorMethodInfo, IQueryable`1 source, CancellationToken cancellationToken)\n   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.CountAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)\n   at LeaveManagement.Application.Common.Paging.PagingHelper.ApplyPagingAsync[T](IQueryable`1 query, PagingArgs args) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application/Common/Paging/PagingHelper.cs:line 30\n   at LeaveManagement.Application.Services.LeaveRequestService.GetAbsenceTypesAsync(PagingArgs args) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application/Services/LeaveRequestService.cs:line 417\n   at LeaveManagement.Api.GraphQL.Queries.LeaveRequestQueries.GetAbsenceTypes(Nullable`1 first, String after, Nullable`1 last, String before) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Api/GraphQL/Queries/LeaveRequestQueries.cs:line 41\n   at HotChocolate.Resolvers.Expressions.ExpressionHelper.AwaitTaskHelper[T](Task`1 task)\n   at HotChocolate.Types.Helpers.FieldMiddlewareCompiler.<>c__DisplayClass9_0.<<CreateResolverMiddleware>b__0>d.MoveNext()\n--- End of stack trace from previous location ---\n   at HotChocolate.Execution.Processing.Tasks.ResolverTask.ExecuteResolverPipelineAsync(CancellationToken cancellationToken)\n   at HotChocolate.Execution.Processing.Tasks.ResolverTask.TryExecuteAsync(CancellationToken cancellationToken)"
+      }
+    }
+  ],
+  "data": null
+}

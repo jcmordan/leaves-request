@@ -9,7 +9,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasKey(u => u.Id);
-        builder.Property(u => u.Id).HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(u => u.Id).ValueGeneratedOnAdd().HasDefaultValueSql("uuidv7()");
 
         builder.HasIndex(u => u.ExternalId).IsUnique().HasFilter("\"ExternalId\" IS NOT NULL");
         builder.Property(u => u.ExternalId).IsRequired(false).HasMaxLength(128);

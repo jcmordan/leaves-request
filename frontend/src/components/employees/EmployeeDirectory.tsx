@@ -1,14 +1,40 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { useSuspenseQuery } from "@apollo/client/react";
+import { useDebouncedCallback } from "use-debounce";
+
+import { useUrlPagination } from "@/hooks/useUrlPagination";
+
 import { StatsSection } from "./StatsSection";
 import { DirectoryControls } from "./DirectoryControls";
 import { EmployeeTable } from "./EmployeeTable";
+import { EMPLOYEE_DIRECTORY_QUERY } from "@/app/[locale]/(root)/employees/graphql/EmployeeQueries";
+
+const PAGE_SIZE = 10;
 
 export function EmployeeDirectory() {
   const t = useTranslations("Employees");
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchParams = useSearchParams();
+  const { setFilter } = useUrlPagination();
+
+  const after = searchParams.get("after") ?? undefined;
+  const before = searchParams.get("before") ?? undefined;
+  const search = searchParams.get("search") ?? undefined;
+
+  const variables = {
+    ...(before
+      ? { last: PAGE_SIZE, before }
+      : { first: PAGE_SIZE, after: after ?? undefined }),
+    search,
+  };
+
+  const { data } = useSuspenseQuery(EMPLOYEE_DIRECTORY_QUERY, { variables });
+
+  const handleSearch = useDebouncedCallback((value: string) => {
+    setFilter("search", value);
+  }, 500);
 
   return (
     <div className="flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
@@ -21,18 +47,22 @@ export function EmployeeDirectory() {
       </div>
 
       {/* Stats Overview */}
-      <StatsSection />
+      <StatsSection statsQueryRef={data} />
 
       {/* Main Content Area */}
       <div className="space-y-6">
-        <DirectoryControls onSearch={setSearchQuery} />
-        
+        <DirectoryControls onSearch={handleSearch} searchValue={search} />
+
         <div className="relative">
-          <EmployeeTable searchQuery={searchQuery} />
-          
+          <EmployeeTable
+            employeesRef={data.employees}
+            variables={variables}
+            onClearSearch={() => setFilter("search", "")}
+          />
+
           {/* Floating Action Button (Mobile optimization / quick access) */}
           <button className="fixed bottom-10 right-10 h-16 w-16 bg-primary text-white rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all md:hidden z-50">
-             <span className="text-2xl font-bold">+</span>
+            <span className="text-2xl font-bold">+</span>
           </button>
         </div>
       </div>

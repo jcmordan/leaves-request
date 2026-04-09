@@ -1,8 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using LeaveManagement.Application.Common.Paging;
 using LeaveManagement.Application.Interfaces;
+using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Constants;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Enums;
@@ -402,5 +401,39 @@ public class LeaveRequestService : ILeaveRequestService
         await _context.SaveChangesAsync();
 
         return true;
+    }
+
+    /// <inheritdoc/>
+    public async Task<PaginationResult<AbsenceRequest>> GetAbsenceRequestsAsync(PaginationFilter filter)
+    {
+        IQueryable<AbsenceRequest> query = _context.AbsenceRequests;
+        return await PagingHelper.ApplyPagingAsync(query, filter);
+    }
+
+    /// <inheritdoc/>
+    public async Task<PaginationResult<AbsenceType>> GetAbsenceTypesAsync(PaginationFilter filter)
+    {
+        IQueryable<AbsenceType> query = _context.AbsenceTypes;
+        return await PagingHelper.ApplyPagingAsync(query, filter);
+    }
+
+    /// <inheritdoc/>
+    public async Task<PaginationResult<AbsenceRequest>> GetTeamAbsencesAsync(Guid managerId, PaginationFilter filter)
+    {
+        IQueryable<AbsenceRequest> query = _context.AbsenceRequests.Where(r => r.Employee!.ManagerId == managerId);
+        return await PagingHelper.ApplyPagingAsync(query, filter);
+    }
+
+    /// <inheritdoc/>
+    public async Task<PaginationResult<AbsenceRequest>> GetEmployeeRequestsAsync(Guid employeeId, PaginationFilter filter)
+    {
+        IQueryable<AbsenceRequest> query = _context.AbsenceRequests.Where(r => r.EmployeeId == employeeId);
+        return await PagingHelper.ApplyPagingAsync(query, filter);
+    }
+
+    /// <inheritdoc/>
+    public async Task<AbsenceRequest?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        return await _context.AbsenceRequests.FindAsync(new object[] { id }, ct);
     }
 }

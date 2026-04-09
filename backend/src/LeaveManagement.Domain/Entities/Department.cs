@@ -8,4 +8,5 @@ public class Department
     public string Name { get; set; } = string.Empty;
     public string Code { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
+    public ICollection<DepartmentSection> Sections { get; set; } = new List<DepartmentSection>();
 }

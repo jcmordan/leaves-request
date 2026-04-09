@@ -12,11 +12,11 @@ import { BaseInputProps } from '../types'
 type MaskType = 'number' | 'currency' | 'integer' | 'percentage' | RegExp
 
 type Props = BaseInputProps<ComponentProps<typeof Input>> &
-  Pick<ComponentProps<typeof Controller>, 'rules'> & {
-    startAdornment?: ReactNode
-    endAdornment?: ReactNode
-    mask?: MaskType
-  }
+  Partial<Pick<ComponentProps<typeof Controller>, "rules">> & {
+    startAdornment?: ReactNode;
+    endAdornment?: ReactNode;
+    mask?: MaskType;
+  };
 
 const applyMask = (value: string, mask: MaskType): string => {
   if (!mask) {

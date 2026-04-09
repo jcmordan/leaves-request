@@ -2,7 +2,15 @@ import NextAuth from "next-auth";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 import Credentials from "next-auth/providers/credentials";
 
-const { AUTH_MICROSOFT_ENTRA_ID_ID, AUTH_MICROSOFT_ENTRA_ID_SECRET, AUTH_MICROSOFT_ENTRA_ID_TENANT_ID, AUTH_SECRET, NEXT_PUBLIC_GRAPHQL_URL } = process.env;
+const {
+  AUTH_MICROSOFT_ENTRA_ID_ID,
+  AUTH_MICROSOFT_ENTRA_ID_SECRET,
+  AUTH_MICROSOFT_ENTRA_ID_TENANT_ID,
+  AUTH_SECRET,
+} = process.env;
+
+const graphqlUrl = "http://localhost:5005/graphql";
+
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -27,8 +35,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        const graphqlUrl =
-          NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:5148/graphql/";
 
         console.log(
           `[AUTH] Attempting login for: ${credentials.username} at ${graphqlUrl}`,

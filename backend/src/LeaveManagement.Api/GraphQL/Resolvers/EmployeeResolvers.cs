@@ -1,10 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using HotChocolate;
 using LeaveManagement.Api.GraphQL.DataLoaders;
+using LeaveManagement.Application.DTOs;
+using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Domain.Entities;
+using LeaveManagement.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagement.Api.GraphQL.Resolvers;
 
@@ -63,5 +62,27 @@ public class EmployeeResolvers
             return Task.FromResult<JobTitle?>(null);
         }
         return dataLoader.LoadAsync(employee.JobTitleId.Value, cancellationToken);
+    }
+
+    public Task<Employee?> GetManagerAsync(
+        [Parent] Employee employee,
+        EmployeeByIdDataLoader dataLoader,
+        CancellationToken cancellationToken
+    )
+    {
+        if (employee.ManagerId == null)
+        {
+            return Task.FromResult<Employee?>(null);
+        }
+        return dataLoader.LoadAsync(employee.ManagerId.Value, cancellationToken);
+    }
+
+    public Task<LeaveBalanceDto> GetLeaveBalanceAsync(
+        [Parent] Employee employee,
+        LeaveBalanceDataLoader dataLoader,
+        CancellationToken cancellationToken
+    )
+    {
+        return dataLoader.LoadAsync(employee.Id, cancellationToken);
     }
 }

@@ -97,32 +97,43 @@ export const FormSheet = <TFieldValues extends FieldValues>({
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formSubmitHandler} className='flex flex-col h-full'>
+      <form onSubmit={formSubmitHandler} className="flex flex-col h-full">
         <SheetHeader>
           <SheetTitle>
-            <span className='text-lg font-semibold pt-4'>{title}</span>
+            <span className="text-lg font-semibold pt-4">{title}</span>
           </SheetTitle>
           {description && <SheetDescription>{description}</SheetDescription>}
         </SheetHeader>
-        <div className='flex-1 overflow-auto p-8 pt-1'>
+        <div className="flex-1 overflow-auto p-8 pt-1">
           {loading ? (
             <LoadingSkeleton description={loadingDescription} />
           ) : (
-            <div className='flex flex-col gap-4'>{children}</div>
+            <div className="flex flex-col gap-4">{children}</div>
           )}
         </div>
         {showFooter && (
-          <SheetFooter className='flex flex-row justify-between items-center gap-2'>
+          <SheetFooter className="flex flex-row justify-between items-center gap-2 pb-10">
             {footer ?? (
               <>
                 <div>{secondaryAction}</div>
-                <div className='flex flex-row gap-2'>
-                  <Button type='button' variant='outline' onClick={closeSheet}>
+                <div className="flex flex-row gap-2">
+                  <Button
+                    size="lg"
+                    type="button"
+                    variant="outline"
+                    onClick={closeSheet}
+                  >
                     {defaultCancelLabel}
                   </Button>
                   {allowSubmit && (
-                    <Button type='submit' disabled={isLoadingOrSubmitting || disabled}>
-                      {isLoadingOrSubmitting ? <Loader2 className='w-4 h-4 animate-spin' /> : null}
+                    <Button
+                      type="submit"
+                      size="lg"
+                      disabled={isLoadingOrSubmitting || disabled}
+                    >
+                      {isLoadingOrSubmitting ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : null}
                       {defaultSubmitLabel}
                     </Button>
                   )}
@@ -133,7 +144,7 @@ export const FormSheet = <TFieldValues extends FieldValues>({
         )}
       </form>
     </FormProvider>
-  )
+  );
 }
 
 export default FormSheet

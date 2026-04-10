@@ -58,8 +58,10 @@ export const getInitials = (value: string) => {
   const names = value.split(' ')
   let initials = names[0].substring(0, 1).toUpperCase()
 
-  if (names.length > 1) {
-    initials += names[names.length - 1].substring(0, 1).toUpperCase()
+  if (names.length === 4) {
+    initials += names[2].substring(0, 1).toUpperCase();
+  } else if (names.length > 2) {
+    initials += names[1].substring(0, 1).toUpperCase();
   }
 
   return initials
@@ -70,17 +72,17 @@ export const getInitials = (value: string) => {
  * @param {string} cedula - The raw numeric string
  * @returns {string} - The formatted cédula
  */
-export const formatCedula = (cedula: string) => {
-    // 1. Remove all non-digits
-    const cleaned = ('' + cedula).replace(/\D/g, '');
-    
-    // 2. Check if we have the required 11 digits
-    // (Optional: handle partial strings if you want "live" formatting)
-    const match = cleaned.match(/^(\d{3})(\d{7})(\d{1})$/);
+export const formatNationalId = (cedula: string) => {
+  // 1. Remove all non-digits
+  const cleaned = ("" + cedula).replace(/\D/g, "");
 
-    if (match) {
-        return `${match[1]}-${match[2]}-${match[3]}`;
-    }
+  // 2. Check if we have the required 11 digits
+  // (Optional: handle partial strings if you want "live" formatting)
+  const match = cleaned.match(/^(\d{3})(\d{7})(\d{1})$/);
 
-    return "Invalid length; must be 11 digits.";
-}
+  if (match) {
+    return `${match[1]}-${match[2]}-${match[3]}`;
+  }
+
+  return "Invalid length; must be 11 digits.";
+};

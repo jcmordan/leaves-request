@@ -218,10 +218,9 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
 
     public async Task<EmployeeStats> GetEmployeeStatsAsync()
     {
-        var allEmployees = await _context.Employees.ToListAsync();
-        var totalEmployees = allEmployees.Count;
-        var activeEmployees = allEmployees.Count(e => e.IsActive);
-        var inactiveEmployees = allEmployees.Count(e => !e.IsActive);
+        var totalEmployees = await _context.Employees.CountAsync();
+        var activeEmployees = await _context.Employees.CountAsync(e => e.IsActive);
+        var inactiveEmployees = totalEmployees - activeEmployees;
 
         var onLeaveEmployees = await _context
             .AbsenceRequests.Where(lr =>

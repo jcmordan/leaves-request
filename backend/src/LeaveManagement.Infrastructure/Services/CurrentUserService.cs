@@ -21,7 +21,7 @@ public class CurrentUserService(
             ?? string.Empty;
     }
 
-    public Guid GetCurrentEmployeeId()
+    public async Task<Guid> GetCurrentEmployeeIdAsync()
     {
         var email = GetUserEmail();
         if (string.IsNullOrEmpty(email))
@@ -29,9 +29,9 @@ public class CurrentUserService(
             return Guid.Empty;
         }
 
-        var employee = _context
+        var employee = await _context
             .Employees.AsNoTracking()
-            .FirstOrDefault(e => e.User != null && e.User.Email == email);
+            .FirstOrDefaultAsync(e => e.User != null && e.User.Email == email);
 
         if (employee == null)
         {
@@ -39,9 +39,9 @@ public class CurrentUserService(
 
             if (!string.IsNullOrEmpty(adId))
             {
-                employee = _context
+                employee = await _context
                     .Employees.AsNoTracking()
-                    .FirstOrDefault(e => e.User != null && e.User.ExternalId == adId);
+                    .FirstOrDefaultAsync(e => e.User != null && e.User.ExternalId == adId);
             }
         }
 

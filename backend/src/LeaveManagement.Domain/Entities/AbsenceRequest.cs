@@ -21,6 +21,6 @@ public class AbsenceRequest
     public DateTime CreatedAt { get; set; }
     public Guid RequesterEmployeeId { get; set; }
     public Employee? RequesterEmployee { get; set; }
-    public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
-    public ICollection<ApprovalHistory> ApprovalHistories { get; set; } = new List<ApprovalHistory>();
+    public ICollection<Attachment> Attachments { get; set; } = [];
+    public ICollection<ApprovalHistory> ApprovalHistories { get; set; } = [];
 }

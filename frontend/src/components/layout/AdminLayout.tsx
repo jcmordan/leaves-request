@@ -7,13 +7,14 @@ import { LogOut, Calendar, Clock, Users, Building2, UserCircle } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/layout/Logo";
+import { SheetPortalTarget } from "@/components/layout/sheets/SheetPortalTarget";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
-  const t = useTranslations('Navigation');
-  const tLayout = useTranslations('Layout');
-  const tRoles = useTranslations("Roles");
+  const t = useTranslations("navigation");
+  const tLayout = useTranslations("layout");
+  const tRoles = useTranslations("roles");
 
   const getNavigation = () => {
     const baseNav = [
@@ -125,18 +126,20 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </header>
 
         {/* Workspace Content Area */}
-        <main className="flex-1 p-12 overflow-y-auto bg-surface-container-low/30">
-          <div className="max-w-7xl mx-auto">
-            {/* Contextual Breadcrumb Path */}
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 mb-8">
-              {tLayout("breadcrumb")} /{" "}
-              {navigation.find(
-                (n) => pathname === n.href || pathname.startsWith(n.href),
-              )?.name || t("dashboard")}
-            </p>
-            {children}
-          </div>
-        </main>
+        <SheetPortalTarget className="flex-1 relative flex flex-col overflow-hidden">
+          <main className="flex-1 p-12 overflow-y-auto bg-surface-container-low/30">
+            <div className="max-w-7xl mx-auto">
+              {/* Contextual Breadcrumb Path */}
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 mb-8">
+                {tLayout("breadcrumb")} /{" "}
+                {navigation.find(
+                  (n) => pathname === n.href || pathname.startsWith(n.href),
+                )?.name || t("dashboard")}
+              </p>
+              {children}
+            </div>
+          </main>
+        </SheetPortalTarget>
       </div>
     </div>
   );

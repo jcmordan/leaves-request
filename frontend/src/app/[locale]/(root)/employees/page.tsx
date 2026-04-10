@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 
 import LoadingCard from '@/components/card/LoadingCard';
 import { PreloadQuery } from '@/lib/apollo-client';
-import { EmployeeDirectory } from "@/components/employees/EmployeeDirectory";
+import { EmployeeDirectory } from "@/app/[locale]/(root)/employees/components/EmployeeDirectory";
 import { EMPLOYEE_DIRECTORY_QUERY } from "./graphql/EmployeeQueries";
 
 const PAGE_SIZE = 10;

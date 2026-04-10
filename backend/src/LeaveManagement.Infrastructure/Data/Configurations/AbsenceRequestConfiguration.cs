@@ -9,7 +9,12 @@ public class AbsenceRequestConfiguration : IEntityTypeConfiguration<AbsenceReque
     public void Configure(EntityTypeBuilder<AbsenceRequest> builder)
     {
         builder.HasKey(ar => ar.Id);
-        builder.Property(ar => ar.Id).ValueGeneratedOnAdd().HasDefaultValueSql("uuidv7()");
+        builder.Property(ar => ar.Id).ValueGeneratedOnAdd();
+        
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Testing")
+        {
+             builder.Property(ar => ar.Id).HasDefaultValueSql("uuidv7()");
+        }
         builder.Property(ar => ar.Status).HasConversion<string>();
 
         builder.HasOne(ar => ar.Employee)

@@ -8,31 +8,32 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/Dotnet.gitignore
 
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-[Ww][Ii][Nn]32/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
-bld/
 [Bb]in/
-[Oo]bj/
+[Dd]ebug/
+[Dd]ebugPublic/
 [Ll]og/
 [Ll]ogs/
+[Oo]bj/
+[Rr]elease/
+[Rr]eleases/
+[Ww][Ii][Nn]32/
+bld/
+x64/
+x86/
 
 # .NET Core
-project.lock.json
-project.fragment.lock.json
 artifacts/
+project.fragment.lock.json
+project.lock.json
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
 # NuGet Packages
 *.nupkg
+
 # NuGet Symbol Packages
 *.snupkg
 
@@ -40,29 +41,28 @@ ScaffoldingReadMe.txt
 .env
 
 # Others
-~$*
 *~
 CodeCoverage/
+~$*
 
 # MSBuild Binary and Structured Log
 *.binlog
 
 # MSTest test Results
-[Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
+[Tt]est[Rr]esult*/
 
 # NUnit
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
 
-
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-frontend/node_modules
 frontend/.pnp
 frontend/.pnp.js
+frontend/node_modules
 
 # testing
 frontend/coverage
@@ -75,9 +75,9 @@ frontend/out/
 frontend/build
 
 # misc
-frontend/.DS_Store
 .DS_Store
 frontend/*.pem
+frontend/.DS_Store
 
 # debug
 frontend/npm-debug.log*
@@ -85,8 +85,8 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
 # local env files
-.env*.local
 .env
+.env*.local
 
 # vercel
 .vercel
@@ -95,5 +95,7 @@ frontend/yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
 frontend/src/gql/
+
+# migrations
+backend/src/LeaveManagement.Infrastructure/Migrations/

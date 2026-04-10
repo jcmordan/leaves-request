@@ -67,8 +67,12 @@ public class CustomClaimsTransformation : IClaimsTransformation
         // Inject Role from local database into the principal
         var identity = (ClaimsIdentity)principal.Identity;
         
-        // Add roles based on the UserRole enum
-        identity.AddClaim(new Claim(ClaimTypes.Role, user.Role.ToString()));
+        // Add role if not already present
+        var roleName = user.Role.ToString();
+        if (!identity.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == roleName))
+        {
+            identity.AddClaim(new Claim(ClaimTypes.Role, roleName));
+        }
 
         return principal;
     }

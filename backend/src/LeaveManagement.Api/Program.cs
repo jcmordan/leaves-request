@@ -158,6 +158,8 @@ builder.Services.AddScoped<DepartmentByIdDataLoader>();
 builder.Services.AddScoped<DepartmentSectionByIdDataLoader>();
 builder.Services.AddScoped<SubordinatesByEmployeeIdDataLoader>();
 builder.Services.AddScoped<JobTitleByIdDataLoader>();
+builder.Services.AddScoped<EmployeeByIdDataLoader>();
+builder.Services.AddScoped<LeaveBalanceDataLoader>();
 
 builder.Services.AddHttpClient();
 
@@ -181,6 +183,8 @@ builder
     .AddDataLoader<DepartmentSectionByIdDataLoader>()
     .AddDataLoader<SubordinatesByEmployeeIdDataLoader>()
     .AddDataLoader<JobTitleByIdDataLoader>()
+    .AddDataLoader<EmployeeByIdDataLoader>()
+    .AddDataLoader<LeaveBalanceDataLoader>()
     .AddProjections()
     .AddFiltering()
     .AddSorting()
@@ -205,6 +209,7 @@ using (var scope = app.Services.CreateScope())
 
     // Ensure database is created and migrations are applied
     await context.Database.MigrateAsync();
+    await DataSeeder.SeedAsync(context);
 }
 
 app.Run();

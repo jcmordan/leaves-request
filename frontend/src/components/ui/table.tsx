@@ -1,21 +1,44 @@
 "use client"
 
 import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+const TableContext = React.createContext<{
+  density?: "comfortable" | "standard" | "compact"
+}>({
+  density: "standard",
+})
+
+const tableVariants = cva("w-full caption-bottom text-sm", {
+  variants: {
+    density: {
+      comfortable: "text-base",
+      standard: "text-sm",
+      compact: "text-xs",
+    },
+  },
+  defaultVariants: {
+    density: "standard",
+  },
+})
+
+function Table({
+  className,
+  density = "standard",
+  ...props
+}: React.ComponentProps<"table"> & VariantProps<typeof tableVariants>) {
   return (
-    <div
-      data-slot="table-container"
-      className="relative w-full overflow-x-auto"
-    >
-      <table
-        data-slot="table"
-        className={cn("w-full caption-bottom text-sm", className)}
-        {...props}
-      />
-    </div>
+    <TableContext.Provider value={{ density }}>
+      <div data-slot="table-container" className="relative w-full overflow-x-auto">
+        <table
+          data-slot="table"
+          className={cn(tableVariants({ density, className }))}
+          {...props}
+        />
+      </div>
+    </TableContext.Provider>
   )
 }
 
@@ -65,27 +88,55 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   )
 }
 
+const tableHeadVariants = cva(
+  "text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0",
+  {
+    variants: {
+      density: {
+        comfortable: "h-14 px-4",
+        standard: "h-10 px-2",
+        compact: "h-8 px-1",
+      },
+    },
+    defaultVariants: {
+      density: "standard",
+    },
+  }
+)
+
 function TableHead({ className, ...props }: React.ComponentProps<"th">) {
+  const { density } = React.useContext(TableContext)
   return (
     <th
       data-slot="table-head"
-      className={cn(
-        "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0",
-        className
-      )}
+      className={cn(tableHeadVariants({ density, className }))}
       {...props}
     />
   )
 }
 
+const tableCellVariants = cva(
+  "align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0",
+  {
+    variants: {
+      density: {
+        comfortable: "p-4",
+        standard: "p-2",
+        compact: "p-1",
+      },
+    },
+    defaultVariants: {
+      density: "standard",
+    },
+  }
+)
+
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
+  const { density } = React.useContext(TableContext)
   return (
     <td
       data-slot="table-cell"
-      className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0",
-        className
-      )}
+      className={cn(tableCellVariants({ density, className }))}
       {...props}
     />
   )

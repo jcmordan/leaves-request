@@ -37,9 +37,17 @@ public class JobTitleService(LeaveManagementDbContext context) : IJobTitleServic
     /// <inheritdoc/>
     public async Task<PaginationResult<JobTitle>> GetAllAsync(
         PaginationFilter filter,
+        string? search = null,
         CancellationToken ct = default
     )
     {
-        return await PagingHelper.ApplyPagingAsync(_context.JobTitles, filter);
+        IQueryable<JobTitle> query = _context.JobTitles;
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(jt => jt.Name.ToLower().Contains(search.ToLower()));
+        }
+
+        return await PagingHelper.ApplyPagingAsync(query, filter);
     }
 }

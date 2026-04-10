@@ -21,18 +21,12 @@ public class CompanyQueries
         string? after,
         int? last,
         string? before,
+        string? search,
         [Service] ICompanyService companyService
     )
     {
-        var result = await companyService.GetAllAsync();
-        var items = result.ToList();
-        var paginatedResult = new PaginationResult<Company>
-        {
-            Items = items,
-            TotalCount = items.Count,
-            HasNextPage = false,
-            HasPreviousPage = false
-        };
+        var filter = new PaginationFilter(first, after, last, before);
+        var paginatedResult = await companyService.GetAllAsync(filter, search);
         return paginatedResult.ToConnection();
     }
 }

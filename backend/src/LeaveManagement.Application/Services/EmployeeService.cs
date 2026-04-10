@@ -179,9 +179,9 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
         if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(e =>
-                EF.Functions.ILike(e.FullName, $"%{search}%")
-                || EF.Functions.ILike(e.EmployeeCode, $"%{search}%")
-                || EF.Functions.ILike(e.NationalId, $"%{search}%")
+                e.FullName.ToLower().Contains(search.ToLower())
+                || e.EmployeeCode.ToLower().Contains(search.ToLower())
+                || e.NationalId.ToLower().Contains(search.ToLower())
             );
         }
 
@@ -195,21 +195,29 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<Guid, Employee>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
+    public async Task<IDictionary<Guid, Employee>> GetByIdsAsync(
+        IEnumerable<Guid> ids,
+        CancellationToken ct = default
+    )
     {
-        return await _context.Employees
-            .Where(e => ids.Contains(e.Id))
+        return await _context
+            .Employees.Where(e => ids.Contains(e.Id))
             .ToDictionaryAsync(e => e.Id, ct);
     }
 
     /// <inheritdoc/>
-    public async Task<ILookup<Guid, Employee>> GetSubordinatesByEmployeeIdsAsync(IEnumerable<Guid> employeeIds, CancellationToken ct = default)
+    public async Task<ILookup<Guid, Employee>> GetSubordinatesByEmployeeIdsAsync(
+        IEnumerable<Guid> employeeIds,
+        CancellationToken ct = default
+    )
     {
-        var subordinates = await _context.Employees
-            .Join(_context.EmployeeSupervisors,
-                  e => e.Id,
-                  es => es.EmployeeId,
-                  (e, es) => new { Employee = e, SupervisorId = es.SupervisorId })
+        var subordinates = await _context
+            .Employees.Join(
+                _context.EmployeeSupervisors,
+                e => e.Id,
+                es => es.EmployeeId,
+                (e, es) => new { Employee = e, SupervisorId = es.SupervisorId }
+            )
             .Where(x => employeeIds.Contains(x.SupervisorId))
             .ToListAsync(ct);
 

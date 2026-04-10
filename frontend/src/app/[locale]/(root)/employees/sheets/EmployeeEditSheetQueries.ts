@@ -97,3 +97,88 @@ export const UPDATE_EMPLOYEE_MUTATION = graphql(`
     }
   }
 `);
+
+export const JOB_TITLES_SEARCH_QUERY = graphql(`
+  query JobTitlesSearch($search: String, $first: Int) {
+    jobTitles(search: $search, first: $first) {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`);
+
+export const COMPANIES_SEARCH_QUERY = graphql(`
+  query CompaniesSearch($search: String, $first: Int) {
+    companies(search: $search, first: $first) {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`);
+
+export const DEPARTMENTS_SEARCH_QUERY = graphql(`
+  query DepartmentsSearch($search: String, $first: Int) {
+    departments(search: $search, first: $first) {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`);
+
+export const DEPARTMENT_SECTIONS_SEARCH_QUERY = graphql(`
+  query DepartmentSectionsSearch($search: String, $first: Int, $departmentId: UUID) {
+    departmentSections(search: $search, first: $first, departmentId: $departmentId) {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`);
+
+export const EMPLOYEES_SEARCH_QUERY = graphql(`
+  query EmployeesSearch($search: String, $first: Int) {
+    employees(search: $search, first: $first) {
+      edges {
+        node {
+          id
+          fullName
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`);

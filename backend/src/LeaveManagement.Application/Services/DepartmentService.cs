@@ -20,9 +20,15 @@ public class DepartmentService : IDepartmentService
     }
 
     /// <inheritdoc/>
-    public async Task<PaginationResult<Department>> GetDepartmentsAsync(PaginationFilter filter)
+    public async Task<PaginationResult<Department>> GetDepartmentsAsync(PaginationFilter filter, string? search = null)
     {
         IQueryable<Department> query = _context.Departments;
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(d => d.Name.ToLower().Contains(search.ToLower()));
+        }
+
         return await PagingHelper.ApplyPagingAsync(query, filter);
     }
 

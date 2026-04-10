@@ -20,11 +20,12 @@ public class JobTitleQueries
         string? after,
         int? last,
         string? before,
+        string? search,
         [Service] IJobTitleService jobTitleService
     )
     {
         var filter = new PaginationFilter(first, after, last, before);
-        var paginatedResult = await jobTitleService.GetAllAsync(filter);
+        var paginatedResult = await jobTitleService.GetAllAsync(filter, search);
         return paginatedResult.ToConnection();
     }
 }

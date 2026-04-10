@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HotChocolate;
 using HotChocolate.Types;
 using LeaveManagement.Api.GraphQL.InputTypes;
+using LeaveManagement.Api.GraphQL.Mappings;
 using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Domain.Entities;
 
@@ -37,17 +38,8 @@ public class EmployeeMutations
         CancellationToken ct
     )
     {
-        return await employeeService.UpdateAsync(
-            input.Id,
-            input.FullName,
-            input.Email,
-            input.EmployeeCode,
-            input.NationalId,
-            input.DepartmentId,
-            input.HireDate,
-            input.IsActive,
-            ct
-        );
+        var data = EmployeeMapper.ToDomain(input);
+        return await employeeService.UpdateAsync(data, ct);
     }
 
     /// <summary>Soft-deletes an employee by marking them inactive.</summary>

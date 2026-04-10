@@ -4,10 +4,6 @@ import { useEffect, useMemo, memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { FormComboboxInput } from "@/components/forms";
 import { FragmentType, useFragment } from "@/__generated__";
-import {
-  EMPLOYEE_EDIT_METADATA_FRAGMENT,
-  EMPLOYEE_BASIC_INFO_FRAGMENT,
-} from "../EmployeeEditSheetQueries";
 import { FormSection } from "./FormSection";
 import { useTranslations } from "next-intl";
 import { useJobTitleSearch } from "../hooks/useJobTitleSearch";
@@ -16,8 +12,8 @@ import { useDepartmentSearch } from "../hooks/useDepartmentSearch";
 import { useDepartmentSectionSearch } from "../hooks/useDepartmentSectionSearch";
 import { useServerSideSearch } from "@/hooks/useServerSideSearch";
 import { useCallback } from "react";
-import { InputOption } from "@/components/forms/types";
 import { mergeSearchOptions } from "@/components/forms/helpers";
+import { EMPLOYEE_ENTITIES_INFO_FRAGMENT } from "../../graphql/EmployeeQueries";
 
 
 
@@ -26,7 +22,7 @@ import { mergeSearchOptions } from "@/components/forms/helpers";
  */
 interface RolePlacementSectionProps {
   /** Reference to the employee basic info fragment. */
-  employeeRef: FragmentType<typeof EMPLOYEE_BASIC_INFO_FRAGMENT>;
+  employeeRef: FragmentType<typeof EMPLOYEE_ENTITIES_INFO_FRAGMENT>;
 }
 
 /**
@@ -42,7 +38,7 @@ export const RolePlacementSection = memo(({
   const { watch } = useFormContext();
   const selectedDepartmentId = watch("departmentId");
   const tc = useTranslations("common");
-  const employee = useFragment(EMPLOYEE_BASIC_INFO_FRAGMENT, employeeRef);
+  const employee = useFragment(EMPLOYEE_ENTITIES_INFO_FRAGMENT, employeeRef);
 
   const jobTitleSearch = useJobTitleSearch();
   const {

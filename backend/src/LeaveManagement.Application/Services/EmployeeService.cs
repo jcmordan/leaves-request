@@ -7,6 +7,7 @@ using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Enums;
+using LeaveManagement.Domain.Models;
 using LeaveManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,40 +59,44 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
     }
 
     public async Task<Employee> UpdateAsync(
-        Guid id,
-        string fullName,
-        string email,
-        string employeeCode,
-        string nationalId,
-        Guid departmentId,
-        DateTime hireDate,
-        bool isActive,
+        EmployeeUpdateData data,
         CancellationToken cancellationToken = default
     )
     {
         var employee =
-            await _context.Employees.FindAsync([id], cancellationToken)
-            ?? throw new InvalidOperationException($"Employee {id} not found.");
+            await _context.Employees.FindAsync([data.Id], cancellationToken)
+            ?? throw new InvalidOperationException($"Employee {data.Id} not found.");
 
         var duplicateExists = await _context.Employees.AnyAsync(
-            e => e.Id != id && (e.EmployeeCode == employeeCode || e.NationalId == nationalId),
+            e =>
+                e.Id != data.Id
+                && (
+                    e.EmployeeCode == data.EmployeeCode
+                    || e.NationalId == data.NationalId
+                    || (data.Email != null && e.Email == data.Email)
+                ),
             cancellationToken
         );
 
         if (duplicateExists)
         {
             throw new InvalidOperationException(
-                "Another employee with the same code or national ID already exists."
+                "Another employee with the same code, national ID, or email already exists."
             );
         }
 
-        employee.FullName = fullName;
-        employee.Email = email;
-        employee.EmployeeCode = employeeCode;
-        employee.NationalId = nationalId;
-        employee.DepartmentId = departmentId;
-        employee.HireDate = DateTime.SpecifyKind(hireDate, DateTimeKind.Utc);
-        employee.IsActive = isActive;
+        employee.FullName = data.FullName;
+        employee.Email = data.Email;
+        employee.EmployeeCode = data.EmployeeCode;
+        employee.AN8 = data.AN8;
+        employee.NationalId = data.NationalId;
+        employee.JobTitleId = data.JobTitleId;
+        employee.DepartmentId = data.DepartmentId;
+        employee.DepartmentSectionId = data.DepartmentSectionId;
+        employee.HireDate = DateTime.SpecifyKind(data.HireDate, DateTimeKind.Utc);
+        employee.ManagerId = data.ManagerId;
+        employee.CompanyId = data.CompanyId;
+        employee.IsActive = data.IsActive;
 
         await _context.SaveChangesAsync(cancellationToken);
 

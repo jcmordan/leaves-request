@@ -1,6 +1,6 @@
 import { useLazyQuery } from "@apollo/client/react";
-import { EMPLOYEES_SEARCH_QUERY } from "../EmployeeEditSheetQueries";
 import { useCallback } from "react";
+import { EMPLOYEES_SEARCH_QUERY } from "../../graphql/EmployeeQueries";
 
 /**
  * Hook for performing employee server-side search.
@@ -31,6 +31,6 @@ export const useEmployeeSearch = () => {
         endCursor: data?.employees?.pageInfo.endCursor,
       };
     },
-    [loadEmployees]
+    [loadEmployees],
   );
 };

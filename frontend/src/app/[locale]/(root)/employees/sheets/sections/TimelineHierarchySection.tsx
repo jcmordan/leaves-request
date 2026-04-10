@@ -5,15 +5,12 @@ import {
   FormSwitch,
 } from "@/components/forms";
 import { FragmentType, useFragment } from "@/__generated__";
-import {
-  EMPLOYEE_EDIT_METADATA_FRAGMENT,
-  EMPLOYEE_BASIC_INFO_FRAGMENT,
-} from "../EmployeeEditSheetQueries";
 import { FormSection } from "./FormSection";
 import { useTranslations } from "next-intl";
 import { useEmployeeSearch } from "../hooks/useEmployeeSearch";
 import { useServerSideSearch } from "@/hooks/useServerSideSearch";
 import { mergeSearchOptions } from "@/components/forms/helpers";
+import { EMPLOYEE_ENTITIES_INFO_FRAGMENT } from "../../graphql/EmployeeQueries";
 
 
 /**
@@ -21,7 +18,7 @@ import { mergeSearchOptions } from "@/components/forms/helpers";
  */
 interface TimelineHierarchySectionProps {
   /** Reference to the employee basic info fragment. */
-  employeeRef: FragmentType<typeof EMPLOYEE_BASIC_INFO_FRAGMENT>;
+  employeeRef: FragmentType<typeof EMPLOYEE_ENTITIES_INFO_FRAGMENT>;
 }
 
 /**
@@ -34,7 +31,7 @@ interface TimelineHierarchySectionProps {
 export const TimelineHierarchySection = memo(({
   employeeRef,
 }: TimelineHierarchySectionProps) => {
-  const employee = useFragment(EMPLOYEE_BASIC_INFO_FRAGMENT, employeeRef);
+  const employee = useFragment(EMPLOYEE_ENTITIES_INFO_FRAGMENT, employeeRef);
 
   const t = useTranslations("employees");
   const tc = useTranslations("common");
@@ -81,7 +78,7 @@ export const TimelineHierarchySection = memo(({
             <FormSwitch
               name="isActive"
               labelPosition="top"
-              label={tc("status")}
+              label={tc("active")}
             />
           </div>
         </div>

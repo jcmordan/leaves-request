@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
+using LeaveManagement.Domain.Models;
 
 namespace LeaveManagement.Application.Interfaces;
 
@@ -19,14 +20,7 @@ public interface IEmployeeService
     );
 
     Task<Employee> UpdateAsync(
-        Guid id,
-        string fullName,
-        string email,
-        string employeeCode,
-        string nationalId,
-        Guid departmentId,
-        DateTime hireDate,
-        bool isActive,
+        EmployeeUpdateData data,
         CancellationToken ct = default
     );
 

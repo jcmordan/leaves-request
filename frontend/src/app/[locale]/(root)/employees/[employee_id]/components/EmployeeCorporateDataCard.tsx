@@ -3,8 +3,8 @@
 import { Building2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FragmentType, useFragment } from "@/__generated__";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EMPLOYEE_CORPORATE_DATA_FRAGMENT } from "@/app/[locale]/(root)/employees/[employee_id]/graphql/EmployeeDetailsQueries";
+import { Card } from "@/components/ui/card";
+import { EMPLOYEE_CORPORATE_DATA_FRAGMENT } from "../../graphql/EmployeeQueries";
 
 interface EmployeeCorporateDataCardProps {
   employeeRef: FragmentType<typeof EMPLOYEE_CORPORATE_DATA_FRAGMENT>;

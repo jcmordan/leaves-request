@@ -23,18 +23,12 @@ public class DepartmentSectionQueries
         int? last,
         string? before,
         Guid? departmentId,
+        string? search,
         [Service] IDepartmentSectionService departmentSectionService
     )
     {
-        var result = await departmentSectionService.GetByDepartmentIdAsync(departmentId);
-        var items = result.ToList();
-        var paginatedResult = new PaginationResult<DepartmentSection>
-        {
-            Items = items,
-            TotalCount = items.Count,
-            HasNextPage = false,
-            HasPreviousPage = false
-        };
+        var filter = new PaginationFilter(first, after, last, before);
+        var paginatedResult = await departmentSectionService.GetDepartmentSectionsAsync(filter, departmentId, search);
         return paginatedResult.ToConnection();
     }
 }

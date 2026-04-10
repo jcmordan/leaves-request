@@ -19,9 +19,10 @@ public interface IJobTitleService
         CancellationToken ct = default
     );
 
-    /// <summary>Returns all job titles with pagination.</summary>
+    /// <summary>Returns all job titles with pagination and optional search.</summary>
     Task<PaginationResult<JobTitle>> GetAllAsync(
         PaginationFilter filter,
+        string? search = null,
         CancellationToken ct = default
     );
 }

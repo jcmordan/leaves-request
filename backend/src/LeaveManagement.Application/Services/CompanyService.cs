@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using LeaveManagement.Application.Common.Paging;
 using LeaveManagement.Application.Interfaces;
+using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -22,16 +24,30 @@ public class CompanyService(LeaveManagementDbContext context) : ICompanyService
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<Guid, Company>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
+    public async Task<IDictionary<Guid, Company>> GetByIdsAsync(
+        IEnumerable<Guid> ids,
+        CancellationToken ct = default
+    )
     {
-        return await _context.Companies
-            .Where(c => ids.Contains(c.Id))
+        return await _context
+            .Companies.Where(c => ids.Contains(c.Id))
             .ToDictionaryAsync(c => c.Id, ct);
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<Company>> GetAllAsync(CancellationToken ct = default)
+    public async Task<PaginationResult<Company>> GetAllAsync(
+        PaginationFilter filter,
+        string? search = null,
+        CancellationToken ct = default
+    )
     {
-        return await _context.Companies.OrderBy(c => c.Name).ToListAsync(ct);
+        IQueryable<Company> query = _context.Companies;
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(c => c.Name.ToLower().Contains(search.ToLower()));
+        }
+
+        return await PagingHelper.ApplyPagingAsync(query, filter);
     }
 }

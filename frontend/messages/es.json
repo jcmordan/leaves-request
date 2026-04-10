@@ -161,5 +161,9 @@
   "calendar": {
     "previous": "Anterior",
     "next": "Siguiente"
+  },
+  "combobox": {
+    "search": "Buscar...",
+    "searchPlaceholder": "Escribe al menos {min} caracteres para buscar..."
   }
 }

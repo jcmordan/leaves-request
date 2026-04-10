@@ -3,6 +3,7 @@
 import { ComponentProps } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { useDebouncedCallback } from 'use-debounce'
+import { useTranslations } from 'next-intl'
 
 import { Combobox } from '@/components/ui/combobox'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
@@ -41,6 +42,7 @@ export const FormComboboxInput = ({
   ...otherProps
 }: Props) => {
   const formContext = useFormContext();
+  const t = useTranslations();
 
   if (!formContext) {
     throw new Error("FormComboboxInput must be used within a FormProvider");
@@ -95,10 +97,10 @@ export const FormComboboxInput = ({
                 disabled={disabled ?? loading}
                 searchPlaceholder={
                   onSearch
-                    ? `Type at least ${minSearchLength} characters to search...`
-                    : "Search..."
+                    ? t("combobox.searchPlaceholder", { min: minSearchLength })
+                    : t("combobox.search")
                 }
-                emptyText={loading ? "Loading..." : "No results found."}
+                emptyText={loading ? t("loading.pleaseWait") : t("table.noResults")}
                 {...otherProps}
               />
             ) : (
@@ -112,10 +114,10 @@ export const FormComboboxInput = ({
                 disabled={disabled ?? loading}
                 searchPlaceholder={
                   onSearch
-                    ? `Type at least ${minSearchLength} characters to search...`
-                    : "Search..."
+                    ? t("combobox.searchPlaceholder", { min: minSearchLength })
+                    : t("combobox.search")
                 }
-                emptyText={loading ? "Loading..." : "No results found."}
+                emptyText={loading ? t("loading.pleaseWait") : t("table.noResults")}
                 {...otherProps}
               />
             )}

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
 
 namespace LeaveManagement.Application.Interfaces;
@@ -13,8 +10,15 @@ public interface ICompanyService
     Task<Company?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
     /// <summary>Returns companies by their IDs for batch loading.</summary>
-    Task<IDictionary<Guid, Company>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default);
+    Task<IDictionary<Guid, Company>> GetByIdsAsync(
+        IEnumerable<Guid> ids,
+        CancellationToken ct = default
+    );
 
-    /// <summary>Returns all companies.</summary>
-    Task<IEnumerable<Company>> GetAllAsync(CancellationToken ct = default);
+    /// <summary>Returns all companies with pagination and optional search.</summary>
+    Task<PaginationResult<Company>> GetAllAsync(
+        PaginationFilter filter,
+        string? search = null,
+        CancellationToken ct = default
+    );
 }

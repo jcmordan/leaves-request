@@ -12,7 +12,11 @@
  * }
  */
 
-export const Sheets = {} as const
+import * as EmployeeSheets from "@/app/[locale]/(root)/employees/sheets";
+
+export const Sheets = {
+  ...EmployeeSheets,
+} as const;
 
 export type SheetName = keyof typeof Sheets
 

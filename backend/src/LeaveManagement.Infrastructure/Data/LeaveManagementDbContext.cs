@@ -18,7 +18,8 @@ public class LeaveManagementDbContext(DbContextOptions<LeaveManagementDbContext>
     public DbSet<EmployeeSupervisor> EmployeeSupervisors { get; set; }
     public DbSet<PublicHoliday> PublicHolidays { get; set; }
     public DbSet<AbsenceType> AbsenceTypes { get; set; }
-    public DbSet<VacationBalance> VacationBalances { get; set; }
+    public DbSet<LeaveEntitlement> LeaveEntitlements { get; set; }
+    public DbSet<EntitlementPolicy> EntitlementPolicies { get; set; }
     public DbSet<AbsenceRequest> AbsenceRequests { get; set; }
     public DbSet<Attachment> Attachments { get; set; }
     public DbSet<ApprovalHistory> ApprovalHistories { get; set; }
@@ -35,7 +36,15 @@ public class LeaveManagementDbContext(DbContextOptions<LeaveManagementDbContext>
             DotNetEnv.Env.Load(envPath);
         }
 
-        modelBuilder.HasPostgresExtension("pgcrypto");
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LeaveManagementDbContext).Assembly);
+        if (Database.IsNpgsql())
+        {
+            modelBuilder.HasPostgresExtension("pgcrypto");
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(LeaveManagementDbContext).Assembly);
+        }
+        else
+        {
+            // For InMemory or other providers, apply configurations but without Postgres-specific default SQL
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(LeaveManagementDbContext).Assembly);
+        }
     }
 }

@@ -20,7 +20,7 @@ public class LeaveRequestMutations
         CancellationToken ct
     )
     {
-        var employeeId = currentUserService.GetCurrentEmployeeId();
+        var employeeId = await currentUserService.GetCurrentEmployeeIdAsync();
 
         return await leaveRequestService.SubmitRequestAsync(
             employeeId,
@@ -40,7 +40,7 @@ public class LeaveRequestMutations
         CancellationToken ct
     )
     {
-        var approverId = currentUserService.GetCurrentEmployeeId();
+        var approverId = await currentUserService.GetCurrentEmployeeIdAsync();
 
         return await leaveRequestService.ApproveRequestAsync(input.RequestId, approverId, input.Comment);
     }
@@ -52,7 +52,7 @@ public class LeaveRequestMutations
         CancellationToken ct
     )
     {
-        var approverId = currentUserService.GetCurrentEmployeeId();
+        var approverId = await currentUserService.GetCurrentEmployeeIdAsync();
 
         return await leaveRequestService.RejectRequestAsync(input.RequestId, approverId, input.Comment);
     }

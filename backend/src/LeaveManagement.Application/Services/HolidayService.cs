@@ -22,7 +22,7 @@ public class HolidayService : IHolidayService
     {
         if (startDate > endDate)
         {
-            return 0;
+            throw new ArgumentException("Start date must be before or equal to end date.");
         }
 
         var start = DateTime.SpecifyKind(startDate.Date, DateTimeKind.Utc);

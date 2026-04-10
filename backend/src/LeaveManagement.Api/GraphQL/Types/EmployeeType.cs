@@ -41,6 +41,17 @@ public class EmployeeType : ObjectType<Employee>
             .Name("jobTitle");
 
         descriptor
+            .Field("leaveBalance")
+            .Type<NonNullType<LeaveBalanceType>>()
+            .ResolveWith<EmployeeResolvers>(r => r.GetLeaveBalanceAsync(default!, default!, default))
+            .Name("leaveBalance");
+
+        descriptor
+            .Field(t => t.Manager)
+            .ResolveWith<EmployeeResolvers>(r => r.GetManagerAsync(default!, default!, default))
+            .Name("manager");
+
+        descriptor
             .Field(t => t.Subordinates)
             .ResolveWith<EmployeeResolvers>(r =>
                 r.GetSubordinatesAsync(default!, default!, default)

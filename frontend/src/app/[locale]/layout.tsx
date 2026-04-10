@@ -5,7 +5,6 @@ import { routing } from '@/i18n/routing';
 import type { Metadata } from "next";
 import { Manrope, Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
-import { AdminLayout } from '@/components/layout/AdminLayout';
 
 const manrope = Manrope({
   variable: "--font-heading",
@@ -23,7 +22,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }> 
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'Metadata' });
+  const t = await getTranslations({ locale, namespace: "metadata" });
 
   return {
     title: t('title', { default: "Absenteeism and Leave Management" }),

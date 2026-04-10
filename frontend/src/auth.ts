@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 import Credentials from "next-auth/providers/credentials";
+import { getApiUrl } from "envUtils";
 
 const {
   AUTH_MICROSOFT_ENTRA_ID_ID,
@@ -9,7 +10,6 @@ const {
   AUTH_SECRET,
 } = process.env;
 
-const graphqlUrl = "http://localhost:5005/graphql";
 
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -36,6 +36,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
 
+        const graphqlUrl = await getApiUrl();
         console.log(
           `[AUTH] Attempting login for: ${credentials.username} at ${graphqlUrl}`,
         );

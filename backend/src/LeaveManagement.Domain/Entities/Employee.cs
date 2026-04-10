@@ -34,7 +34,6 @@ public class Employee
     public Department? Department { get; set; }
 
     public JobTitle? JobTitle { get; set; }
-
-    public ICollection<Employee> Subordinates { get; set; } = new List<Employee>();
-
+    public ICollection<Employee> Subordinates { get; set; } = [];
+    public ICollection<AbsenceRequest> AbsenceRequests { get; set; } = [];
 }

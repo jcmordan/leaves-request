@@ -25,6 +25,7 @@ interface PaginatedDataTableProps<TData, TValue> {
   onPreviousPage?: () => void;
   className?: string;
   containerClassName?: string;
+  density?: 'comfortable' | 'standard' | 'compact';
 }
 
 export function PaginatedDataTable<TData, TValue>({
@@ -37,6 +38,7 @@ export function PaginatedDataTable<TData, TValue>({
   onPreviousPage,
   className,
   containerClassName,
+  density = 'standard',
 }: Readonly<PaginatedDataTableProps<TData, TValue>>) {
   const tCommon = useTranslations("common");
   const pagination = useUrlPagination(pageInfo);
@@ -52,6 +54,7 @@ export function PaginatedDataTable<TData, TValue>({
         loading={loading}
         emptyMessage={emptyMessage}
         className={className}
+        density={density}
       />
 
       {pageInfo && (

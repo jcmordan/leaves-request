@@ -17,6 +17,21 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
+      include: [
+        'src/utils/**/*.{ts,tsx}',
+        'src/hooks/**/*.{ts,tsx}',
+        'src/lib/utils.ts',
+        'src/lib/constants.ts',
+        'src/lib/themes.ts',
+        'src/lib/themeStorage.ts',
+        'src/app/**/employees/components/**/*.{ts,tsx}',
+      ],
+      exclude: [
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.spec.{ts,tsx}',
+        'src/__generated__/**',
+        'src/gql/**',
+      ],
     },
   },
 })

@@ -1,12 +1,15 @@
 {
-  "Common": {
+  "common": {
     "active": "Activo",
+    "inactive": "Inactivo",
     "away": "Ausente",
     "onLeave": "En Permiso",
     "employee": "Empleado",
     "employeeCode": "Ficha",
     "nationalId": "Cédula",
     "department": "Departamento",
+    "company": "Compañía",
+    "an8": "ID AN8",
     "role": "Cargo",
     "status": "Estado",
     "id": "ID",
@@ -15,17 +18,20 @@
     "none": "Ninguno",
     "viewAll": "Ver Todo",
     "filters": "Filtros",
+    "email": "Correo",
     "next": "Siguiente",
-    "previous": "Anterior"
+    "previous": "Anterior",
+    "save": "Guardar",
+    "cancel": "Cancelar"
   },
-  "Index": {
+  "index": {
     "title": "Bienvenido a Solicitudes de Permisos"
   },
-  "Metadata": {
+  "metadata": {
     "title": "Gestión de Ausentismo y Permisos",
     "description": "Gestionar los permisos y ausencias de los empleados."
   },
-  "Navigation": {
+  "navigation": {
     "dashboard": "Panel de Control",
     "requests": "Solicitudes",
     "teams": "Equipos",
@@ -33,7 +39,7 @@
     "allRequests": "Todas las Solicitudes",
     "employees": "Empleados"
   },
-  "Layout": {
+  "layout": {
     "workspace": "Portal de Servicios al Colaborador",
     "adminPortal": "Admin Soberano",
     "memberPortal": "Portal Soberano",
@@ -41,7 +47,7 @@
     "signout": "Cerrar Sesión",
     "breadcrumb": "Portal de Servicios"
   },
-  "Roles": {
+  "roles": {
     "employee": "Empleado",
     "supervisor": "Supervisor",
     "coordinator": "Coordinador",
@@ -55,7 +61,7 @@
     "technicalArchitect": "Arquitecto Técnico",
     "departmentHead": "Jefe de Departamento"
   },
-  "Dashboard": {
+  "dashboard": {
     "welcome": "Bienvenido de nuevo, {name}",
     "subtitle": "Aquí tienes un resumen de tus solicitudes de permisos.",
     "pendingApprovals": "Aprobaciones Pendientes",
@@ -73,7 +79,7 @@
     "daysCount": "{count, plural, =1 {# Día} other {# Días}}",
     "days": "Días"
   },
-  "Auth": {
+  "auth": {
     "loginTitle": "Bienvenido a Solicitudes de Permisos",
     "microsoftSignIn": "Iniciar sesión con Microsoft",
     "dividerOr": "O",
@@ -87,8 +93,34 @@
     "errorInvalidCredentials": "Credenciales inválidas. Por favor, inténtelo de nuevo.",
     "errorGeneric": "Ocurrió un error al iniciar sesión. Por favor, inténtelo de nuevo."
   },
-  "Employees": {
+  "employees": {
     "title": "Directorio de Empleados",
+    "employeeDetails": "Detalle del Empleado",
+    "actions": "Acciones",
+    "contact": "Contacto",
+    "editProfile": "Editar Perfil",
+    "organization": "Organización",
+    "corporateData": "Datos Corporativos",
+    "reportingStructure": "Estructura de Reporte",
+    "leaveBalance": "Balance de Permisos",
+    "entitlement": "Derecho",
+    "taken": "Tomado",
+    "daysLeft": "Días Restantes",
+    "viewDetailedHistory": "Ver Historial Detallado",
+    "reportsTo": "Reporta a",
+    "manager": "Gerente",
+    "directReports": "Reportes Directos ({count})",
+    "viewTeamDirectory": "Ver Directorio del Equipo",
+    "teamMembers": "{count} Miembros del Equipo",
+    "personalInformation": "Información Personal",
+    "emailAddress": "Correo Electrónico",
+    "tenure": "Duración: + {count}",
+    "workLocation": "Lugar de Trabajo",
+    "hireDate": "Fecha de Ingreso",
+    "access": "Acceso",
+    "notFoundTitle": "Empleado no encontrado",
+    "notFoundDescription": "El empleado seleccionado no existe o ya no está disponible.",
+    "backToDirectory": "Volver al directorio",
     "statsTotal": "Total Empleados",
     "statsActive": "Activos Ahora",
     "statsOnLeave": "En Permiso",
@@ -100,7 +132,7 @@
     "emptyStateDescription": "No pudimos encontrar ningún resultado que coincida con su búsqueda o filtros. Intente ajustar sus criterios.",
     "clearSearch": "Limpiar Búsqueda"
   },
-  "Departments": {
+  "departments": {
     "engineering": "Ingeniería",
     "management": "Gestión",
     "legal": "Legal",

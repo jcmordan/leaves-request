@@ -47,7 +47,15 @@ const sheetContext = createContext<{
   sheetOptions: {},
 })
 
-export const useSheets = () => useContext(sheetContext)
+export const useSheets = () => {
+  const context = useContext(sheetContext);
+
+  if (context === undefined) {
+    throw new Error("useSheets must be used within a SheetProvider");
+  }
+
+  return context;
+};
 
 export const useSheetParams = () => {
   const searchParams = useSearchParams()
@@ -124,6 +132,10 @@ export const SheetProvider = ({ children }: Props) => {
   ) => {
     const currentSheetName = searchParams.get('sheetName')
     const currentSheetParams = searchParams.get('sheetParams')
+
+    console.log("currentSheetName", currentSheetName);
+    console.log("currentSheetParams", currentSheetParams);
+    
 
     const updates: Record<string, string | null> = {
       sheetName,

@@ -1,10 +1,16 @@
 {
-  "Common": {
+  "common": {
     "active": "Active",
+    "inactive": "Inactive",
     "away": "Away",
     "onLeave": "On Leave",
     "employee": "Employee",
+    "employeeCode": "Employee Code",
     "department": "Department",
+    "company": "Company",
+    "an8": "AN8 ID",
+    "nationalId": "National ID",
+    "email": "Email",
     "role": "Role",
     "status": "Status",
     "id": "ID",
@@ -12,16 +18,18 @@
     "review": "Review",
     "none": "None",
     "viewAll": "View All",
-    "filters": "Filters"
+    "filters": "Filters",
+    "save": "Save",
+    "cancel": "Cancel"
   },
-  "Index": {
+  "index": {
     "title": "Welcome to Leave Request"
   },
-  "Metadata": {
+  "metadata": {
     "title": "Absenteeism and Leave Management",
     "description": "Manage employee leaves and absences."
   },
-  "Navigation": {
+  "navigation": {
     "dashboard": "Dashboard",
     "requests": "Requests",
     "teams": "Teams",
@@ -29,7 +37,7 @@
     "allRequests": "All Requests",
     "employees": "Employees"
   },
-  "Layout": {
+  "layout": {
     "workspace": "Employee Service Portal",
     "adminPortal": "Sovereign Admin",
     "memberPortal": "Sovereign Portal",
@@ -37,7 +45,7 @@
     "signout": "Sign out",
     "breadcrumb": "Service Portal"
   },
-  "Roles": {
+  "roles": {
     "employee": "Employee",
     "supervisor": "Supervisor",
     "coordinator": "Coordinator",
@@ -51,7 +59,7 @@
     "technicalArchitect": "Technical Architect",
     "departmentHead": "Department Head"
   },
-  "Dashboard": {
+  "dashboard": {
     "welcome": "Welcome back, {name}",
     "subtitle": "Here's what's happening with your leave requests.",
     "pendingApprovals": "Pending Approvals",
@@ -69,7 +77,7 @@
     "daysCount": "{count, plural, =1 {# Day} other {# Days}}",
     "days": "Days"
   },
-  "Auth": {
+  "auth": {
     "loginTitle": "Welcome to Leave Request",
     "microsoftSignIn": "Sign in with Microsoft",
     "dividerOr": "OR",
@@ -83,8 +91,34 @@
     "errorInvalidCredentials": "Invalid credentials. Please try again.",
     "errorGeneric": "An error occurred during sign in. Please try again."
   },
-  "Employees": {
+  "employees": {
     "title": "Employee Directory",
+    "employeeDetails": "Employee Details",
+    "actions": "Actions",
+    "contact": "Contact",
+    "editProfile": "Edit Profile",
+    "organization": "Organization",
+    "corporateData": "Corporate Data",
+    "reportingStructure": "Reporting Structure",
+    "leaveBalance": "Leave Balance",
+    "entitlement": "Entitlement",
+    "taken": "Taken",
+    "daysLeft": "Days Left",
+    "viewDetailedHistory": "View Detailed History",
+    "reportsTo": "Reports To",
+    "manager": "Manager",
+    "directReports": "Direct Reports ({count})",
+    "viewTeamDirectory": "View Team Directory",
+    "teamMembers": "{count} Team Members",
+    "personalInformation": "Personal Information",
+    "emailAddress": "Email Address",
+    "tenure": "Duration: + {count}",
+    "workLocation": "Work Location",
+    "hireDate": "Hire Date",
+    "access": "Access",
+    "notFoundTitle": "Employee not found",
+    "notFoundDescription": "The selected employee was not found or is no longer available.",
+    "backToDirectory": "Back to employee list",
     "statsTotal": "Total Employees",
     "statsActive": "Active Now",
     "statsOnLeave": "On Leave",
@@ -94,9 +128,13 @@
     "newEmployee": "New Employee",
     "emptyStateTitle": "No employees found",
     "emptyStateDescription": "We couldn't find any results matching your search or filters. Try adjusting your criteria.",
-    "clearSearch": "Clear Search"
+    "clearSearch": "Clear Search",
+    "density": "Density",
+    "comfortable": "Comfortable",
+    "standard": "Standard",
+    "compact": "Compact"
   },
-  "Departments": {
+  "departments": {
     "engineering": "Engineering",
     "management": "Management",
     "legal": "Legal",

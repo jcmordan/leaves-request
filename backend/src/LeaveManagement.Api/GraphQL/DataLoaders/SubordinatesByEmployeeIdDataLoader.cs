@@ -26,15 +26,9 @@ public class SubordinatesByEmployeeIdDataLoader(
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
         var subcontractors = await context
-            .Employees.Join(
-                context.EmployeeSupervisors,
-                e => e.Id,
-                es => es.EmployeeId,
-                (e, es) => new { Employee = e, SupervisorId = es.SupervisorId }
-            )
-            .Where(x => keys.Contains(x.SupervisorId))
+            .Employees.Where(x => x.ManagerId != null && keys.Contains(x.ManagerId.Value))
             .ToListAsync(cancellationToken);
 
-        return subcontractors.ToLookup(x => x.SupervisorId, x => x.Employee);
+        return subcontractors.ToLookup(x => x.ManagerId!.Value, x => x);
     }
 }

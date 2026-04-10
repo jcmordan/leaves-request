@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import createNextIntlPlugin from 'next-intl/plugin'
-import { getApiUrl } from 'envUtils'
+
 import type { NextConfig } from 'next'
 
 dotenv.config({ path: '.env' })
@@ -10,6 +10,9 @@ dotenv.config({ path: "../.env" });
 const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
+  env: {
+    GRAPHQL_ENDPOINT: process.env.GRAPHQL_ENDPOINT,
+  },
   images: {
     remotePatterns: [
       new URL('https://i.pravatar.cc/*'),

@@ -4,7 +4,7 @@ namespace LeaveManagement.Domain.Interfaces;
 
 public interface ICurrentUserService
 {
-    Guid GetCurrentEmployeeId();
+    Task<Guid> GetCurrentEmployeeIdAsync();
     string GetUserEmail();
     string GetCurrentUserId();
 }

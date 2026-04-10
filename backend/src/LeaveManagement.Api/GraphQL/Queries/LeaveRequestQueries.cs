@@ -5,6 +5,7 @@ using HotChocolate.Data;
 using HotChocolate.Types;
 using HotChocolate.Types.Pagination;
 using LeaveManagement.Api.GraphQL.Pagination;
+using LeaveManagement.Application.DTOs;
 using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
@@ -12,6 +13,7 @@ using LeaveManagement.Domain.Enums;
 using LeaveManagement.Domain.Interfaces;
 using LeaveManagement.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagement.Api.GraphQL.Queries;
 
@@ -29,7 +31,7 @@ public class LeaveRequestQueries
         [Service] ICurrentUserService currentUserService
     )
     {
-        var managerId = currentUserService.GetCurrentEmployeeId();
+        var managerId = await currentUserService.GetCurrentEmployeeIdAsync();
         var filter = new PaginationFilter(first, after, last, before);
         var result = await leaveRequestService.GetTeamAbsencesAsync(managerId, filter);
         return result.ToConnection();
@@ -45,20 +47,19 @@ public class LeaveRequestQueries
         [Service] ICurrentUserService currentUserService
     )
     {
-        var employeeId = currentUserService.GetCurrentEmployeeId();
+        var employeeId = await currentUserService.GetCurrentEmployeeIdAsync();
         var filter = new PaginationFilter(first, after, last, before);
         var result = await leaveRequestService.GetEmployeeRequestsAsync(employeeId, filter);
         return result.ToConnection();
     }
 
-    public async Task<VacationBalance> GetMyBalance(
+    public async Task<LeaveBalanceDto> GetMyBalance(
         [Service] IBalanceService balanceService,
         [Service] ICurrentUserService currentUserService
     )
     {
-        var employeeId = currentUserService.GetCurrentEmployeeId();
-
-        return await balanceService.GetCurrentYearBalanceAsync(employeeId);
+        var employeeId = await currentUserService.GetCurrentEmployeeIdAsync();
+        return await balanceService.GetEmployeeBalanceSummaryAsync(employeeId, DateTime.UtcNow.Year);
     }
 
     [UsePaging(IncludeTotalCount = true)]

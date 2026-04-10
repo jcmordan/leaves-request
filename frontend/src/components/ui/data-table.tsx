@@ -19,6 +19,7 @@ interface IDataTableProps<TData, TValue> {
   loading?: boolean
   emptyMessage?: string
   className?: string
+  density?: 'comfortable' | 'standard' | 'compact'
 }
 
 export function DataTable<TData, TValue>({
@@ -27,6 +28,7 @@ export function DataTable<TData, TValue>({
   loading = false,
   emptyMessage,
   className,
+  density = 'standard',
 }: IDataTableProps<TData, TValue>) {
   const tTable = useTranslations('table')
   const tLoading = useTranslations('loading')
@@ -50,7 +52,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className={className ?? 'overflow-hidden rounded-md border p-6'}>
-      <Table>
+      <Table density={density}>
         <TableHeader>
           {table.getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id} className='bg-muted/50'>

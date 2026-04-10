@@ -14,11 +14,17 @@ public class LeaveRequestService : ILeaveRequestService
 {
     private readonly LeaveManagementDbContext _context;
     private readonly IHolidayService _holidayService;
+    private readonly IBalanceService _balanceService;
 
-    public LeaveRequestService(LeaveManagementDbContext context, IHolidayService holidayService)
+    public LeaveRequestService(
+        LeaveManagementDbContext context,
+        IHolidayService holidayService,
+        IBalanceService balanceService
+    )
     {
         _context = context;
         _holidayService = holidayService;
+        _balanceService = balanceService;
     }
 
     public async Task<AbsenceRequest> SubmitRequestAsync(
@@ -91,15 +97,12 @@ public class LeaveRequestService : ILeaveRequestService
             );
         }
 
-        var balance =
-            await _context.VacationBalances.FirstOrDefaultAsync(b =>
-                b.EmployeeId == employeeId && b.Year == startDate.Year
-            ) ?? throw new Exception("Vacation balance not found for this year.");
+        var balance = await _balanceService.GetEmployeeBalanceAsync(employeeId, startDate.Year, absenceTypeId);
 
-        if (absenceType.DeductsFromBalance && balance.RemainingDays < totalDays)
+        if (absenceType.DeductsFromBalance && balance.Remaining < totalDays)
         {
             throw new Exception(
-                $"Insufficient balance. Remaining: {balance.RemainingDays}, Requested: {totalDays}."
+                $"Insufficient balance. Remaining: {balance.Remaining}, Requested: {totalDays}."
             );
         }
 
@@ -107,10 +110,8 @@ public class LeaveRequestService : ILeaveRequestService
             r.EmployeeId == employeeId
             && r.Status != RequestStatus.Cancelled
             && r.Status != RequestStatus.Rejected
-            && (
-                (startDate >= r.StartDate && startDate <= r.EndDate)
-                || (endDate >= r.StartDate && endDate <= r.EndDate)
-            )
+            && r.StartDate <= endDate
+            && r.EndDate >= startDate
         );
 
         if (overlapping)
@@ -149,12 +150,6 @@ public class LeaveRequestService : ILeaveRequestService
         }
 
         await _context.AbsenceRequests.AddAsync(request);
-
-        if (absenceType.DeductsFromBalance)
-        {
-            balance.UsedDays += totalDays;
-        }
-
         await _context.SaveChangesAsync();
 
         return request;
@@ -198,17 +193,12 @@ public class LeaveRequestService : ILeaveRequestService
         // Simple validation check
         if (absenceType.DeductsFromBalance)
         {
-            var balance =
-                await _context.VacationBalances.FirstOrDefaultAsync(b =>
-                    b.EmployeeId == employeeId && b.Year == startDate.Year
-                ) ?? throw new Exception("Vacation balance not found for this year.");
+            var balance = await _balanceService.GetEmployeeBalanceAsync(employeeId, startDate.Year, request.AbsenceTypeId);
 
-            if (balance.UsedDays - oldDays + newDays > balance.TotalDays)
+            if (balance.Remaining < newDays)
             {
-                throw new Exception($"Insufficient balance. Requested: {newDays}.");
+                throw new Exception($"Insufficient balance. Remaining: {balance.Remaining}, Requested: {newDays} days.");
             }
-
-            balance.UsedDays = balance.UsedDays - oldDays + newDays;
         }
 
         request.StartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
@@ -243,6 +233,7 @@ public class LeaveRequestService : ILeaveRequestService
             await _context
                 .AbsenceRequests.Include(r => r.AbsenceType)
                 .Include(r => r.Employee)
+                .Include(r => r.ApprovalHistories)
                 .FirstOrDefaultAsync(r => r.Id == requestId)
             ?? throw new Exception("Request not found.");
 
@@ -260,44 +251,37 @@ public class LeaveRequestService : ILeaveRequestService
             throw new Exception("Only pending requests can be approved.");
         }
 
-        if (
-            request.AbsenceType?.RequiresAttachment == true
-            && approver.User?.Role != UserRole.HRManager
-        )
-        {
-            throw new Exception(
-                "Medical leaves must be validated and approved by an HR Administrator."
-            );
-        }
+        // Rule: Only the direct manager can approve (except for Medical leaves which need HR)
+        bool isDirectManager = approverId == request.Employee?.ManagerId;
+        bool isHR = approver.User?.Role == UserRole.HRManager;
 
-        if (approver.User?.Role == UserRole.Manager && request.Status == RequestStatus.Pending)
+        if (request.AbsenceType?.RequiresAttachment == true)
         {
-            request.Status = RequestStatus.PendingCoordinatorApproval;
-        }
-        else if (
-            approver.User?.Role == UserRole.Manager
-            || approver.User?.Role == UserRole.HRManager
-        )
-        {
-            request.Status = RequestStatus.Approved;
-        }
-        else
-        {
-            throw new Exception(
-                "You do not have sufficient permissions to approve this request at this stage."
-            );
-        }
-
-        request.ApprovalHistories.Add(
-            new ApprovalHistory
+            if (!isHR)
             {
-                Id = Guid.NewGuid(),
-                ApproverEmployeeId = approverId,
-                Action = ApprovalAction.Approved,
-                Comment = comment,
-                ActionDate = DateTime.UtcNow,
+                throw new Exception("Medical leaves must be validated and approved by an HR Administrator.");
             }
-        );
+        }
+        else if (!isDirectManager)
+        {
+            throw new Exception("Only the direct manager can approve this request.");
+        }
+
+        // For now, manager approval moves directly to Approved (bypassing Coordinator)
+        request.Status = RequestStatus.Approved;
+
+        var history = new ApprovalHistory
+        {
+            Id = Guid.NewGuid(),
+            AbsenceRequestId = request.Id,
+            ApproverEmployeeId = approverId,
+            Action = ApprovalAction.Approved,
+            Comment = comment,
+            ActionDate = DateTime.UtcNow,
+            StatusAfterAction = RequestStatus.Approved,
+        };
+        
+        _context.ApprovalHistories.Add(history);
 
         await _context.SaveChangesAsync();
 
@@ -315,16 +299,17 @@ public class LeaveRequestService : ILeaveRequestService
             ?? throw new Exception("Request not found.");
 
         request.Status = RequestStatus.ModificationRequested;
-        request.ApprovalHistories.Add(
-            new ApprovalHistory
-            {
-                Id = Guid.NewGuid(),
-                ApproverEmployeeId = approverId,
-                Action = ApprovalAction.Rejected,
-                Comment = $"Modification requested: {comment}",
-                ActionDate = DateTime.UtcNow,
-            }
-        );
+        var history = new ApprovalHistory
+        {
+            Id = Guid.NewGuid(),
+            AbsenceRequestId = request.Id,
+            ApproverEmployeeId = approverId,
+            Action = ApprovalAction.Rejected,
+            Comment = $"Modification requested: {comment}",
+            ActionDate = DateTime.UtcNow,
+            StatusAfterAction = RequestStatus.ModificationRequested,
+        };
+        _context.ApprovalHistories.Add(history);
 
         await _context.SaveChangesAsync();
 
@@ -335,7 +320,9 @@ public class LeaveRequestService : ILeaveRequestService
     {
         var request =
             await _context
-                .AbsenceRequests.Include(r => r.AbsenceType)
+                .AbsenceRequests
+                .Include(r => r.AbsenceType)
+                .Include(r => r.ApprovalHistories)
                 .FirstOrDefaultAsync(r => r.Id == requestId)
             ?? throw new Exception("Request not found.");
 
@@ -345,27 +332,21 @@ public class LeaveRequestService : ILeaveRequestService
         }
 
         request.Status = RequestStatus.Rejected;
-        request.ApprovalHistories.Add(
-            new ApprovalHistory
-            {
-                Id = Guid.NewGuid(),
-                ApproverEmployeeId = approverId,
-                Action = ApprovalAction.Rejected,
-                Comment = comment,
-                ActionDate = DateTime.UtcNow,
-            }
-        );
-
-        if (request.AbsenceType != null && request.AbsenceType.DeductsFromBalance)
+        
+        var history = new ApprovalHistory
         {
-            var balance = await _context.VacationBalances.FirstOrDefaultAsync(b =>
-                b.EmployeeId == request.EmployeeId && b.Year == request.StartDate.Year
-            );
-            if (balance != null)
-            {
-                balance.UsedDays -= request.TotalDaysRequested;
-            }
-        }
+            Id = Guid.NewGuid(),
+            AbsenceRequestId = request.Id,
+            ApproverEmployeeId = approverId,
+            Action = ApprovalAction.Rejected,
+            Comment = comment,
+            ActionDate = DateTime.UtcNow,
+            StatusAfterAction = RequestStatus.Rejected,
+        };
+        
+        _context.ApprovalHistories.Add(history);
+
+        // Balance is calculated dynamically, no manual update needed
 
         await _context.SaveChangesAsync();
 
@@ -387,16 +368,7 @@ public class LeaveRequestService : ILeaveRequestService
 
         request.Status = RequestStatus.Cancelled;
 
-        if (request.AbsenceType != null && request.AbsenceType.DeductsFromBalance)
-        {
-            var balance = await _context.VacationBalances.FirstOrDefaultAsync(b =>
-                b.EmployeeId == request.EmployeeId && b.Year == request.StartDate.Year
-            );
-            if (balance != null)
-            {
-                balance.UsedDays -= request.TotalDaysRequested;
-            }
-        }
+        // Balance is calculated dynamically, no manual update needed
 
         await _context.SaveChangesAsync();
 

@@ -11,36 +11,40 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function DatePicker() {
+export interface DatePickerProps {
+  label?: string;
+  value: Date | undefined;
+  onChange: (date: Date | undefined) => void;
+}
+
+export function DatePicker({ value, onChange }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
 
   return (
-    <Field className="mx-auto w-44">
-      <FieldLabel htmlFor="date">Date of birth</FieldLabel>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        render={
           <Button
             variant="outline"
             id="date"
             className="justify-start font-normal"
           >
-            {date ? date.toLocaleDateString() : "Select date"}
+            {value ? value.toLocaleDateString() : "Select date"}
           </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={date}
-            defaultMonth={date}
-            captionLayout="dropdown"
-            onSelect={(date) => {
-              setDate(date);
-              setOpen(false);
-            }}
-          />
-        </PopoverContent>
-      </Popover>
-    </Field>
+        }
+      />
+      <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+        <Calendar
+          mode="single"
+          selected={value}
+          defaultMonth={value}
+          captionLayout="dropdown"
+          onSelect={(date) => {
+            onChange(date);
+            setOpen(false);
+          }}
+        />
+      </PopoverContent>
+    </Popover>
   );
 }

@@ -139,16 +139,18 @@ export const FilterPanel = ({ children, className, searchInput }: FilterPanelPro
           {/* Trigger button */}
           <Activity mode={children ? 'visible' : 'hidden'}>
             <Popover>
-              <PopoverTrigger asChild>
-                <Button variant='outline' size='sm' className='relative gap-2'>
-                  <IconFilter2 size={15} />
-                  {count > 0 && (
-                    <Badge className='absolute -top-2 -right-2 h-5 w-5 justify-center rounded-full p-0 text-[10px]'>
-                      {count}
-                    </Badge>
-                  )}
-                </Button>
-              </PopoverTrigger>
+              <PopoverTrigger
+                render={
+                  <Button variant='outline' size='sm' className='relative gap-2'>
+                    <IconFilter2 size={15} />
+                    {count > 0 && (
+                      <Badge className='absolute -top-2 -right-2 h-5 w-5 justify-center rounded-full p-0 text-[10px]'>
+                        {count}
+                      </Badge>
+                    )}
+                  </Button>
+                }
+              />
               <PopoverContent align='end' className='w-auto min-w-[280px] p-4'>
                 <div className='flex flex-col gap-3'>
                   <p className='text-sm font-medium text-muted-foreground'>Filter by</p>

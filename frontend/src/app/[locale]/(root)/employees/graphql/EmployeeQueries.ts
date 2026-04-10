@@ -34,6 +34,11 @@ export const EMPLOYEE_CONNECTION_FRAGMENT = graphql(`
           id
           name
         }
+        an8
+        company {
+          id
+          name
+        }
       }
     }
     pageInfo {

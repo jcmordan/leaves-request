@@ -14,4 +14,7 @@ public interface IDepartmentSectionService
 
     /// <summary>Returns department sections by their IDs for batch loading.</summary>
     Task<IDictionary<Guid, DepartmentSection>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default);
+
+    /// <summary>Returns all department sections, optionally filtered by department ID.</summary>
+    Task<IEnumerable<DepartmentSection>> GetByDepartmentIdAsync(Guid? departmentId = null, CancellationToken ct = default);
 }

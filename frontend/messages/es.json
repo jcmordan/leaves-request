@@ -18,11 +18,19 @@
     "none": "Ninguno",
     "viewAll": "Ver Todo",
     "filters": "Filtros",
-    "email": "Correo",
     "next": "Siguiente",
     "previous": "Anterior",
     "save": "Guardar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "fullName": "Nombre Completo",
+    "email": "Correo Electrónico",
+    "jobTitleId": "Cargo",
+    "departmentId": "Departamento",
+    "departmentSectionId": "Sección",
+    "companyId": "Compañía",
+    "hireDate": "Fecha de Ingreso",
+    "isActive": "Activo",
+    "managerId": "Gerente"
   },
   "index": {
     "title": "Bienvenido a Solicitudes de Permisos"
@@ -116,7 +124,6 @@
     "emailAddress": "Correo Electrónico",
     "tenure": "Duración: + {count}",
     "workLocation": "Lugar de Trabajo",
-    "hireDate": "Fecha de Ingreso",
     "access": "Acceso",
     "notFoundTitle": "Empleado no encontrado",
     "notFoundDescription": "El empleado seleccionado no existe o ya no está disponible.",

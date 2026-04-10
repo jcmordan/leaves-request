@@ -28,4 +28,10 @@ public class JobTitleService(LeaveManagementDbContext context) : IJobTitleServic
             .Where(jt => ids.Contains(jt.Id))
             .ToDictionaryAsync(jt => jt.Id, ct);
     }
+
+    /// <inheritdoc/>
+    public async Task<IEnumerable<JobTitle>> GetAllAsync(CancellationToken ct = default)
+    {
+        return await _context.JobTitles.OrderBy(jt => jt.Name).ToListAsync(ct);
+    }
 }

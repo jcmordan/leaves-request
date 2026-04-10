@@ -5,8 +5,8 @@ import { getTranslations } from "next-intl/server";
 import LoadingCard from "@/components/card/LoadingCard";
 import { PreloadQuery } from "@/lib/apollo-client";
 import { EmployeeDetailsView } from "@/app/[locale]/(root)/employees/[employee_id]/components/EmployeeDetailsView";
+import { EMPLOYEE_DETAILS_QUERY } from "../graphql/EmployeeQueries";
 
-import { EMPLOYEE_DETAILS_QUERY } from "./graphql/EmployeeDetailsQueries";
 
 type PageProps = {
   params: Promise<{ locale: string; employee_id: string }>;

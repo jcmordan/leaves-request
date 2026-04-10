@@ -16,10 +16,15 @@ public record CreateEmployeeInput(
 public record UpdateEmployeeInput(
     Guid Id,
     string FullName,
-    string Email,
+    string? Email,
     string EmployeeCode,
     string NationalId,
     Guid DepartmentId,
     DateTime HireDate,
-    bool IsActive
+    bool IsActive,
+    string An8,
+    Guid? JobTitleId,
+    Guid? DepartmentSectionId,
+    Guid CompanyId,
+    Guid? ManagerId
 );

@@ -1,13 +1,13 @@
 "use client";
 
 import { useSuspenseQuery } from "@apollo/client/react";
-import { EMPLOYEE_DETAILS_QUERY } from "../graphql/EmployeeDetailsQueries";
 import { EmployeeCorporateDataCard } from "./EmployeeCorporateDataCard";
 import { EmployeePersonalInformationCard } from "./EmployeePersonalInformationCard";
 import { EmployeeProfileHero } from "./EmployeeProfileHero";
 import { EmployeeReportingStructureCard } from "./EmployeeReportingStructureCard";
 import { EmployeeLeaveBalanceCard } from "./EmployeeLeaveBalanceCard";
 import { EmployeeUpcomingEventsCard } from "./EmployeeUpcomingEventsCard";
+import { EMPLOYEE_DETAILS_QUERY } from "../../graphql/EmployeeQueries";
 
 interface EmployeeDetailsViewProps {
   employeeId: string;

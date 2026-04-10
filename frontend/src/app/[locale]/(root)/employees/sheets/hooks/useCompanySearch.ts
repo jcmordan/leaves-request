@@ -2,7 +2,7 @@ import { useLazyQuery } from "@apollo/client/react";
 import { useMemo } from "react";
 import { CompaniesSearchQuery, CompaniesSearchQueryVariables } from "@/__generated__/graphql";
 import { InputOption } from "@/components/forms/types";
-import { COMPANIES_SEARCH_QUERY } from "../EmployeeEditSheetQueries";
+import { COMPANIES_SEARCH_QUERY } from "../../graphql/EmployeeQueries";
 
 type SearchFunction = (
   searchTerm: string,

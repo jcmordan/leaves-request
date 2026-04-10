@@ -2,9 +2,11 @@ using System.Text;
 using DotNetEnv;
 using HotChocolate.Data;
 using LeaveManagement.Api.GraphQL;
+using LeaveManagement.Api.GraphQL.DataLoaders;
 using LeaveManagement.Api.GraphQL.Filters;
 using LeaveManagement.Api.GraphQL.Mutations;
 using LeaveManagement.Api.GraphQL.Queries;
+using LeaveManagement.Api.GraphQL.Types;
 using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Application.Services;
 using LeaveManagement.Domain.Interfaces;
@@ -13,14 +15,12 @@ using LeaveManagement.Infrastructure.Data.Seeders;
 using LeaveManagement.Infrastructure.Interfaces;
 using LeaveManagement.Infrastructure.Repositories;
 using LeaveManagement.Infrastructure.Services;
-using LeaveManagement.Api.GraphQL.DataLoaders;
-using LeaveManagement.Api.GraphQL.Types;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Options;
 
 // Load environment variables from .env file in the root directory
 Env.Load(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "../../.env"));
@@ -43,8 +43,9 @@ builder.Services.AddPooledDbContextFactory<LeaveManagementDbContext>(options =>
     options.UseNpgsql(connectionString, b => b.MigrationsAssembly("LeaveManagement.Infrastructure"))
 );
 
-builder.Services.AddScoped(sp => 
-    sp.GetRequiredService<IDbContextFactory<LeaveManagementDbContext>>().CreateDbContext());
+builder.Services.AddScoped(sp =>
+    sp.GetRequiredService<IDbContextFactory<LeaveManagementDbContext>>().CreateDbContext()
+);
 
 // Authentication
 builder
@@ -166,6 +167,10 @@ builder.Services.AddScoped<EmployeeByIdDataLoader>();
 builder.Services.AddScoped<LeaveBalanceDataLoader>();
 
 builder.Services.AddHttpClient();
+builder.Services.AddHttpLogging(logging =>
+{
+    builder.Configuration.GetSection("HttpLogging").Bind(logging);
+});
 
 // HotChocolate GraphQL
 builder
@@ -200,6 +205,11 @@ builder
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpLogging();
+    app.UseDeveloperExceptionPage();
+}
 
 // app.UseHttpsRedirection();
 

@@ -9,7 +9,7 @@ import { useSheets } from "@/components/layout/sheets/SheetNavigation";
 import {
   EMPLOYEE_FOR_EDIT_QUERY,
   UPDATE_EMPLOYEE_MUTATION,
-} from "./EmployeeEditSheetQueries";
+} from "../graphql/EmployeeQueries";
 import {
   EmployeeEditFormContent,
   EmployeeFormValues,
@@ -36,25 +36,26 @@ export const EmployeeEditSheet = () => {
       onCompleted: () => {
         closeSheet();
       },
-      refetchQueries: ["GetEmployees", "GetEmployeeById"],
+      // refetchQueries: ["GetEmployees", "GetEmployeeById"],
     },
   );
 
   const defaultValues = useMemo<Partial<EmployeeFormValues>>(() => {
     if (!employeeData?.employee) return {};
     const e = employeeData.employee;
+
     return {
       fullName: e.fullName,
       email: e.email || "",
       employeeCode: e.employeeCode,
       an8: e.an8,
       nationalId: e.nationalId,
+      hireDate: e.hireDate ? new Date(e.hireDate) : new Date(),
+      isActive: e.isActive,
       jobTitleId: e.jobTitle?.id,
       departmentId: e.department?.id,
       departmentSectionId: e.departmentSection?.id,
       companyId: e.company?.id,
-      hireDate: e.hireDate ? new Date(e.hireDate) : new Date(),
-      isActive: e.isActive,
       managerId: e.manager?.id,
     };
   }, [employeeData]);
@@ -64,6 +65,7 @@ export const EmployeeEditSheet = () => {
       variables: {
         input: {
           id: employeeId,
+          email: values.email || null,
           ...values,
           managerId: values.managerId === "none" ? null : values.managerId,
         },
@@ -81,10 +83,7 @@ export const EmployeeEditSheet = () => {
       submitting={updating}
       className="md:w-[540px] lg:w-[600px] bg-white" // Adjusted width and set white background per design
     >
-      <EmployeeEditFormContent
-        metadataRef={employeeData}
-        employeeRef={employeeData?.employee}
-      />
+      <EmployeeEditFormContent employeeRef={employeeData?.employee} />
     </FormSheet>
   );
 };

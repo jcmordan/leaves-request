@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FragmentType, useFragment } from "@/__generated__";
-import { EMPLOYEE_LEAVE_BALANCE_FRAGMENT } from "@/app/[locale]/(root)/employees/[employee_id]/graphql/EmployeeDetailsQueries";
+import { EMPLOYEE_LEAVE_BALANCE_FRAGMENT } from "../../graphql/EmployeeQueries";
 
 interface EmployeeLeaveBalanceCardProps {
  employeeRef: FragmentType<typeof EMPLOYEE_LEAVE_BALANCE_FRAGMENT>;

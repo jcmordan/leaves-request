@@ -14,7 +14,6 @@ namespace LeaveManagement.Api.GraphQL.Queries;
 [ExtendObjectType(typeof(Query))]
 public class JobTitleQueries
 {
-    /// <summary>Returns all job titles.</summary>
     [UsePaging(IncludeTotalCount = true)]
     public async Task<Connection<JobTitle>> GetJobTitles(
         int? first,
@@ -24,15 +23,8 @@ public class JobTitleQueries
         [Service] IJobTitleService jobTitleService
     )
     {
-        var result = await jobTitleService.GetAllAsync();
-        var items = result.ToList();
-        var paginatedResult = new PaginationResult<JobTitle>
-        {
-            Items = items,
-            TotalCount = items.Count,
-            HasNextPage = false,
-            HasPreviousPage = false
-        };
+        var filter = new PaginationFilter(first, after, last, before);
+        var paginatedResult = await jobTitleService.GetAllAsync(filter);
         return paginatedResult.ToConnection();
     }
 }

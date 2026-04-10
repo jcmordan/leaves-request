@@ -7,7 +7,6 @@ import { useMemo } from "react";
 import FormSheet from "@/components/layout/sheets/FormSheet";
 import { useSheets } from "@/components/layout/sheets/SheetNavigation";
 import {
-  EMPLOYEE_EDIT_METADATA_QUERY,
   EMPLOYEE_FOR_EDIT_QUERY,
   UPDATE_EMPLOYEE_MUTATION,
 } from "./EmployeeEditSheetQueries";
@@ -15,11 +14,13 @@ import {
   EmployeeEditFormContent,
   EmployeeFormValues,
 } from "./EmployeeEditForm";
+import { useParams } from "next/navigation";
 
 export const EmployeeEditSheet = () => {
-  const { sheetOptions, closeSheet } = useSheets();
+  const { closeSheet } = useSheets();
   const t = useTranslations("employees");
-  const employeeId = sheetOptions?.id as string;
+  const params = useParams();
+  const employeeId = params.employee_id as string;
 
   const { data: employeeData, loading: loadingEmployee } = useQuery(
     EMPLOYEE_FOR_EDIT_QUERY,
@@ -27,10 +28,6 @@ export const EmployeeEditSheet = () => {
       variables: { id: employeeId },
       skip: !employeeId,
     },
-  );
-
-  const { data: metadata, loading: loadingMetadata } = useQuery(
-    EMPLOYEE_EDIT_METADATA_QUERY,
   );
 
   const [updateEmployee, { loading: updating }] = useMutation(
@@ -85,8 +82,8 @@ export const EmployeeEditSheet = () => {
       className="md:w-[540px] lg:w-[600px] bg-white" // Adjusted width and set white background per design
     >
       <EmployeeEditFormContent
-        metadata={metadata}
-        loadingMetadata={loadingMetadata}
+        metadataRef={employeeData}
+        employeeRef={employeeData?.employee}
       />
     </FormSheet>
   );

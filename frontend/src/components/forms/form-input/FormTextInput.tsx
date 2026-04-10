@@ -154,11 +154,11 @@ export const FormTextInput = ({
           <Field id={`${name}-field`} data-invalid={invalid}>
             <FieldLabel htmlFor={name}>
               {label}
-              {required && <span className='text-destructive ml-1'>*</span>}
+              {required && <span className="text-destructive ml-1">*</span>}
             </FieldLabel>
-            <div className='relative'>
+            <div className="relative">
               {startAdornment && (
-                <div className='absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm'>
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
                   {startAdornment}
                 </div>
               )}
@@ -172,18 +172,22 @@ export const FormTextInput = ({
                 disabled={disabled}
                 aria-invalid={invalid}
                 aria-describedby={error ? `${name}-error` : undefined}
-                className={cn(startAdornment && 'pl-8', endAdornment && 'pr-12')}
+                className={cn(
+                  startAdornment && "pl-8",
+                  endAdornment && "pr-12",
+                  "bg-muted"
+                )}
                 {...otherProps}
               />
               {endAdornment && (
-                <div className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm'>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
                   {endAdornment}
                 </div>
               )}
             </div>
             {invalid && <FieldError errors={error ? [error] : []} />}
           </Field>
-        )
+        );
       }}
     />
   )

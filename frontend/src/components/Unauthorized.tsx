@@ -21,8 +21,12 @@ export default function Unauthorized() {
           <p>Please contact your system administrator if you believe this is a mistake.</p>
         </CardContent>
         <CardFooter className='flex justify-center pb-6'>
-          <Button asChild variant='default' className='min-w-[140px]'>
-            <Link href='/console'>Return to Dashboard</Link>
+          <Button
+            variant='default'
+            className='min-w-[140px]'
+            render={<Link href='/console' />}
+          >
+            Return to Dashboard
           </Button>
         </CardFooter>
       </Card>

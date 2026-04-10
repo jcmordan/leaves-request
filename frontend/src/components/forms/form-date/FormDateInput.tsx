@@ -2,13 +2,15 @@
 
 import { Controller, useFormContext } from 'react-hook-form'
 
-import { DatePicker, IDatePickerProps } from '@/components/ui/date-picker'
+import { DatePicker, DatePickerProps } from "@/components/ui/date-picker";
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { cn } from '@/lib/utils'
 
 import { BaseInputProps } from '../types'
 
-type Props = BaseInputProps<Omit<IDatePickerProps, 'date' | 'onDateChange' | 'id'>> & {
+type Props = BaseInputProps<
+  Omit<DatePickerProps, "value" | "onChange" | "id">
+> & {
   defaultValue?: string
 }
 
@@ -64,21 +66,20 @@ export const FormDateInput = ({
           <Field data-invalid={invalid}>
             <FieldLabel htmlFor={name}>
               {label}
-              {required && <span className='text-destructive ml-1'>*</span>}
+              {required && <span className="text-destructive ml-1">*</span>}
             </FieldLabel>
             <DatePicker
-              id={name}
-              date={date}
-              onDateChange={handleDateChange}
+              value={date}
+              onChange={handleDateChange}
               disabled={disabled}
-              className={cn(invalid && 'border-destructive')}
+              className={cn(invalid && "border-destructive")}
               aria-invalid={invalid}
               aria-describedby={error ? `${name}-error` : undefined}
               {...pickerProps}
             />
             {invalid && <FieldError errors={error ? [error] : []} />}
           </Field>
-        )
+        );
       }}
     />
   )

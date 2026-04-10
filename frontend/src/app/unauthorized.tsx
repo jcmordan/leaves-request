@@ -18,8 +18,8 @@ export default function UnauthorizedPage() {
             </p>
 
             <div className='flex justify-center pt-4'>
-              <Button asChild>
-                <Link href='/console'>Return to Dashboard</Link>
+              <Button render={<Link href='/console' />}>
+                Return to Dashboard
               </Button>
             </div>
           </div>

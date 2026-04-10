@@ -42,31 +42,33 @@ export function DateRangePicker({
   return (
     <div className={cn('grid gap-2', className)}>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            id={id}
-            variant='outline'
-            className={cn(
-              'w-full justify-start text-left font-normal',
-              !range && 'text-muted-foreground'
-            )}
-            disabled={disabled}
-          >
-            <CalendarIcon className='mr-2 h-4 w-4' />
-            {range?.from ? (
-              range.to ? (
-                <>
-                  {format(range.from, 'LLL dd, y', { locale: dateLocale })} -{' '}
-                  {format(range.to, 'LLL dd, y', { locale: dateLocale })}
-                </>
+        <PopoverTrigger
+          render={
+            <Button
+              id={id}
+              variant='outline'
+              className={cn(
+                'w-full justify-start text-left font-normal',
+                !range && 'text-muted-foreground'
+              )}
+              disabled={disabled}
+            >
+              <CalendarIcon className='mr-2 h-4 w-4' />
+              {range?.from ? (
+                range.to ? (
+                  <>
+                    {format(range.from, 'LLL dd, y', { locale: dateLocale })} -{' '}
+                    {format(range.to, 'LLL dd, y', { locale: dateLocale })}
+                  </>
+                ) : (
+                  format(range.from, 'LLL dd, y', { locale: dateLocale })
+                )
               ) : (
-                format(range.from, 'LLL dd, y', { locale: dateLocale })
-              )
-            ) : (
-              <span>{defaultPlaceholder}</span>
-            )}
-          </Button>
-        </PopoverTrigger>
+                <span>{defaultPlaceholder}</span>
+              )}
+            </Button>
+          }
+        />
         <PopoverContent className='w-auto p-0' align='start'>
           <Calendar
             initialFocus

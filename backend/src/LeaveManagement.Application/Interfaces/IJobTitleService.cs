@@ -14,4 +14,7 @@ public interface IJobTitleService
 
     /// <summary>Returns job titles by their IDs for batch loading.</summary>
     Task<IDictionary<Guid, JobTitle>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default);
+
+    /// <summary>Returns all job titles.</summary>
+    Task<IEnumerable<JobTitle>> GetAllAsync(CancellationToken ct = default);
 }

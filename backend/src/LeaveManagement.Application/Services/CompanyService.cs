@@ -28,4 +28,10 @@ public class CompanyService(LeaveManagementDbContext context) : ICompanyService
             .Where(c => ids.Contains(c.Id))
             .ToDictionaryAsync(c => c.Id, ct);
     }
+
+    /// <inheritdoc/>
+    public async Task<IEnumerable<Company>> GetAllAsync(CancellationToken ct = default)
+    {
+        return await _context.Companies.OrderBy(c => c.Name).ToListAsync(ct);
+    }
 }

@@ -18,7 +18,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; employee_id: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "Employees" });
+  const t = await getTranslations({ locale, namespace: "employees" });
 
   return {
     title: t("employeeDetails"),

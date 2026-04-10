@@ -71,22 +71,24 @@ export const NotificationBell = () => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant='ghost'
-          size='icon'
-          className='relative'
-          aria-label='Notifications'
-          suppressHydrationWarning
-        >
-          <Bell className='h-5 w-5' />
-          {count > 0 && (
-            <span className='absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white'>
-              {count}
-            </span>
-          )}
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger
+        render={
+          <Button
+            variant='ghost'
+            size='icon'
+            className='relative'
+            aria-label='Notifications'
+            suppressHydrationWarning
+          >
+            <Bell className='h-5 w-5' />
+            {count > 0 && (
+              <span className='absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white'>
+                {count}
+              </span>
+            )}
+          </Button>
+        }
+      />
       <PopoverContent className='w-100 p-0' align='end'>
         <div className='p-4 font-medium leading-none'>Notifications ({count})</div>
         <Separator />

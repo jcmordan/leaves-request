@@ -3,7 +3,12 @@
 import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useEffect, useRef } from 'react'
-import { FormProvider, useForm, type DefaultValues, type FieldValues } from 'react-hook-form'
+import {
+  FormProvider,
+  useForm,
+  type UseFormProps,
+  type FieldValues,
+} from "react-hook-form";
 
 import { LoadingSkeleton } from '@/components/card/LoadingCard'
 import { useSheets } from '@/components/layout/sheets/SheetNavigation'
@@ -11,23 +16,23 @@ import { Button } from '@/components/ui/button'
 import { SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 type FormSheetProps<TFieldValues extends FieldValues> = {
-  title: string | React.ReactNode
-  description?: string
-  onSubmit: (values: TFieldValues) => Promise<void> | void
-  children: React.ReactNode
-  defaultValues?: DefaultValues<TFieldValues>
-  mode?: 'onSubmit' | 'onBlur' | 'onChange' | 'onTouched' | 'all'
-  loading?: boolean
-  disabled?: boolean
-  submitting?: boolean
-  submitLabel?: string
-  cancelLabel?: string
-  allowSubmit?: boolean
-  secondaryAction?: React.ReactNode
-  footer?: React.ReactNode
-  showFooter?: boolean
-  className?: string
-}
+  title: string | React.ReactNode;
+  description?: string;
+  onSubmit: (values: TFieldValues) => Promise<void> | void;
+  children: React.ReactNode;
+  defaultValues?: UseFormProps<TFieldValues>["defaultValues"];
+  mode?: "onSubmit" | "onBlur" | "onChange" | "onTouched" | "all";
+  loading?: boolean;
+  disabled?: boolean;
+  submitting?: boolean;
+  submitLabel?: string;
+  cancelLabel?: string;
+  allowSubmit?: boolean;
+  secondaryAction?: React.ReactNode;
+  footer?: React.ReactNode;
+  showFooter?: boolean;
+  className?: string;
+};
 
 export const FormSheet = <TFieldValues extends FieldValues>({
   title,
@@ -98,13 +103,13 @@ export const FormSheet = <TFieldValues extends FieldValues>({
   return (
     <FormProvider {...formMethods}>
       <form onSubmit={formSubmitHandler} className="flex flex-col h-full">
-        <SheetHeader>
+        <SheetHeader className="bg-white">
           <SheetTitle>
             <span className="text-lg font-semibold pt-4">{title}</span>
           </SheetTitle>
           {description && <SheetDescription>{description}</SheetDescription>}
         </SheetHeader>
-        <div className="flex-1 overflow-auto p-8 pt-1">
+        <div className="flex-1 overflow-auto p-8 pt-1 bg-white">
           {loading ? (
             <LoadingSkeleton description={loadingDescription} />
           ) : (
@@ -112,7 +117,7 @@ export const FormSheet = <TFieldValues extends FieldValues>({
           )}
         </div>
         {showFooter && (
-          <SheetFooter className="flex flex-row justify-between items-center gap-2 pb-10">
+          <SheetFooter className="flex flex-row justify-between items-center gap-2 pb-8 pt-8">
             {footer ?? (
               <>
                 <div>{secondaryAction}</div>

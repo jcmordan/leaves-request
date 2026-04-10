@@ -14,4 +14,7 @@ public interface ICompanyService
 
     /// <summary>Returns companies by their IDs for batch loading.</summary>
     Task<IDictionary<Guid, Company>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default);
+
+    /// <summary>Returns all companies.</summary>
+    Task<IEnumerable<Company>> GetAllAsync(CancellationToken ct = default);
 }

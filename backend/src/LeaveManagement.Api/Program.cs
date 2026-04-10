@@ -27,6 +27,10 @@ Env.Load(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "../.
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Ensure the backend starts on the fixed port defined in .env or default to 5148
+var backendUrl = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://localhost:5148";
+builder.WebHost.UseUrls(backendUrl);
+
 // Add services to the container.
 
 // DbContext
@@ -172,6 +176,9 @@ builder
     .AddTypeExtension<LeaveRequestQueries>()
     .AddTypeExtension<EmployeeQueries>()
     .AddTypeExtension<DepartmentQueries>()
+    .AddTypeExtension<JobTitleQueries>()
+    .AddTypeExtension<CompanyQueries>()
+    .AddTypeExtension<DepartmentSectionQueries>()
     .AddMutationType<Mutation>()
     .AddTypeExtension<LeaveRequestMutations>()
     .AddTypeExtension<EmployeeMutations>()

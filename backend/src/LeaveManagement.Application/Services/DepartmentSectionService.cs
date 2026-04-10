@@ -28,4 +28,17 @@ public class DepartmentSectionService(LeaveManagementDbContext context) : IDepar
             .Where(ds => ids.Contains(ds.Id))
             .ToDictionaryAsync(ds => ds.Id, ct);
     }
+
+    /// <inheritdoc/>
+    public async Task<IEnumerable<DepartmentSection>> GetByDepartmentIdAsync(Guid? departmentId = null, CancellationToken ct = default)
+    {
+        var query = _context.DepartmentSections.AsQueryable();
+
+        if (departmentId.HasValue)
+        {
+            query = query.Where(ds => ds.DepartmentId == departmentId.Value);
+        }
+
+        return await query.OrderBy(ds => ds.Name).ToListAsync(ct);
+    }
 }

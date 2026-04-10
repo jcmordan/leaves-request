@@ -20,7 +20,15 @@
     "viewAll": "View All",
     "filters": "Filters",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "fullName": "Full Name",
+    "jobTitleId": "Job Title",
+    "departmentId": "Department",
+    "departmentSectionId": "Department Section",
+    "companyId": "Company",
+    "hireDate": "Hire Date",
+    "isActive": "Active",
+    "managerId": "Manager"
   },
   "index": {
     "title": "Welcome to Leave Request"
@@ -114,7 +122,6 @@
     "emailAddress": "Email Address",
     "tenure": "Duration: + {count}",
     "workLocation": "Work Location",
-    "hireDate": "Hire Date",
     "access": "Access",
     "notFoundTitle": "Employee not found",
     "notFoundDescription": "The selected employee was not found or is no longer available.",

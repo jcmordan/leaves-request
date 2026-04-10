@@ -133,10 +133,11 @@ export const FormSheet = <TFieldValues extends FieldValues>({
                   {allowSubmit && (
                     <Button
                       type="submit"
+                      variant="default"
                       size="lg"
                       disabled={isLoadingOrSubmitting || disabled}
                     >
-                      {isLoadingOrSubmitting ? (
+                      {submitting ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : null}
                       {defaultSubmitLabel}

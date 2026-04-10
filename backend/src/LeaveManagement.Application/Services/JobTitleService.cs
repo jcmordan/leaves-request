@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using LeaveManagement.Application.Common.Paging;
 using LeaveManagement.Application.Interfaces;
+using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -22,16 +24,22 @@ public class JobTitleService(LeaveManagementDbContext context) : IJobTitleServic
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<Guid, JobTitle>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
+    public async Task<IDictionary<Guid, JobTitle>> GetByIdsAsync(
+        IEnumerable<Guid> ids,
+        CancellationToken ct = default
+    )
     {
-        return await _context.JobTitles
-            .Where(jt => ids.Contains(jt.Id))
+        return await _context
+            .JobTitles.Where(jt => ids.Contains(jt.Id))
             .ToDictionaryAsync(jt => jt.Id, ct);
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<JobTitle>> GetAllAsync(CancellationToken ct = default)
+    public async Task<PaginationResult<JobTitle>> GetAllAsync(
+        PaginationFilter filter,
+        CancellationToken ct = default
+    )
     {
-        return await _context.JobTitles.OrderBy(jt => jt.Name).ToListAsync(ct);
+        return await PagingHelper.ApplyPagingAsync(_context.JobTitles, filter);
     }
 }

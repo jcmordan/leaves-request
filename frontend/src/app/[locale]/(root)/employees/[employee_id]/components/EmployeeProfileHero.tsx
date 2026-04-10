@@ -24,7 +24,11 @@ export function EmployeeProfileHero({
   const { openSheet } = useSheets();
 
   const handleEdit = () => {
-    openSheet("EmployeeEditSheet", { employeeId: employee.id }, { width: "lg" });
+    openSheet(
+      "EmployeeEditSheet",
+      { employeeId: employee.id },
+      { width: "xl" },
+    );
   };
 
   return (

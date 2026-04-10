@@ -13,7 +13,11 @@ import {
   FormDateInput,
   FormSwitch,
 } from "@/components/forms";
-import { EmployeeFormValues } from "./EmployeeEditForm";
+import { FragmentType, useFragment } from "@/__generated__";
+import {
+  EMPLOYEE_EDIT_METADATA_FRAGMENT,
+  EMPLOYEE_BASIC_INFO_FRAGMENT,
+} from "./EmployeeEditSheetQueries";
 
 export const employeeFormSchema = z.object({
   fullName: z.string().min(1, "Full Name is required"),
@@ -55,72 +59,138 @@ const FormSection = ({
 );
 
 export const EmployeeEditFormContent = ({
-  metadata,
-  loadingMetadata,
+  metadataRef,
+  employeeRef,
 }: {
-  metadata: any;
-  loadingMetadata: boolean;
+  metadataRef?: FragmentType<typeof EMPLOYEE_EDIT_METADATA_FRAGMENT> | null;
+  employeeRef?: FragmentType<typeof EMPLOYEE_BASIC_INFO_FRAGMENT> | null;
 }) => {
   const t = useTranslations("employees");
   const tc = useTranslations("common");
   const { watch } = useFormContext<EmployeeFormValues>();
 
   const selectedDepartmentId = watch("departmentId");
+  const metadata = useFragment(EMPLOYEE_EDIT_METADATA_FRAGMENT, metadataRef);
+  const employee = useFragment(EMPLOYEE_BASIC_INFO_FRAGMENT, employeeRef);
 
   // Options mapping
-  const jobTitleOptions = useMemo(
-    () =>
+  const jobTitleOptions = useMemo(() => {
+    const list =
       metadata?.jobTitles?.edges?.map((e: any) => ({
         label: e.node.name,
         value: e.node.id,
-      })) ?? [],
-    [metadata],
-  );
+      })) ?? [];
 
-  const companyOptions = useMemo(
-    () =>
+    // Ensure currently assigned job title is in the list to avoid race conditions/pagination issues
+    if (
+      employee?.jobTitle &&
+      !list.some((o) => o.value === employee.jobTitle?.id)
+    ) {
+      list.push({
+        label: employee.jobTitle.name,
+        value: employee.jobTitle.id,
+      });
+    }
+
+    return list;
+  }, [metadata, employee]);
+
+  const companyOptions = useMemo(() => {
+    const list =
       metadata?.companies?.edges?.map((e: any) => ({
         label: e.node.name,
         value: e.node.id,
-      })) ?? [],
-    [metadata],
-  );
+      })) ?? [];
 
-  const departmentOptions = useMemo(
-    () =>
+    if (
+      employee?.company &&
+      !list.some((o) => o.value === employee.company?.id)
+    ) {
+      list.push({
+        label: employee.company.name,
+        value: employee.company.id,
+      });
+    }
+
+    return list;
+  }, [metadata, employee]);
+
+  const departmentOptions = useMemo(() => {
+    const list =
       metadata?.departments?.edges?.map((e: any) => ({
         label: e.node.name,
         value: e.node.id,
-      })) ?? [],
-    [metadata],
-  );
+      })) ?? [];
+
+    if (
+      employee?.department &&
+      !list.some((o) => o.value === employee.department?.id)
+    ) {
+      list.push({
+        label: employee.department.name,
+        value: employee.department.id,
+      });
+    }
+
+    return list;
+  }, [metadata, employee]);
 
   const departmentSectionOptions = useMemo(() => {
-    if (!selectedDepartmentId) return [];
-    return (
+    const list =
       metadata?.departmentSections?.edges
-        ?.map((e: any) => e.node)
-        .filter(
-          (s: any) =>
-            s.departmentId === selectedDepartmentId || !s.departmentId,
-        )
-        .map((s: any) => ({
-          label: s.name,
-          value: s.id,
-        })) ?? []
-    );
-  }, [metadata, selectedDepartmentId]);
+        ?.filter((e: any) => e.node.departmentId === selectedDepartmentId)
+        .map((e: any) => ({
+          label: e.node.name,
+          value: e.node.id,
+        })) ?? [];
 
-  const managerOptions = useMemo(
-    () => [
-      { label: tc("none"), value: "none" },
-      ...(metadata?.employees?.edges?.map((e: any) => ({
+    // Filtered by department, but we should still ensure the current one is visible
+    // if it matches the currently selected department.
+    if (
+      employee?.departmentSection &&
+      employee.departmentSection.id &&
+      !list.some((o) => o.value === employee.departmentSection?.id) &&
+      (!selectedDepartmentId ||
+        employee.department?.id === selectedDepartmentId)
+    ) {
+      list.push({
+        label: employee.departmentSection.name,
+        value: employee.departmentSection.id,
+      });
+    }
+
+    return list;
+  }, [metadata, employee, selectedDepartmentId]);
+
+  const managerOptions = useMemo(() => {
+    const list =
+      metadata?.employees?.edges?.map((e: any) => ({
         label: e.node.fullName,
         value: e.node.id,
-      })) ?? []),
-    ],
-    [metadata, tc],
-  );
+      })) ?? [];
+
+    if (
+      employee?.manager &&
+      !list.some((o) => o.value === employee.manager?.id)
+    ) {
+      list.push({
+        label: employee.manager.fullName,
+        value: employee.manager.id,
+      });
+    }
+
+    return [{ label: tc("none"), value: "none" }, ...list];
+  }, [metadata, employee, tc]);
+
+  // If metadata hasn't been loaded yet, we don't render the form fields
+  // to prevent race conditions with default values being set before options are available.
+  if (!metadata) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-8">
@@ -169,7 +239,6 @@ export const EmployeeEditFormContent = ({
             label={tc("role")}
             options={jobTitleOptions}
             required
-            loading={loadingMetadata}
           />
 
           <FormComboboxInput
@@ -177,7 +246,6 @@ export const EmployeeEditFormContent = ({
             label={tc("company")}
             options={companyOptions}
             required
-            loading={loadingMetadata}
           />
 
           <FormComboboxInput
@@ -185,15 +253,15 @@ export const EmployeeEditFormContent = ({
             label={tc("department")}
             options={departmentOptions}
             required
-            loading={loadingMetadata}
           />
 
           <FormComboboxInput
             name="departmentSectionId"
             label="Dept Section"
             options={departmentSectionOptions}
-            loading={loadingMetadata}
-            disabled={!selectedDepartmentId}
+            disabled={
+              !selectedDepartmentId || departmentSectionOptions.length === 0
+            }
           />
         </div>
       </FormSection>
@@ -209,12 +277,15 @@ export const EmployeeEditFormContent = ({
             name="managerId"
             label={t("manager")}
             options={managerOptions}
-            loading={loadingMetadata}
           />
 
-          <div className="col-span-2 mt-2">
-            <div className="p-4 bg-surface-container-low/50 rounded-lg">
-              <FormSwitch name="isActive" label={tc("status")} />
+          <div className="col-span-1 mt-2">
+            <div className="rounded-lg">
+              <FormSwitch
+                name="isActive"
+                labelPosition="top"
+                label={tc("status")}
+              />
             </div>
           </div>
         </div>

@@ -130,29 +130,25 @@ export const SheetProvider = ({ children }: Props) => {
     params: SheetProps<N>,
     options: SheetOptions = { width: 'md', side: 'right' }
   ) => {
-    const currentSheetName = searchParams.get('sheetName')
-    const currentSheetParams = searchParams.get('sheetParams')
-
-    console.log("currentSheetName", currentSheetName);
-    console.log("currentSheetParams", currentSheetParams);
-    
+    const currentSheetName = searchParams.get("sheetName");
+    const currentSheetParams = searchParams.get("sheetParams");
 
     const updates: Record<string, string | null> = {
       sheetName,
       sheetParams: JSON.stringify(params),
       sheetWidth: options?.width ?? null,
       sheetSide: options?.side ?? null,
-    }
+    };
 
     if (currentSheetName) {
-      updates.prevSheetName = currentSheetName
-      updates.prevSheetParams = currentSheetParams
+      updates.prevSheetName = currentSheetName;
+      updates.prevSheetParams = currentSheetParams;
     } else {
-      updates.prevSheetName = null
-      updates.prevSheetParams = null
+      updates.prevSheetName = null;
+      updates.prevSheetParams = null;
     }
 
-    router.replace(buildUrl(updates))
+    router.replace(buildUrl(updates));
   }
 
   const setOptions = (options: SheetOptions) => {

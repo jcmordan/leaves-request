@@ -373,7 +373,7 @@ function Combobox({
         }
       />
       <PopoverContent
-        className="w-[--radix-popover-trigger-width] p-0"
+        className="w-[--radix-popover-trigger-width] p-0 bg-white"
         align="start"
       >
         <Command shouldFilter={!onSearchChange}>
@@ -394,7 +394,7 @@ function Combobox({
                   {options.map((option) => (
                     <CommandItem
                       key={option.value}
-                      value={String(option.value)}
+                      value={option.label}
                       onSelect={() => handleSelect(option.value)}
                     >
                       <Check

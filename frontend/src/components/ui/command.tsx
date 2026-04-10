@@ -156,16 +156,18 @@ function CommandItem({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "group/command-item relative flex cursor-default items-center gap-2 rounded-md px-3 py-2.5 text-sm outline-hidden select-none in-data-[slot=dialog-content]:rounded-xl! data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-accent/50 data-selected:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-selected:*:[svg]:text-accent-foreground transition-all",
-        "before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-0 before:w-1 before:bg-primary before:rounded-r-full before:transition-all data-selected:before:h-1/2",
-        className
+        "group/command-item relative flex cursor-default items-center gap-2",
+        "rounded-md px-3 py-2.5 text-sm outline-hidden select-none in-data-[slot=dialog-content]:rounded-xl!",
+        "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 aria-selected:bg-muted aria-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 transition-all",
+        "cursor-pointer",
+        className,
       )}
       {...props}
     >
       {children}
       <CheckIcon className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
     </CommandPrimitive.Item>
-  )
+  );
 }
 
 function CommandShortcut({

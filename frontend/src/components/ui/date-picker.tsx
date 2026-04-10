@@ -10,14 +10,22 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 export interface DatePickerProps {
   label?: string;
   value: Date | undefined;
   onChange: (date: Date | undefined) => void;
+  className?: string;
+  disabled?: boolean;
 }
 
-export function DatePicker({ value, onChange }: DatePickerProps) {
+export function DatePicker({
+  value,
+  onChange,
+  className,
+  disabled,
+}: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -27,7 +35,8 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           <Button
             variant="outline"
             id="date"
-            className="justify-start font-normal"
+            disabled={disabled}
+            className={cn("justify-start font-normal h-10", className)}
           >
             {value ? value.toLocaleDateString() : "Select date"}
           </Button>

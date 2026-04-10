@@ -1,7 +1,7 @@
-import { gql } from "@apollo/client";
+import { graphql } from "@/__generated__";
 
-export const EMPLOYEE_EDIT_METADATA_QUERY = gql`
-  query GetEmployeeEditMetadata($departmentId: UUID) {
+export const EMPLOYEE_EDIT_METADATA_FRAGMENT = graphql(`
+  fragment EmployeeEditMetadata on Query {
     jobTitles(first: 10) {
       edges {
         node {
@@ -26,14 +26,6 @@ export const EMPLOYEE_EDIT_METADATA_QUERY = gql`
         }
       }
     }
-    departmentSections(first: 10, departmentId: $departmentId) {
-      edges {
-        node {
-          id
-          name
-        }
-      }
-    }
     employees(first: 10) {
       edges {
         node {
@@ -42,10 +34,45 @@ export const EMPLOYEE_EDIT_METADATA_QUERY = gql`
         }
       }
     }
+    departmentSections(first: 10) {
+      edges {
+        node {
+          id
+          name
+          departmentId
+        }
+      }
+    }
   }
-`;
+`);
 
-export const EMPLOYEE_FOR_EDIT_QUERY = gql`
+export const EMPLOYEE_BASIC_INFO_FRAGMENT = graphql(`
+  fragment EmployeeBasicInfo on Employee {
+    id
+    jobTitle {
+      id
+      name
+    }
+    department {
+      id
+      name
+    }
+    departmentSection {
+      id
+      name
+    }
+    company {
+      id
+      name
+    }
+    manager {
+      id
+      fullName
+    }
+  }
+`);
+
+export const EMPLOYEE_FOR_EDIT_QUERY = graphql(`
   query GetEmployeeForEdit($id: UUID!) {
     employee(id: $id) {
       id
@@ -56,35 +83,17 @@ export const EMPLOYEE_FOR_EDIT_QUERY = gql`
       nationalId
       hireDate
       isActive
-      jobTitle {
-        id
-        name
-      }
-      department {
-        id
-        name
-      }
-      departmentSection {
-        id
-        name
-      }
-      company {
-        id
-        name
-      }
-      manager {
-        id
-        fullName
-      }
+      ...EmployeeBasicInfo
     }
+    ...EmployeeEditMetadata
   }
-`;
+`);
 
-export const UPDATE_EMPLOYEE_MUTATION = gql`
+export const UPDATE_EMPLOYEE_MUTATION = graphql(`
   mutation UpdateEmployee($input: UpdateEmployeeInput!) {
     updateEmployee(input: $input) {
       id
       fullName
     }
   }
-`;
+`);

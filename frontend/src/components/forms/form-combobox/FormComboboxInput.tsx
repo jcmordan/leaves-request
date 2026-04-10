@@ -40,35 +40,35 @@ export const FormComboboxInput = ({
   multi = false,
   ...otherProps
 }: Props) => {
-  const formContext = useFormContext()
+  const formContext = useFormContext();
 
   if (!formContext) {
-    throw new Error('FormComboboxInput must be used within a FormProvider')
+    throw new Error("FormComboboxInput must be used within a FormProvider");
   }
 
-  const { control } = formContext
+  const { control } = formContext;
 
   const debouncedSearch = useDebouncedCallback(async (term: string) => {
     if (!onSearch) {
-      return
+      return;
     }
 
     if (term.length < minSearchLength) {
-      return
+      return;
     }
 
-    await onSearch(term)
-  }, debounceMs)
+    await onSearch(term);
+  }, debounceMs);
 
   const handleSearchChange = async (searchTerm: string) => {
     if (!onSearch) {
-      return
+      return;
     }
 
-    await debouncedSearch(searchTerm)
-  }
+    await debouncedSearch(searchTerm);
+  };
 
-  const shouldUseLocalFilter = enableLocalFilter || !onSearch
+  const shouldUseLocalFilter = enableLocalFilter || !onSearch;
 
   return (
     <Controller
@@ -76,27 +76,29 @@ export const FormComboboxInput = ({
       control={control}
       rules={{ required }}
       render={({ field, fieldState }) => {
-        const { error, invalid } = fieldState
+        const { error, invalid } = fieldState;
 
         return (
           <Field data-invalid={invalid}>
             <FieldLabel htmlFor={name}>
               {label}
-              {required && <span className='text-destructive ml-1'>*</span>}
+              {required && <span className="text-destructive ml-1">*</span>}
             </FieldLabel>
             {multi ? (
               <MultiCombobox
                 options={options}
                 value={field.value ?? []}
                 onValueChange={field.onChange}
-                onSearchChange={shouldUseLocalFilter ? undefined : handleSearchChange}
+                onSearchChange={
+                  shouldUseLocalFilter ? undefined : handleSearchChange
+                }
                 disabled={disabled ?? loading}
                 searchPlaceholder={
                   onSearch
                     ? `Type at least ${minSearchLength} characters to search...`
-                    : 'Search...'
+                    : "Search..."
                 }
-                emptyText={loading ? 'Loading...' : 'No results found.'}
+                emptyText={loading ? "Loading..." : "No results found."}
                 {...otherProps}
               />
             ) : (
@@ -104,21 +106,23 @@ export const FormComboboxInput = ({
                 options={options}
                 value={field.value}
                 onValueChange={field.onChange}
-                onSearchChange={shouldUseLocalFilter ? undefined : handleSearchChange}
+                onSearchChange={
+                  shouldUseLocalFilter ? undefined : handleSearchChange
+                }
                 disabled={disabled ?? loading}
                 searchPlaceholder={
                   onSearch
                     ? `Type at least ${minSearchLength} characters to search...`
-                    : 'Search...'
+                    : "Search..."
                 }
-                emptyText={loading ? 'Loading...' : 'No results found.'}
+                emptyText={loading ? "Loading..." : "No results found."}
                 {...otherProps}
               />
             )}
             {invalid && <FieldError errors={error ? [error] : []} />}
           </Field>
-        )
+        );
       }}
     />
-  )
-}
+  );
+};

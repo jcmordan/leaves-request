@@ -72,7 +72,7 @@ export const FormDateInput = ({
               value={date}
               onChange={handleDateChange}
               disabled={disabled}
-              className={cn(invalid && "border-destructive")}
+              className={cn(invalid && "border-destructive", "w-full")}
               aria-invalid={invalid}
               aria-describedby={error ? `${name}-error` : undefined}
               {...pickerProps}

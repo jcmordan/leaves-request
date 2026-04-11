@@ -4,7 +4,7 @@ import * as z from "zod";
 
 import { Separator } from "@/components/ui/separator";
 import { FragmentType } from "@/__generated__";
-import { EMPLOYEE_ENTITIES_INFO_FRAGMENT } from "./EmployeeEditSheetQueries";
+import { EMPLOYEE_ENTITIES_INFO_FRAGMENT } from "../graphql/EmployeeQueries";
 import {
   IdentitySection,
   RolePlacementSection,

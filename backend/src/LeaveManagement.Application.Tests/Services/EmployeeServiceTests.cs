@@ -3,6 +3,7 @@ using LeaveManagement.Application.Services;
 using LeaveManagement.Application.Tests.Helpers;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Enums;
+using LeaveManagement.Domain.Models;
 using LeaveManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -88,52 +89,71 @@ public class EmployeeServiceTests : IDisposable
         );
         await _context.SaveChangesAsync();
 
-        var act = () =>
-            _sut.UpdateAsync(
-                targetId,
-                "Target Updated",
-                "tg@test.com",
-                "TGT001",
-                "NID999",
-                _departmentId,
-                DateTime.UtcNow,
-                true
-            );
+        var data = new EmployeeUpdateData(
+            targetId,
+            "Target Updated",
+            "tg@test.com",
+            "TGT001",
+            "AN8-123",
+            "NID999",
+            null,
+            _departmentId,
+            null,
+            DateTime.UtcNow,
+            null,
+            Guid.NewGuid(),
+            true
+        );
+
+        var act = () => _sut.UpdateAsync(data);
 
         await act.Should()
             .ThrowAsync<InvalidOperationException>()
-            .WithMessage("Another employee with the same code or national ID already exists.");
+            .WithMessage("Another employee with the same code, national ID, or email already exists.");
     }
 
     [Fact]
     public async Task UpdateAsync_ValidUpdate_ShouldSucceed()
     {
         var targetId = Guid.NewGuid();
+        var companyId = Guid.NewGuid();
         var employee = new Employee
         {
             Id = targetId,
             FullName = "Original",
             EmployeeCode = "OLD001",
             NationalId = "NID001",
+            Email = "old@test.com",
+            AN8 = "OLD-AN8",
             IsActive = true,
             DepartmentId = _departmentId,
+            CompanyId = companyId,
         };
         _context.Employees.Add(employee);
         await _context.SaveChangesAsync();
 
-        var result = await _sut.UpdateAsync(
+        var data = new EmployeeUpdateData(
             targetId,
             "Updated",
             "new@test.com",
             "NEW001",
+            "NEW-AN8",
             "NID001",
+            null,
             _departmentId,
+            null,
             DateTime.UtcNow,
+            null,
+            companyId,
             true
         );
 
+        var result = await _sut.UpdateAsync(data);
+
         result.FullName.Should().Be("Updated");
         result.EmployeeCode.Should().Be("NEW001");
+        result.Email.Should().Be("new@test.com");
+        result.AN8.Should().Be("NEW-AN8");
 
         var saved = await _context.Employees.FindAsync(targetId);
         saved!.FullName.Should().Be("Updated");

@@ -1,5 +1,5 @@
 {
-  "name": "nextjs-graphql-template",
+  "name": "@leave-request/frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {

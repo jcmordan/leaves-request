@@ -123,7 +123,7 @@ export function MultiCombobox({
                 return (
                   <CommandItem
                     key={option.value}
-                    value={String(option.value)}
+                    value={option.label}
                     onSelect={() => handleSelect(option.value)}
                   >
                     <Check

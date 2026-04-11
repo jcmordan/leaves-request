@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
 
 namespace LeaveManagement.Application.Interfaces;
@@ -13,5 +14,15 @@ public interface IJobTitleService
     Task<JobTitle?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
     /// <summary>Returns job titles by their IDs for batch loading.</summary>
-    Task<IDictionary<Guid, JobTitle>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default);
+    Task<IDictionary<Guid, JobTitle>> GetByIdsAsync(
+        IEnumerable<Guid> ids,
+        CancellationToken ct = default
+    );
+
+    /// <summary>Returns all job titles with pagination and optional search.</summary>
+    Task<PaginationResult<JobTitle>> GetAllAsync(
+        PaginationFilter filter,
+        string? search = null,
+        CancellationToken ct = default
+    );
 }

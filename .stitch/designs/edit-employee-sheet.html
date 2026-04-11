@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Employee Details | HR Sovereign</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#cddbf2",
+                        "primary-container": "#002855",
+                        "surface-variant": "#d6e3fb",
+                        "primary": "#001430",
+                        "primary-fixed-dim": "#aac7fd",
+                        "on-surface": "#0f1c2d",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#002855",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed-variant": "#284775",
+                        "secondary-container": "#c3f270",
+                        "tertiary-fixed": "#d6e3ff",
+                        "tertiary": "#001430",
+                        "secondary-fixed": "#c3f270",
+                        "secondary-fixed-dim": "#a8d557",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-highest": "#d6e3fb",
+                        "inverse-surface": "#243143",
+                        "inverse-primary": "#aac7fd",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#e6eeff",
+                        "on-surface-variant": "#43474f",
+                        "tertiary-fixed-dim": "#a9c7ff",
+                        "on-tertiary-fixed": "#001b3e",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#eff4ff",
+                        "on-tertiary-container": "#6490d9",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001b3d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#08468a",
+                        "outline-variant": "#c4c6d0",
+                        "on-background": "#0f1c2d",
+                        "on-secondary-fixed": "#131f00",
+                        "on-primary-container": "#7490c3",
+                        "on-error": "#ffffff",
+                        "secondary": "#486800",
+                        "primary-fixed": "#d6e3ff",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#415f8f",
+                        "outline": "#747780",
+                        "on-secondary-fixed-variant": "#354e00",
+                        "on-secondary-container": "#4d6e00",
+                        "background": "#f8f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 flex flex-col h-full z-40 bg-slate-100 dark:bg-[#001430] docked left-0 h-screen w-64 tonal-layering shadow-2xl dark:shadow-none">
+<div class="px-6 py-8">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+<img alt="Refidomsa" class="w-6 h-6" data-alt="Corporate logo with a stylized geometric symbol in navy and white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKZe2JAUAuKzVYEbOj3UX2XWo7j3WFIz35MkdvjwY6CUuMHmMpmTqhG5obA9i3AERIYTuuKyuijRdAsJohIx8M-6g14nO1X3LgF7OpuFVC68wNgMKIUG2ConHrEDBQRjd_uMVAxc04nu_oAmdNmuzy2CwP68IqNkfBEOovbQV3oTmYW-UML-WIewlMJoe2aTYzpfV7cf7x_yaeCTn9jV8dOTA8O9OmVa_dDX8vsiBgBPjX5DswRvIq0hS2dgEm4Dzg6Dy_66rDtJA"/>
+</div>
+<div>
+<h2 class="text-lg font-bold text-white leading-tight">Refidomsa</h2>
+<p class="font-manrope uppercase tracking-wider text-[11px] text-slate-400">Enterprise Portal</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 text-slate-400 px-4 py-3 hover:bg-white/5 transition-all font-manrope uppercase tracking-wider text-[11px]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 bg-white/10 text-white border-l-4 border-[#486800] px-4 py-3 hover:bg-white/5 transition-all font-manrope uppercase tracking-wider text-[11px]" href="#">
+<span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+<span>Employees</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 px-4 py-3 hover:bg-white/5 transition-all font-manrope uppercase tracking-wider text-[11px]" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Payroll</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 px-4 py-3 hover:bg-white/5 transition-all font-manrope uppercase tracking-wider text-[11px]" href="#">
+<span class="material-symbols-outlined" data-icon="volunteer_activism">volunteer_activism</span>
+<span>Benefits</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 px-4 py-3 hover:bg-white/5 transition-all font-manrope uppercase tracking-wider text-[11px]" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span>Time Off</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 px-4 py-3 hover:bg-white/5 transition-all font-manrope uppercase tracking-wider text-[11px]" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span>Documents</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto px-6 py-8 space-y-1">
+<a class="flex items-center gap-3 text-slate-400 px-4 py-3 hover:bg-white/5 transition-all font-manrope uppercase tracking-wider text-[11px]" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 px-4 py-3 hover:bg-white/5 transition-all font-manrope uppercase tracking-wider text-[11px]" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Top App Bar -->
+<header class="fixed top-0 left-64 right-0 h-16 bg-slate-50 dark:bg-slate-900 flex justify-between items-center px-8 z-30 border-b border-slate-200/15 dark:border-slate-800/15">
+<div class="flex items-center gap-8">
+<h1 class="text-xl font-black text-[#001430] dark:text-white font-manrope tracking-tight">HR Sovereign</h1>
+<nav class="hidden md:flex gap-6">
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#002855] transition-colors font-manrope tracking-tight font-bold" href="#">Directory</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#002855] transition-colors font-manrope tracking-tight font-bold" href="#">Org Chart</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#002855] transition-colors font-manrope tracking-tight font-bold" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-200/50 rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-200/50 rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-px bg-slate-200 mx-2"></div>
+<div class="flex items-center gap-3">
+<img alt="User Profile" class="w-8 h-8 rounded-full bg-slate-200" data-alt="Headshot of a professional man in a dark suit against a clean gray background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzQtnJJG5fOgID7V1NGro0RvPHmFSN50UH1tML-S8mHzLGu8fEkHkof9hGjuBuQD89IY4pHk8k2gI3G72RzfU_t-fRLfYdFvtz7SEMCMHJX63hCcJRDiZKH8zi-TPxqerA8Q13R-6UGwHPvgI73z1LXhtTR4DDtBCldgOtu9CmfehY-cH_ldcQmn5zbM1c4D6xOM0LtapKrjtXmIyh8Z7bpEzBFMC-p5-3knX9DJgKtATl2Q0P-MSS3YHkPvvHIhUpr0WNqUFegQA"/>
+<span class="text-sm font-bold text-primary">Julian de los Santos</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-8 min-h-screen bg-surface transition-all duration-300">
+<!-- Background Dimming Overlay -->
+<div class="fixed inset-0 bg-primary/20 backdrop-blur-[2px] z-40"></div>
+<!-- Employee Profile Header (Backgrounded) -->
+<div class="relative z-10 opacity-50 pointer-events-none">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-6">
+<div class="w-24 h-24 rounded-xl bg-primary-container overflow-hidden ring-4 ring-white shadow-xl">
+<img alt="Employee Photo" class="w-full h-full object-cover" data-alt="Portrait of a female professional with glasses, smiling confidently in a corporate setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbBz2TxmrbeE-vInYtVxudwMsSRz57jDpKC_IrEBGDSmTjkcSfSSg6Cte6Y_Om0V-VN4UEBg87lFamrt4ekTNcouWYYYIpN1UHBTjWMDKjJiEbD9sSJVISEzfRrJQBKBpJL9DVuc0HtYupq9Hn3SmxKfT7NqvckUQjYZ3HPtJY0GkME39zXs2ZqX4fcWp2Q1EpMARYfMPrtA7dWkUg_uxBELLK7naU8uqgBV10Ct6E4iYf8hVrrrUJgFXNxWR3fwJ4YkrClGrVKo8"/>
+</div>
+<div>
+<h2 class="text-3xl font-extrabold text-primary font-headline tracking-tighter">Elena Rodriguez</h2>
+<p class="text-slate-500 font-medium">Senior Operations Analyst • Logistics &amp; Supply Chain</p>
+<div class="flex gap-2 mt-2">
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-container text-xs font-bold rounded-full">ACTIVE</span>
+<span class="px-3 py-1 bg-surface-container text-primary text-xs font-bold rounded-full uppercase tracking-widest">EMP-88291</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2.5 bg-surface-container-highest text-primary font-bold rounded-lg transition-transform duration-200 hover:scale-98">
+                        View Documents
+                    </button>
+<button class="px-5 py-2.5 bg-primary text-white font-bold rounded-lg transition-transform duration-200 hover:scale-98">
+                        Action Center
+                    </button>
+</div>
+</div>
+<!-- Bento Grid of Stats (Backgrounded) -->
+<div class="grid grid-cols-12 gap-6">
+<div class="col-span-8 bg-white p-8 rounded-xl shadow-sm space-y-6">
+<h3 class="text-lg font-bold text-primary font-headline border-b border-slate-100 pb-4">Personal Information</h3>
+<div class="grid grid-cols-2 gap-y-6 gap-x-12">
+<div>
+<p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Email Address</p>
+<p class="text-sm font-semibold text-primary">e.rodriguez@refidomsa.com.do</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">National ID</p>
+<p class="text-sm font-semibold text-primary">402-2394102-1</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Hire Date</p>
+<p class="text-sm font-semibold text-primary">March 14, 2018</p>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Reporting Manager</p>
+<p class="text-sm font-semibold text-primary">Carlos Mendez (VP Ops)</p>
+</div>
+</div>
+</div>
+<div class="col-span-4 space-y-6">
+<div class="bg-primary text-white p-8 rounded-xl shadow-lg relative overflow-hidden">
+<div class="relative z-10">
+<p class="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Payroll Status</p>
+<p class="text-2xl font-bold font-headline">Verified</p>
+<p class="text-xs text-white/80 mt-4">Last updated: 2 days ago</p>
+</div>
+<div class="absolute -right-8 -bottom-8 opacity-10">
+<span class="material-symbols-outlined text-9xl" data-icon="verified_user">verified_user</span>
+</div>
+</div>
+<div class="bg-secondary-fixed p-8 rounded-xl shadow-sm">
+<p class="text-[10px] uppercase tracking-widest text-on-secondary-container/60 font-bold mb-1">Leave Balance</p>
+<p class="text-2xl font-bold font-headline text-on-secondary-container">18.5 Days</p>
+<p class="text-xs text-on-secondary-container/80 mt-4">Accrual Rate: 1.5 / mo</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- SIDE SHEET: Edit Employee Profile -->
+<div class="fixed right-0 top-0 h-full w-[480px] bg-white shadow-[-20px_0_40px_rgba(15,28,45,0.08)] z-50 flex flex-col transition-transform duration-300">
+<!-- Sheet Header -->
+<div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between">
+<div>
+<h2 class="text-xl font-extrabold text-primary font-headline tracking-tight">Edit Employee Profile</h2>
+<p class="text-xs text-slate-500 font-medium">Update structural data and identifiers</p>
+</div>
+<button class="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Scrollable Form Body -->
+<div class="flex-1 overflow-y-auto px-8 py-8 space-y-8 scroll-smooth">
+<!-- Section: Primary Identity -->
+<div class="space-y-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-1 h-4 bg-secondary rounded-full"></span>
+<h3 class="text-[11px] uppercase tracking-[0.1em] font-bold text-slate-400">Identity &amp; Contact</h3>
+</div>
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">Full Name</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint focus:bg-white transition-all" type="text" value="Elena Rodriguez"/>
+</div>
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">Email Address</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint focus:bg-white transition-all" type="email" value="e.rodriguez@refidomsa.com.do"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">Employee Code</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint focus:bg-white transition-all" type="text" value="EMP-88291"/>
+</div>
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">AN8</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint focus:bg-white transition-all" type="text" value="992011"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">National ID</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint focus:bg-white transition-all" type="text" value="402-2394102-1"/>
+</div>
+</div>
+<!-- Section: Organization Structure -->
+<div class="space-y-4 pt-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-1 h-4 bg-secondary rounded-full"></span>
+<h3 class="text-[11px] uppercase tracking-[0.1em] font-bold text-slate-400">Role &amp; Placement</h3>
+</div>
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">Job Title</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint appearance-none">
+<option>Senior Operations Analyst</option>
+<option>Operations Manager</option>
+<option>Logistics Coordinator</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">Department</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint appearance-none">
+<option>Logistics</option>
+<option>Human Resources</option>
+<option>IT</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">Dept Section</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint appearance-none">
+<option>Supply Chain</option>
+<option>Warehouse</option>
+<option>Procurement</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">Company</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint appearance-none">
+<option>Refineria Dominicana de Petróleo</option>
+<option>Refidomsa Logistics SAS</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Section: Lifecycle -->
+<div class="space-y-4 pt-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-1 h-4 bg-secondary rounded-full"></span>
+<h3 class="text-[11px] uppercase tracking-[0.1em] font-bold text-slate-400">Timeline &amp; Hierarchy</h3>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">Hire Date</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint" type="text" value="2018-03-14"/>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none" data-icon="calendar_month">calendar_month</span>
+</div>
+</div>
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">Status</label>
+<div class="flex items-center h-12 gap-3 px-4 bg-surface-container-low rounded-lg">
+<span class="text-sm font-semibold text-primary">Is Active</span>
+<div class="ml-auto w-10 h-5 bg-secondary rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-1">
+<label class="text-[11px] font-bold text-primary uppercase ml-1">Reporting Manager</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-surface-tint appearance-none">
+<option>Carlos Mendez</option>
+<option>Sarah Johnson</option>
+<option>Miguel Herrera</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+<div class="h-10"></div> <!-- Spacer for scroll -->
+</div>
+<!-- Sheet Footer -->
+<div class="px-8 py-6 border-t border-slate-100 flex items-center gap-4 bg-white/90 backdrop-blur-sm">
+<button class="flex-1 px-5 py-3 bg-surface-container-highest text-primary font-bold rounded-lg transition-all hover:bg-surface-container-high active:scale-95">
+                Cancel
+            </button>
+<button class="flex-[2] px-5 py-3 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/20 transition-all hover:bg-primary-container active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="save">save</span>
+                Save Changes
+            </button>
+</div>
+</div>
+</body></html>

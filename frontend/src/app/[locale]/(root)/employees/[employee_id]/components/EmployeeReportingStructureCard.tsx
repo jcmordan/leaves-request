@@ -5,10 +5,10 @@ import { useTranslations } from "next-intl";
 import { FragmentType, useFragment } from "@/__generated__";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { EMPLOYEE_REPORTING_STRUCTURE_FRAGMENT } from "@/app/[locale]/(root)/employees/[employee_id]/graphql/EmployeeDetailsQueries";
 import { getInitials } from "@/utils/formatters";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { EMPLOYEE_REPORTING_STRUCTURE_FRAGMENT } from "../../graphql/EmployeeQueries";
 
 interface EmployeeReportingStructureCardProps {
   employeeRef: FragmentType<typeof EMPLOYEE_REPORTING_STRUCTURE_FRAGMENT>;

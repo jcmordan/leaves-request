@@ -2,13 +2,13 @@
 
 import { FragmentType, useFragment } from "@/__generated__";
 import { useTranslations } from "next-intl";
-import { EMPLOYEE_DETAILS_HERO_FRAGMENT } from "@/app/[locale]/(root)/employees/[employee_id]/graphql/EmployeeDetailsQueries";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getInitials } from "@/utils/formatters";
 import { Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSheets } from "@/components/layout/sheets/SheetNavigation";
+import { EMPLOYEE_DETAILS_HERO_FRAGMENT } from "../../graphql/EmployeeQueries";
 
 interface EmployeeProfileHeroProps {
   employeeRef: FragmentType<typeof EMPLOYEE_DETAILS_HERO_FRAGMENT>;
@@ -24,7 +24,11 @@ export function EmployeeProfileHero({
   const { openSheet } = useSheets();
 
   const handleEdit = () => {
-    openSheet("EmployeeEditSheet", { employeeId: employee.id }, { width: "lg" });
+    openSheet(
+      "EmployeeEditSheet",
+      { employeeId: employee.id },
+      { width: "xl" },
+    );
   };
 
   return (

@@ -1,13 +1,12 @@
 "use client";
 
-import { ShieldCheck, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FragmentType, useFragment } from "@/__generated__";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { EMPLOYEE_PERSONAL_INFO_FRAGMENT } from "@/app/[locale]/(root)/employees/[employee_id]/graphql/EmployeeDetailsQueries";
 import { formatNationalId, formatDate } from "@/utils/formatters";
 import { calculateAge, fromNow } from "@/utils/dateUtils";
+import { EMPLOYEE_PERSONAL_INFO_FRAGMENT } from "../../graphql/EmployeeQueries";
 
 interface EmployeePersonalInformationCardProps {
   employeeRef: FragmentType<typeof EMPLOYEE_PERSONAL_INFO_FRAGMENT>;
@@ -51,7 +50,7 @@ export function EmployeePersonalInformationCard({
 
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-              {employees("hireDate")}
+              {common("hireDate")}
             </p>
             <p className="mt-0.5 text-base font-bold text-primary">
               {formatDate(employee.hireDate, "MMMM d, yyyy")}

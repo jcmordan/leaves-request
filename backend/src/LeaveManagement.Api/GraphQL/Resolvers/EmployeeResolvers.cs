@@ -77,7 +77,7 @@ public class EmployeeResolvers
         return dataLoader.LoadAsync(employee.ManagerId.Value, cancellationToken);
     }
 
-    public Task<LeaveBalanceDto> GetLeaveBalanceAsync(
+    public Task<LeaveBalanceDto?> GetLeaveBalanceAsync(
         [Parent] Employee employee,
         LeaveBalanceDataLoader dataLoader,
         CancellationToken cancellationToken

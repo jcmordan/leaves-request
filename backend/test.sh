@@ -14,8 +14,10 @@ echo -e "${BLUE}==================================================${NC}"
 # Add dotnet tools to PATH
 export PATH="$PATH:$HOME/.dotnet/tools"
 
+echo "Current directory: $(pwd)"
+
 # Define results directory
-RESULTS_DIR="./TestResults"
+RESULTS_DIR="$(pwd)/TestResults"
 REPORT_DIR="$RESULTS_DIR/CoverageReport"
 
 echo -e "${YELLOW}Cleaning up previous results in $RESULTS_DIR...${NC}"

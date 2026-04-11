@@ -34,6 +34,7 @@ vi.mock('@/components/layout/sheets/SheetNavigation', () => ({
 
 vi.mock('@/utils/formatters', () => ({
   formatNationalId: (value: string) => `cedula:${value}`,
+  getInitials: (value: string) => `initials:${value}`,
 }))
 
 describe('useEmployeeColumns', () => {

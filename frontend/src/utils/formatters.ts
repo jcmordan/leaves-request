@@ -60,7 +60,7 @@ export const getInitials = (value: string) => {
 
   if (names.length === 4) {
     initials += names[2].substring(0, 1).toUpperCase();
-  } else if (names.length > 2) {
+  } else if (names.length >= 2) {
     initials += names[1].substring(0, 1).toUpperCase();
   }
 

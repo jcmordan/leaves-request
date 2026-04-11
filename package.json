@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "pnpm --filter @leave-request/frontend test",
+    "test:fe": "pnpm --filter @leave-request/frontend test",
+    "test:be": "./backend/test.sh",
     "dev": "pnpm --filter @leave-request/frontend dev",
     "codegen": "pnpm --filter @leave-request/frontend codegen"
   },

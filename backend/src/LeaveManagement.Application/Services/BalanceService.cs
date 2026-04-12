@@ -32,11 +32,27 @@ public class BalanceService(LeaveManagementDbContext context) : IBalanceService
             )
             .SumAsync(r => r.TotalDaysRequested);
 
+        var requests = await _context
+            .AbsenceRequests.AsNoTracking()
+            .Where(r =>
+                r.EmployeeId == employeeId && r.StartDate.Year == year && r.AbsenceTypeId == absenceTypeId
+            )
+            .ToListAsync();
+
         return new LeaveBalanceDto
         {
             TotalEntitlement = totalEntitlement,
             Taken = usedDays,
             Remaining = totalEntitlement - usedDays,
+            TotalRequests = requests.Count,
+            PendingRequests = requests.Count(r =>
+                r.Status == RequestStatus.Pending
+                || r.Status == RequestStatus.PendingCoordinatorApproval
+                || r.Status == RequestStatus.ModificationRequested
+            ),
+            ApprovedRequests = requests.Count(r => r.Status == RequestStatus.Approved),
+            RejectedRequests = requests.Count(r => r.Status == RequestStatus.Rejected),
+            CancelledRequests = requests.Count(r => r.Status == RequestStatus.Cancelled),
         };
     }
 
@@ -65,11 +81,25 @@ public class BalanceService(LeaveManagementDbContext context) : IBalanceService
             )
             .SumAsync(r => r.TotalDaysRequested);
 
+        var requests = await _context
+            .AbsenceRequests.AsNoTracking()
+            .Where(r => r.EmployeeId == employeeId && r.StartDate.Year == year)
+            .ToListAsync();
+
         return new LeaveBalanceDto
         {
             TotalEntitlement = totalEntitlement,
             Taken = totalTaken,
             Remaining = totalEntitlement - totalTaken,
+            TotalRequests = requests.Count,
+            PendingRequests = requests.Count(r =>
+                r.Status == RequestStatus.Pending
+                || r.Status == RequestStatus.PendingCoordinatorApproval
+                || r.Status == RequestStatus.ModificationRequested
+            ),
+            ApprovedRequests = requests.Count(r => r.Status == RequestStatus.Approved),
+            RejectedRequests = requests.Count(r => r.Status == RequestStatus.Rejected),
+            CancelledRequests = requests.Count(r => r.Status == RequestStatus.Cancelled),
         };
     }
 

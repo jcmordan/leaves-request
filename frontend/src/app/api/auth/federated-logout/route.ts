@@ -1,4 +1,4 @@
-import { auth } from '@/auth'
+import { auth } from "@/auth";
 
 /**
  * Federated logout endpoint.
@@ -7,11 +7,11 @@ import { auth } from '@/auth'
  * replace the redirect logic below to call the provider's end-session endpoint.
  */
 export async function GET() {
-  const nextAuthUrl = (process.env.NEXTAUTH_URL ?? '').replace(/\/$/, '')
-  let redirectPath = `${nextAuthUrl}/auth/signout`
+  const nextAuthUrl = (process.env.NEXTAUTH_URL ?? "").replace(/\/$/, "");
+  let redirectPath = `${nextAuthUrl}/auth/signout`;
 
   try {
-    const session = await auth()
+    const session = await auth();
     if (session) {
       // TODO: If using an OIDC provider, build the end-session URL here
       // Example for Keycloak:
@@ -26,5 +26,5 @@ export async function GET() {
     // Fall through to default redirect
   }
 
-  return Response.json({ url: redirectPath })
+  return Response.json({ url: redirectPath });
 }

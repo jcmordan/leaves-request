@@ -3,7 +3,7 @@ import { InputOption } from "@/components/forms/types";
 
 type SearchFunction = (
   searchTerm: string,
-  after?: string
+  after?: string,
 ) => Promise<{
   items: InputOption[];
   hasNextPage: boolean;
@@ -21,7 +21,7 @@ type SearchFunction = (
 export const useServerSideSearch = (
   searchFunction: SearchFunction,
   minSearchLength = 3,
-  autoTrigger = false
+  autoTrigger = false,
 ) => {
   const [options, setOptions] = useState<InputOption[]>([]);
   const [loading, setLoading] = useState(false);
@@ -49,14 +49,14 @@ export const useServerSideSearch = (
         setLoading(false);
       }
     },
-    [searchFunction, minSearchLength]
+    [searchFunction, minSearchLength],
   );
 
   const onSearch = useCallback(
     async (searchTerm: string) => {
       await performSearch(searchTerm);
     },
-    [performSearch]
+    [performSearch],
   );
 
   const triggerInitialSearch = useCallback(async () => {

@@ -10,8 +10,6 @@ const {
   AUTH_SECRET,
 } = process.env;
 
-
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     MicrosoftEntraID({
@@ -34,7 +32,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!credentials?.username || !credentials?.password) {
           return null;
         }
-
 
         const graphqlUrl = await getApiUrl();
         console.log(
@@ -85,15 +82,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           const loginPayload = result.data?.login;
-          console.log("[AUTH] Login payload received:", JSON.stringify(loginPayload, null, 2));
+          console.log(
+            "[AUTH] Login payload received:",
+            JSON.stringify(loginPayload, null, 2),
+          );
 
           if (!loginPayload || !loginPayload.success) {
-            console.error("[AUTH] Login failed:", loginPayload?.error?.message || "Unknown error");
+            console.error(
+              "[AUTH] Login failed:",
+              loginPayload?.error?.message || "Unknown error",
+            );
             return null;
           }
 
           const authResponse = loginPayload.data;
-          console.log("[AUTH] Final user data extracted:", authResponse ? "SUCCESS" : "NULL");
+          console.log(
+            "[AUTH] Final user data extracted:",
+            authResponse ? "SUCCESS" : "NULL",
+          );
 
           if (!authResponse) {
             return null;

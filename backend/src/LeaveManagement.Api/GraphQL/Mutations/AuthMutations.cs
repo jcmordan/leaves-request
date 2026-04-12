@@ -1,3 +1,4 @@
+using HotChocolate.Authorization;
 using LeaveManagement.Domain.Common;
 using LeaveManagement.Infrastructure.Interfaces;
 using LeaveManagement.Infrastructure.Models;
@@ -7,6 +8,7 @@ namespace LeaveManagement.Api.GraphQL.Mutations;
 [ExtendObjectType(typeof(Mutation))]
 public class AuthMutations
 {
+    [AllowAnonymous]
     public async Task<LoginPayload> Login(LoginRequest input, [Service] IAuthService authService)
     {
         var result = await authService.LoginAsync(input.Email, input.Password);

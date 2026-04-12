@@ -3,6 +3,7 @@ using LeaveManagement.Application.DTOs;
 using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Application.Services;
 using LeaveManagement.Application.Tests.Helpers;
+using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Enums;
 using LeaveManagement.Infrastructure.Data;
@@ -429,5 +430,83 @@ public class LeaveRequestServiceTests : IDisposable
 
         result.Should().BeTrue();
         request.Status.Should().Be(RequestStatus.Cancelled);
+    }
+
+    [Fact]
+    public async Task GetEmployeeRequestsAsync_WithStatusFilter_ShouldReturnOnlyMatchingRequests()
+    {
+        // Arrange
+        var cancelledRequest = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = _employeeId,
+            StartDate = DateTime.UtcNow.AddDays(1),
+            EndDate = DateTime.UtcNow.AddDays(2),
+            Status = RequestStatus.Cancelled,
+            RequesterEmployeeId = _employeeId,
+        };
+        var approvedRequest = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = _employeeId,
+            StartDate = DateTime.UtcNow.AddDays(3),
+            EndDate = DateTime.UtcNow.AddDays(4),
+            Status = RequestStatus.Approved,
+            RequesterEmployeeId = _employeeId,
+        };
+        _context.AbsenceRequests.AddRange(cancelledRequest, approvedRequest);
+        await _context.SaveChangesAsync();
+
+        var filter = new PaginationFilter { First = 10 };
+
+        // Act
+        var result = await _sut.GetEmployeeRequestsAsync(_employeeId, filter, RequestStatus.Cancelled);
+
+        // Assert
+        result.Items.Should().HaveCount(1);
+        result.Items.First().Id.Should().Be(cancelledRequest.Id);
+        result.Items.First().Status.Should().Be(RequestStatus.Cancelled);
+    }
+
+    [Fact]
+    public async Task GetTeamAbsencesAsync_WithStatusFilter_ShouldReturnOnlyMatchingRequests()
+    {
+        // Arrange
+        var managerId = Guid.NewGuid();
+        var employee = new Employee { Id = Guid.NewGuid(), ManagerId = managerId, EmployeeCode = "E1", NationalId = "N1", FullName = "F1" };
+        _context.Employees.Add(employee);
+
+        var pendingRequest = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = employee.Id,
+            Employee = employee,
+            StartDate = DateTime.UtcNow.AddDays(1),
+            EndDate = DateTime.UtcNow.AddDays(2),
+            Status = RequestStatus.Pending,
+            RequesterEmployeeId = employee.Id,
+        };
+        var rejectedRequest = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = employee.Id,
+            Employee = employee,
+            StartDate = DateTime.UtcNow.AddDays(3),
+            EndDate = DateTime.UtcNow.AddDays(4),
+            Status = RequestStatus.Rejected,
+            RequesterEmployeeId = employee.Id,
+        };
+        _context.AbsenceRequests.AddRange(pendingRequest, rejectedRequest);
+        await _context.SaveChangesAsync();
+
+        var filter = new PaginationFilter { First = 10 };
+
+        // Act
+        var result = await _sut.GetTeamAbsencesAsync(managerId, filter, RequestStatus.Pending);
+
+        // Assert
+        result.Items.Should().HaveCount(1);
+        result.Items.First().Id.Should().Be(pendingRequest.Id);
+        result.Items.First().Status.Should().Be(RequestStatus.Pending);
     }
 }

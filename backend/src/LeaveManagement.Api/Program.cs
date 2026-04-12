@@ -164,6 +164,9 @@ builder.Services.AddScoped<DepartmentSectionByIdDataLoader>();
 builder.Services.AddScoped<SubordinatesByEmployeeIdDataLoader>();
 builder.Services.AddScoped<JobTitleByIdDataLoader>();
 builder.Services.AddScoped<EmployeeByIdDataLoader>();
+builder.Services.AddScoped<AbsenceTypeByIdDataLoader>();
+builder.Services.AddScoped<AttachmentsByAbsenceRequestIdDataLoader>();
+builder.Services.AddScoped<ApprovalHistoriesByAbsenceRequestIdDataLoader>();
 builder.Services.AddScoped<LeaveBalanceDataLoader>();
 
 builder.Services.AddHttpClient();
@@ -190,12 +193,16 @@ builder
     .AddTypeExtension<HolidayMutations>()
     .AddTypeExtension<AuthMutations>()
     .AddType<EmployeeType>()
+    .AddType<AbsenceRequestType>()
     .AddDataLoader<CompanyByIdDataLoader>()
     .AddDataLoader<DepartmentByIdDataLoader>()
     .AddDataLoader<DepartmentSectionByIdDataLoader>()
     .AddDataLoader<SubordinatesByEmployeeIdDataLoader>()
     .AddDataLoader<JobTitleByIdDataLoader>()
     .AddDataLoader<EmployeeByIdDataLoader>()
+    .AddDataLoader<AbsenceTypeByIdDataLoader>()
+    .AddDataLoader<AttachmentsByAbsenceRequestIdDataLoader>()
+    .AddDataLoader<ApprovalHistoriesByAbsenceRequestIdDataLoader>()
     .AddDataLoader<LeaveBalanceDataLoader>()
     .AddProjections()
     .AddFiltering()

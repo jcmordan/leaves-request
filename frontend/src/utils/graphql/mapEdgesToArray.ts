@@ -1,11 +1,11 @@
 export const mapEdgesToArray = <T>(
   edges?: ReadonlyArray<{
     readonly node: {
-      readonly [key: string]: any
-    }
-  }> | null
+      readonly [key: string]: any;
+    };
+  }> | null,
 ): T[] => {
-  return edges?.map(edge => ({
+  return edges?.map((edge) => ({
     ...edge.node,
-  })) as T[]
-}
+  })) as T[];
+};

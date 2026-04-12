@@ -1,104 +1,121 @@
-import { renderHook, act } from '@testing-library/react'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { useUrlPagination } from './useUrlPagination'
+import { renderHook, act } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
+import { useUrlPagination } from "./useUrlPagination";
 
-const mockPush = vi.fn()
+const mockPush = vi.fn();
 
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
-  usePathname: () => '/employees',
+  usePathname: () => "/employees",
   useSearchParams: () => new URLSearchParams(),
-}))
+}));
 
-describe('useUrlPagination', () => {
+describe("useUrlPagination", () => {
   beforeEach(() => {
-    mockPush.mockClear()
-  })
+    mockPush.mockClear();
+  });
 
-  it('returns pagination state', () => {
+  it("returns pagination state", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ hasNextPage: true, hasPreviousPage: false, startCursor: 'a', endCursor: 'b' })
-    )
+      useUrlPagination({
+        hasNextPage: true,
+        hasPreviousPage: false,
+        startCursor: "a",
+        endCursor: "b",
+      }),
+    );
 
-    expect(result.current.hasNextPage).toBe(true)
-    expect(result.current.hasPreviousPage).toBe(false)
-  })
+    expect(result.current.hasNextPage).toBe(true);
+    expect(result.current.hasPreviousPage).toBe(false);
+  });
 
-  it('handleNextPage pushes with after cursor', () => {
+  it("handleNextPage pushes with after cursor", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ hasNextPage: true, hasPreviousPage: false, startCursor: 'a', endCursor: 'cursor-next' })
-    )
+      useUrlPagination({
+        hasNextPage: true,
+        hasPreviousPage: false,
+        startCursor: "a",
+        endCursor: "cursor-next",
+      }),
+    );
 
-    act(() => result.current.handleNextPage())
-    expect(mockPush).toHaveBeenCalledWith('/employees?after=cursor-next')
-  })
+    act(() => result.current.handleNextPage());
+    expect(mockPush).toHaveBeenCalledWith("/employees?after=cursor-next");
+  });
 
-  it('handleNextPage does nothing when no next page', () => {
+  it("handleNextPage does nothing when no next page", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ hasNextPage: false, hasPreviousPage: false, startCursor: 'a', endCursor: 'b' })
-    )
+      useUrlPagination({
+        hasNextPage: false,
+        hasPreviousPage: false,
+        startCursor: "a",
+        endCursor: "b",
+      }),
+    );
 
-    act(() => result.current.handleNextPage())
-    expect(mockPush).not.toHaveBeenCalled()
-  })
+    act(() => result.current.handleNextPage());
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 
-  it('handlePreviousPage pushes with before cursor', () => {
+  it("handlePreviousPage pushes with before cursor", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ hasNextPage: false, hasPreviousPage: true, startCursor: 'cursor-prev', endCursor: 'b' })
-    )
+      useUrlPagination({
+        hasNextPage: false,
+        hasPreviousPage: true,
+        startCursor: "cursor-prev",
+        endCursor: "b",
+      }),
+    );
 
-    act(() => result.current.handlePreviousPage())
-    expect(mockPush).toHaveBeenCalledWith('/employees?before=cursor-prev')
-  })
+    act(() => result.current.handlePreviousPage());
+    expect(mockPush).toHaveBeenCalledWith("/employees?before=cursor-prev");
+  });
 
-  it('handlePreviousPage does nothing when no previous page', () => {
+  it("handlePreviousPage does nothing when no previous page", () => {
     const { result } = renderHook(() =>
-      useUrlPagination({ hasNextPage: false, hasPreviousPage: false, startCursor: 'a', endCursor: 'b' })
-    )
+      useUrlPagination({
+        hasNextPage: false,
+        hasPreviousPage: false,
+        startCursor: "a",
+        endCursor: "b",
+      }),
+    );
 
-    act(() => result.current.handlePreviousPage())
-    expect(mockPush).not.toHaveBeenCalled()
-  })
+    act(() => result.current.handlePreviousPage());
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 
-  it('setFilter adds filter param and resets cursors', () => {
-    const { result } = renderHook(() =>
-      useUrlPagination(null)
-    )
+  it("setFilter adds filter param and resets cursors", () => {
+    const { result } = renderHook(() => useUrlPagination(null));
 
-    act(() => result.current.setFilter('status', 'active'))
-    expect(mockPush).toHaveBeenCalledWith('/employees?status=active')
-  })
+    act(() => result.current.setFilter("status", "active"));
+    expect(mockPush).toHaveBeenCalledWith("/employees?status=active");
+  });
 
-  it('setFilter removes param when value is null', () => {
-    const { result } = renderHook(() =>
-      useUrlPagination(null)
-    )
+  it("setFilter removes param when value is null", () => {
+    const { result } = renderHook(() => useUrlPagination(null));
 
-    act(() => result.current.setFilter('status', null))
-    expect(mockPush).toHaveBeenCalledWith('/employees')
-  })
+    act(() => result.current.setFilter("status", null));
+    expect(mockPush).toHaveBeenCalledWith("/employees");
+  });
 
-  it('setFilter removes param when value is empty string', () => {
-    const { result } = renderHook(() =>
-      useUrlPagination(null)
-    )
+  it("setFilter removes param when value is empty string", () => {
+    const { result } = renderHook(() => useUrlPagination(null));
 
-    act(() => result.current.setFilter('status', ''))
-    expect(mockPush).toHaveBeenCalledWith('/employees')
-  })
+    act(() => result.current.setFilter("status", ""));
+    expect(mockPush).toHaveBeenCalledWith("/employees");
+  });
 
-  it('clearFilters removes specified keys', () => {
-    const { result } = renderHook(() =>
-      useUrlPagination(null)
-    )
+  it("clearFilters removes specified keys", () => {
+    const { result } = renderHook(() => useUrlPagination(null));
 
-    act(() => result.current.clearFilters(['status', 'department']))
-    expect(mockPush).toHaveBeenCalledWith('/employees')
-  })
+    act(() => result.current.clearFilters(["status", "department"]));
+    expect(mockPush).toHaveBeenCalledWith("/employees");
+  });
 
-  it('returns false for both pagination flags with null pageInfo', () => {
-    const { result } = renderHook(() => useUrlPagination(null))
-    expect(result.current.hasNextPage).toBe(false)
-    expect(result.current.hasPreviousPage).toBe(false)
-  })
-})
+  it("returns false for both pagination flags with null pageInfo", () => {
+    const { result } = renderHook(() => useUrlPagination(null));
+    expect(result.current.hasNextPage).toBe(false);
+    expect(result.current.hasPreviousPage).toBe(false);
+  });
+});

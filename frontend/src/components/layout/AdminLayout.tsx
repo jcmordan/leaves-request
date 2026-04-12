@@ -3,7 +3,15 @@
 import { ReactNode } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Calendar, Clock, Users, Building2, UserCircle } from "lucide-react";
+import {
+  LogOut,
+  Calendar,
+  Clock,
+  Users,
+  Building2,
+  UserCircle,
+  ClockPlusIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/layout/Logo";
@@ -18,22 +26,22 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
   const getNavigation = () => {
     const baseNav = [
-      { name: t("dashboard"), href: "/dashboard", icon: UserCircle },
+      { name: t("myRequests"), href: "/my-requests", icon: Clock },
+      { name: t("requests"), href: "/requests", icon: ClockPlusIcon },
       { name: t("employees"), href: "/employees", icon: UserCircle },
-      { name: t("requests"), href: "/requests", icon: Clock },
     ];
 
     if (user?.role === "Supervisor") {
       baseNav.push(
-        { name: t('teams'), href: "/team", icon: Users },
-        { name: t('approvals'), href: "/approvals", icon: Calendar }
+        { name: t("teams"), href: "/team", icon: Users },
+        { name: t("approvals"), href: "/approvals", icon: Calendar },
       );
     }
 
     if (user?.role === "HR_Admin" || user?.role === "Coordinator") {
       baseNav.push(
-        { name: t('allRequests'), href: "/requests/all", icon: Building2 },
-        { name: t('employees'), href: "/employees", icon: Users }
+        { name: t("allRequests"), href: "/requests/all", icon: Building2 },
+        { name: t("employees"), href: "/employees", icon: Users },
       );
     }
 

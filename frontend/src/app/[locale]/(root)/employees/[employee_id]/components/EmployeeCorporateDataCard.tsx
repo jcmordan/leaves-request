@@ -25,7 +25,7 @@ export function EmployeeCorporateDataCard({
         </h3>
         <Building2 className="h-5 w-5 text-tertiary/50" />
       </div>
-      
+
       <div className="grid grid-cols-2 gap-y-6">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">

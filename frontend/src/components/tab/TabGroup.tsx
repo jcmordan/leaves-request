@@ -1,36 +1,36 @@
-'use client'
+"use client";
 
-import { camelCase } from 'lodash'
-import React, { useEffect, useState } from 'react'
+import { camelCase } from "lodash";
+import React, { useEffect, useState } from "react";
 
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Card, CardAction, CardContent, CardHeader } from '../ui/card'
+import { Card, CardAction, CardContent, CardHeader } from "../ui/card";
 
 export type TabGroupItem = {
-  label: string
-  component: React.ReactNode
-  action?: React.ReactNode
-}
+  label: string;
+  component: React.ReactNode;
+  action?: React.ReactNode;
+};
 
 type Props = {
-  tabs: Array<TabGroupItem>
-}
+  tabs: Array<TabGroupItem>;
+};
 
 const TabGroup = ({ tabs }: Props) => {
-  const [mounted, setMounted] = useState(false)
-  const firstTabValue = tabs.length > 0 ? camelCase(tabs[0].label) : ''
-  const [activeValue, setActiveValue] = useState(firstTabValue)
+  const [mounted, setMounted] = useState(false);
+  const firstTabValue = tabs.length > 0 ? camelCase(tabs[0].label) : "";
+  const [activeValue, setActiveValue] = useState(firstTabValue);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
-  const activeTab = tabs.find(tab => camelCase(tab.label) === activeValue)
+  const activeTab = tabs.find((tab) => camelCase(tab.label) === activeValue);
 
   if (!mounted) {
-    return <div className='flex flex-col gap-2'></div>
+    return <div className="flex flex-col gap-2"></div>;
   }
 
   return (
@@ -39,41 +39,46 @@ const TabGroup = ({ tabs }: Props) => {
         <CardHeader>
           <TabsList>
             {tabs.map(({ label }) => {
-              const value = camelCase(label)
+              const value = camelCase(label);
 
               return (
                 <TabsTrigger key={value} value={value}>
                   {label}
                 </TabsTrigger>
-              )
+              );
             })}
           </TabsList>
           <CardAction>{activeTab?.action && activeTab.action}</CardAction>
         </CardHeader>
         <CardContent>
           {tabs.map(({ label, component }) => {
-            const value = camelCase(label)
+            const value = camelCase(label);
 
             return (
-              <TabsContent key={value} value={value} className='mt-0'>
+              <TabsContent key={value} value={value} className="mt-0">
                 {component}
               </TabsContent>
-            )
+            );
           })}
         </CardContent>
       </Card>
     </Tabs>
-  )
-}
+  );
+};
 
 const TabActionButton = (props: { label: string; onClick: () => void }) => {
   return (
-    <Button variant='outline' size='sm' className='mr-5' onClick={props.onClick}>
+    <Button
+      variant="outline"
+      size="sm"
+      className="mr-5"
+      onClick={props.onClick}
+    >
       {props.label}
     </Button>
-  )
-}
+  );
+};
 
-TabGroup.TabActionButton = TabActionButton
+TabGroup.TabActionButton = TabActionButton;
 
-export default TabGroup
+export default TabGroup;

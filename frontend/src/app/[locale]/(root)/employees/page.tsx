@@ -1,9 +1,9 @@
-import { Suspense } from 'react'
+import { Suspense } from "react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-import LoadingCard from '@/components/card/LoadingCard';
-import { PreloadQuery } from '@/lib/apollo-client';
+import LoadingCard from "@/components/card/LoadingCard";
+import { PreloadQuery } from "@/lib/apollo-client";
 import { EmployeeDirectory } from "@/app/[locale]/(root)/employees/components/EmployeeDirectory";
 import { EMPLOYEE_DIRECTORY_QUERY } from "./graphql/EmployeeQueries";
 
@@ -14,16 +14,16 @@ type PageProps = {
   searchParams: Promise<{ after?: string; before?: string; search?: string }>;
 };
 
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: Promise<{ locale: string }> 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "employees" });
 
   return {
-    title: t('title'),
+    title: t("title"),
   };
 }
 

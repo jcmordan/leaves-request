@@ -1,10 +1,28 @@
-import './globals.css'
+import { cn } from "@/lib/utils";
+import "./globals.css";
+import { Manrope, Inter } from "next/font/google";
+
+const manrope = Manrope({
+  variable: "--font-heading",
+  subsets: ["latin"],
+});
+
+const inter = Inter({
+  variable: "--font-sans",
+  subsets: ["latin"],
+});
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-
-  return children;
+  return (
+    <html
+      lang="en"
+      className={(cn("h-full antialiased"), manrope.variable, inter.variable)}
+    >
+      <body className="min-h-full flex flex-col">{children}</body>
+    </html>
+  );
 }

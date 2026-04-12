@@ -64,9 +64,16 @@ public class CustomClaimsTransformation : IClaimsTransformation
             await context.SaveChangesAsync();
         }
 
-        // Inject Role from local database into the principal
+        // Inject local Identity and Role from local database into the principal
         var identity = (ClaimsIdentity)principal.Identity;
         
+        // Add local user ID as NameIdentifier
+        var localUserId = user.Id.ToString();
+        if (!identity.HasClaim(c => c.Type == ClaimTypes.NameIdentifier && c.Value == localUserId))
+        {
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, localUserId));
+        }
+
         // Add role if not already present
         var roleName = user.Role.ToString();
         if (!identity.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == roleName))

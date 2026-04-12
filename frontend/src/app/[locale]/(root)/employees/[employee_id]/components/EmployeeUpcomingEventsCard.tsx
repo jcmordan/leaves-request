@@ -41,7 +41,10 @@ export function EmployeeUpcomingEventsCard() {
             className="group relative rounded-2xl bg-surface-container-low/40 p-4 transition-all hover:bg-surface-container-low"
           >
             <div className="mb-2 flex items-center justify-between">
-              <Badge variant="secondary" className="rounded-full bg-secondary/10 text-[10px] font-bold text-secondary">
+              <Badge
+                variant="secondary"
+                className="rounded-full bg-secondary/10 text-[10px] font-bold text-secondary"
+              >
                 {event.type}
               </Badge>
               <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground/60">
@@ -59,11 +62,13 @@ export function EmployeeUpcomingEventsCard() {
       <div className="mt-8 rounded-2xl bg-primary/5 p-4 border border-primary/10">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-lg">
-             <Star className="h-5 w-5 fill-current" />
+            <Star className="h-5 w-5 fill-current" />
           </div>
           <div>
             <p className="text-sm font-black text-primary">Star Performer</p>
-            <p className="text-[11px] font-bold text-primary/60 uppercase tracking-wider">Top 5% of Q1 2024</p>
+            <p className="text-[11px] font-bold text-primary/60 uppercase tracking-wider">
+              Top 5% of Q1 2024
+            </p>
           </div>
         </div>
       </div>

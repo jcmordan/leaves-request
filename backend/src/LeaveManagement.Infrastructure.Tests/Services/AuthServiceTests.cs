@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using FluentAssertions;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Enums;
@@ -69,6 +70,11 @@ public class AuthServiceTests : IDisposable
         result.Value.Should().NotBeNull();
         result.Value!.Token.Should().NotBeNullOrEmpty();
         result.Value.Email.Should().Be(email);
+
+        // Verify token content
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(result.Value.Token);
+        jwtToken.Subject.Should().Be(user.Id.ToString());
     }
 
     [Fact]

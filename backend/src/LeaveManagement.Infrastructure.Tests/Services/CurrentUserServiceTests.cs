@@ -63,7 +63,10 @@ public class CurrentUserServiceTests : IDisposable
     public void GetCurrentUserId_ShouldReturnObjectIdentifier()
     {
         var adId = "oid-123";
-        var claims = new[] { new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", adId) };
+        var claims = new[]
+        {
+            new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", adId),
+        };
         var identity = new ClaimsIdentity(claims);
         var principal = new ClaimsPrincipal(identity);
         var httpContext = new DefaultHttpContext { User = principal };
@@ -75,19 +78,28 @@ public class CurrentUserServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task GetCurrentEmployeeIdAsync_ShouldReturnId_WhenEmailMatches()
+    public async Task GetCurrentEmployeeIdAsync_ShouldReturnId_WhenUserIdMatches()
     {
-        var email = "emp@example.com";
-        var employee = new Employee 
-        { 
-            Id = Guid.NewGuid(), 
-            User = new User { Email = email, FullName = "Emp" } 
+        var userId = Guid.NewGuid();
+        var employee = new Employee
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            User = new User
+            {
+                Id = userId,
+                Email = "test@emp.com",
+                FullName = "Emp",
+            },
         };
         _context.Employees.Add(employee);
         await _context.SaveChangesAsync();
 
-        var claims = new[] { new Claim(ClaimTypes.Email, email) };
-        var httpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(claims)) };
+        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
+        var httpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity(claims)),
+        };
         _httpContextAccessor.HttpContext.Returns(httpContext);
 
         var result = await _sut.GetCurrentEmployeeIdAsync();
@@ -99,22 +111,28 @@ public class CurrentUserServiceTests : IDisposable
     public async Task GetCurrentEmployeeIdAsync_ShouldReturnId_WhenExternalIdMatches()
     {
         var adId = "ad-123";
-        var employee = new Employee 
-        { 
-            Id = Guid.NewGuid(), 
-            User = new User { Email = "a@b.com", ExternalId = adId, FullName = "Emp" } 
+        var employee = new Employee
+        {
+            Id = Guid.NewGuid(),
+            User = new User
+            {
+                Id = Guid.NewGuid(),
+                Email = "a@b.com",
+                ExternalId = adId,
+                FullName = "Emp",
+            },
         };
         _context.Employees.Add(employee);
         await _context.SaveChangesAsync();
 
-        // Must provide an email so it doesn't return early, but one that doesn't match the DB employee's email
-        // so it falls back to external ID lookup.
-        var claims = new[] 
-        { 
-            new Claim(ClaimTypes.Email, "not-matching@test.com"),
-            new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", adId) 
+        var claims = new[]
+        {
+            new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", adId),
         };
-        var httpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(claims)) };
+        var httpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity(claims)),
+        };
         _httpContextAccessor.HttpContext.Returns(httpContext);
 
         var result = await _sut.GetCurrentEmployeeIdAsync();
@@ -158,11 +176,95 @@ public class CurrentUserServiceTests : IDisposable
     {
         var id = "sub-123";
         var claims = new[] { new Claim(ClaimTypes.NameIdentifier, id) };
-        var httpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(claims)) };
+        var httpContext = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(new ClaimsIdentity(claims)),
+        };
         _httpContextAccessor.HttpContext.Returns(httpContext);
 
         var result = _sut.GetCurrentUserId();
 
         result.Should().Be(id);
+    }
+
+    [Fact]
+    public async Task GetCurrentEmployeeIdAsync_ShouldReturnFirstMatch_WhenMultipleEmployeesMatchUserId()
+    {
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Email = "shared@e.com",
+            FullName = "Shared",
+        };
+        _context.Users.Add(user);
+
+        var emp1 = new Employee { Id = Guid.NewGuid(), UserId = userId };
+        var emp2 = new Employee { Id = Guid.NewGuid(), UserId = userId };
+        _context.Employees.AddRange(emp1, emp2);
+        await _context.SaveChangesAsync();
+
+        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
+        _httpContextAccessor.HttpContext.Returns(
+            new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(claims)) }
+        );
+
+        var result = await _sut.GetCurrentEmployeeIdAsync();
+
+        // Should return one of them
+        new[] { emp1.Id, emp2.Id }
+            .Should()
+            .Contain(result);
+    }
+
+    [Fact]
+    public async Task GetCurrentEmployeeIdAsync_ShouldReturnEmpty_WhenUserExistsButNoEmployeeMatch()
+    {
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            Email = "u@e.com",
+            FullName = "U",
+        };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
+        _httpContextAccessor.HttpContext.Returns(
+            new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(claims)) }
+        );
+
+        var result = await _sut.GetCurrentEmployeeIdAsync();
+
+        result.Should().Be(Guid.Empty);
+    }
+
+    [Fact]
+    public async Task GetCurrentEmployeeIdAsync_ShouldFallbackToExternalId_WhenNameIdentifierIsNotGuid()
+    {
+        var externalId = "ext-123";
+        var employee = new Employee
+        {
+            Id = Guid.NewGuid(),
+            User = new User
+            {
+                Id = Guid.NewGuid(),
+                ExternalId = externalId,
+                Email = "ext@e.com",
+                FullName = "Ext",
+            },
+        };
+        _context.Employees.Add(employee);
+        await _context.SaveChangesAsync();
+
+        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, externalId) };
+        _httpContextAccessor.HttpContext.Returns(
+            new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(claims)) }
+        );
+
+        var result = await _sut.GetCurrentEmployeeIdAsync();
+
+        result.Should().Be(employee.Id);
     }
 }

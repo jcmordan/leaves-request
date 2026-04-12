@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const TableContext = React.createContext<{
-  density?: "comfortable" | "standard" | "compact"
+  density?: "comfortable" | "standard" | "compact";
 }>({
   density: "standard",
-})
+});
 
 const tableVariants = cva("w-full caption-bottom text-sm", {
   variants: {
@@ -22,7 +22,7 @@ const tableVariants = cva("w-full caption-bottom text-sm", {
   defaultVariants: {
     density: "standard",
   },
-})
+});
 
 function Table({
   className,
@@ -31,7 +31,10 @@ function Table({
 }: React.ComponentProps<"table"> & VariantProps<typeof tableVariants>) {
   return (
     <TableContext.Provider value={{ density }}>
-      <div data-slot="table-container" className="relative w-full overflow-x-auto">
+      <div
+        data-slot="table-container"
+        className="relative w-full overflow-x-auto"
+      >
         <table
           data-slot="table"
           className={cn(tableVariants({ density, className }))}
@@ -39,7 +42,7 @@ function Table({
         />
       </div>
     </TableContext.Provider>
-  )
+  );
 }
 
 function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
@@ -49,7 +52,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
       className={cn("[&_tr]:border-b", className)}
       {...props}
     />
-  )
+  );
 }
 
 function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
@@ -59,7 +62,7 @@ function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
       className={cn("[&_tr:last-child]:border-0", className)}
       {...props}
     />
-  )
+  );
 }
 
 function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
@@ -68,11 +71,11 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
       data-slot="table-footer"
       className={cn(
         "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
@@ -81,11 +84,11 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
       data-slot="table-row"
       className={cn(
         "border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-[state=selected]:bg-muted",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 const tableHeadVariants = cva(
@@ -101,18 +104,18 @@ const tableHeadVariants = cva(
     defaultVariants: {
       density: "standard",
     },
-  }
-)
+  },
+);
 
 function TableHead({ className, ...props }: React.ComponentProps<"th">) {
-  const { density } = React.useContext(TableContext)
+  const { density } = React.useContext(TableContext);
   return (
     <th
       data-slot="table-head"
       className={cn(tableHeadVariants({ density, className }))}
       {...props}
     />
-  )
+  );
 }
 
 const tableCellVariants = cva(
@@ -128,18 +131,18 @@ const tableCellVariants = cva(
     defaultVariants: {
       density: "standard",
     },
-  }
-)
+  },
+);
 
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
-  const { density } = React.useContext(TableContext)
+  const { density } = React.useContext(TableContext);
   return (
     <td
       data-slot="table-cell"
       className={cn(tableCellVariants({ density, className }))}
       {...props}
     />
-  )
+  );
 }
 
 function TableCaption({
@@ -152,7 +155,7 @@ function TableCaption({
       className={cn("mt-4 text-sm text-muted-foreground", className)}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -164,4 +167,4 @@ export {
   TableRow,
   TableCell,
   TableCaption,
-}
+};

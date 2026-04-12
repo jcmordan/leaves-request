@@ -94,6 +94,35 @@ public class CustomClaimsTransformationTests : IDisposable
     }
 
     [Fact]
+    public async Task TransformAsync_UserExists_ShouldAddNameIdentifierClaim()
+    {
+        // Arrange
+        var oid = "test-oid";
+        var identity = new ClaimsIdentity("TestAuth");
+        identity.AddClaim(new Claim("oid", oid));
+        var principal = new ClaimsPrincipal(identity);
+
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            ExternalId = oid,
+            Email = "test@example.com",
+            FullName = "Test User",
+            Role = UserRole.Employee,
+            IsActive = true
+        };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.TransformAsync(principal);
+
+        // Assert
+        result.HasClaim(c => c.Type == ClaimTypes.NameIdentifier && c.Value == userId.ToString()).Should().BeTrue();
+    }
+
+    [Fact]
     public async Task TransformAsync_UserDoesNotExist_ShouldProvisionUserAndAddRole()
     {
         // Arrange

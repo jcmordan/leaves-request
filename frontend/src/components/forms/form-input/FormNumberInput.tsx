@@ -1,16 +1,16 @@
-'use client'
-import { ChangeEvent, ComponentProps } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
-import { NumericFormat } from 'react-number-format'
+"use client";
+import { ChangeEvent, ComponentProps } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import { NumericFormat } from "react-number-format";
 
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
-import { BaseInputProps } from '../types'
+import { BaseInputProps } from "../types";
 
-const PREFIX = '$ '
+const PREFIX = "$ ";
 type Props = BaseInputProps<ComponentProps<typeof Input>> &
-  Pick<ComponentProps<typeof Controller>, 'rules'>
+  Pick<ComponentProps<typeof Controller>, "rules">;
 
 export const FormNumberInput = ({
   name,
@@ -21,23 +21,28 @@ export const FormNumberInput = ({
   disabled,
   ...otherProps
 }: Props) => {
-  const formContext = useFormContext()
+  const formContext = useFormContext();
 
   if (!formContext) {
-    throw new Error('FormNumberInput must be used within a FormProvider')
+    throw new Error("FormNumberInput must be used within a FormProvider");
   }
 
-  const { control } = formContext
+  const { control } = formContext;
 
   const handleChange =
-    (onChange: (...event: any[]) => void) => (event: ChangeEvent<HTMLInputElement>) => {
-      event.target.value = event.target.value.toString().split(',').join('').replace(PREFIX, '')
+    (onChange: (...event: any[]) => void) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      event.target.value = event.target.value
+        .toString()
+        .split(",")
+        .join("")
+        .replace(PREFIX, "");
 
-      onChange(event)
-    }
+      onChange(event);
+    };
 
   // Extract type from otherProps since NumericFormat only accepts "text" | "tel" | "password"
-  const { type: _type, ...restProps } = otherProps
+  const { type: _type, ...restProps } = otherProps;
 
   return (
     <Controller
@@ -46,13 +51,13 @@ export const FormNumberInput = ({
       rules={{ ...rules, required }}
       defaultValue={defaultValue}
       render={({ field, fieldState }) => {
-        const { error, invalid } = fieldState
+        const { error, invalid } = fieldState;
 
         return (
           <Field data-invalid={invalid}>
             <FieldLabel htmlFor={name}>
               {label}
-              {required && <span className='text-destructive ml-1'>*</span>}
+              {required && <span className="text-destructive ml-1">*</span>}
             </FieldLabel>
             <NumericFormat
               id={name}
@@ -62,7 +67,7 @@ export const FormNumberInput = ({
               thousandSeparator
               fixedDecimalScale
               decimalScale={2}
-              decimalSeparator='.'
+              decimalSeparator="."
               prefix={PREFIX}
               valueIsNumericString={false}
               disabled={disabled}
@@ -72,8 +77,8 @@ export const FormNumberInput = ({
             />
             {invalid && <FieldError errors={error ? [error] : []} />}
           </Field>
-        )
+        );
       }}
     />
-  )
-}
+  );
+};

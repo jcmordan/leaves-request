@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using GreenDonut;
+using LeaveManagement.Api.GraphQL.DataLoaders;
 using LeaveManagement.Api.GraphQL.Resolvers;
 using LeaveManagement.Application.DTOs;
 using LeaveManagement.Domain.Entities;
@@ -29,7 +30,7 @@ public class EmployeeResolversTests
         var companyId = Guid.NewGuid();
         var employee = new Employee { CompanyId = companyId };
         var expected = new Company { Id = companyId, Name = "Test Co" };
-        var dataLoader = Substitute.For<IDataLoader<Guid, Company>>();
+        var dataLoader = Substitute.For<ICompanyByIdDataLoader>();
         dataLoader.LoadAsync(companyId, Arg.Any<CancellationToken>()).Returns(expected);
 
         // Act
@@ -46,7 +47,7 @@ public class EmployeeResolversTests
         var departmentId = Guid.NewGuid();
         var employee = new Employee { DepartmentId = departmentId };
         var expected = new Department { Id = departmentId, Name = "IT" };
-        var dataLoader = Substitute.For<IDataLoader<Guid, Department>>();
+        var dataLoader = Substitute.For<IDepartmentByIdDataLoader>();
         dataLoader.LoadAsync(departmentId, Arg.Any<CancellationToken>()).Returns(expected);
 
         // Act
@@ -63,7 +64,7 @@ public class EmployeeResolversTests
         var sectionId = Guid.NewGuid();
         var employee = new Employee { DepartmentSectionId = sectionId };
         var expected = new DepartmentSection { Id = sectionId, Name = "Dev" };
-        var dataLoader = Substitute.For<IDataLoader<Guid, DepartmentSection>>();
+        var dataLoader = Substitute.For<IDepartmentSectionByIdDataLoader>();
         dataLoader.LoadAsync(sectionId, Arg.Any<CancellationToken>()).Returns(expected);
 
         // Act
@@ -78,7 +79,7 @@ public class EmployeeResolversTests
     {
         // Arrange
         var employee = new Employee { DepartmentSectionId = null };
-        var dataLoader = Substitute.For<IDataLoader<Guid, DepartmentSection>>();
+        var dataLoader = Substitute.For<IDepartmentSectionByIdDataLoader>();
 
         // Act
         var result = await _sut.GetDepartmentSectionAsync(employee, dataLoader, CancellationToken.None);
@@ -94,7 +95,7 @@ public class EmployeeResolversTests
         var employeeId = Guid.NewGuid();
         var employee = new Employee { Id = employeeId };
         var subordinates = new[] { new Employee { Id = Guid.NewGuid(), ManagerId = employeeId } };
-        var dataLoader = Substitute.For<IDataLoader<Guid, Employee[]>>();
+        var dataLoader = Substitute.For<ISubordinatesByEmployeeIdDataLoader>();
         dataLoader.LoadAsync(employeeId, Arg.Any<CancellationToken>()).Returns(subordinates);
 
         // Act
@@ -111,7 +112,7 @@ public class EmployeeResolversTests
         // Arrange
         var employeeId = Guid.NewGuid();
         var employee = new Employee { Id = employeeId };
-        var dataLoader = Substitute.For<IDataLoader<Guid, Employee[]>>();
+        var dataLoader = Substitute.For<ISubordinatesByEmployeeIdDataLoader>();
         dataLoader.LoadAsync(employeeId, Arg.Any<CancellationToken>()).Returns((Employee[]?)null);
 
         // Act
@@ -128,7 +129,7 @@ public class EmployeeResolversTests
         var jobTitleId = Guid.NewGuid();
         var employee = new Employee { JobTitleId = jobTitleId };
         var expected = new JobTitle { Id = jobTitleId, Name = "Engineer" };
-        var dataLoader = Substitute.For<IDataLoader<Guid, JobTitle>>();
+        var dataLoader = Substitute.For<IJobTitleByIdDataLoader>();
         dataLoader.LoadAsync(jobTitleId, Arg.Any<CancellationToken>()).Returns(expected);
 
         // Act
@@ -143,7 +144,7 @@ public class EmployeeResolversTests
     {
         // Arrange
         var employee = new Employee { JobTitleId = null };
-        var dataLoader = Substitute.For<IDataLoader<Guid, JobTitle>>();
+        var dataLoader = Substitute.For<IJobTitleByIdDataLoader>();
 
         // Act
         var result = await _sut.GetJobTitleAsync(employee, dataLoader, CancellationToken.None);
@@ -159,7 +160,7 @@ public class EmployeeResolversTests
         var managerId = Guid.NewGuid();
         var employee = new Employee { ManagerId = managerId };
         var expected = new Employee { Id = managerId, FullName = "Manager" };
-        var dataLoader = Substitute.For<IDataLoader<Guid, Employee>>();
+        var dataLoader = Substitute.For<IEmployeeByIdDataLoader>();
         dataLoader.LoadAsync(managerId, Arg.Any<CancellationToken>()).Returns(expected);
 
         // Act
@@ -174,7 +175,7 @@ public class EmployeeResolversTests
     {
         // Arrange
         var employee = new Employee { ManagerId = null };
-        var dataLoader = Substitute.For<IDataLoader<Guid, Employee>>();
+        var dataLoader = Substitute.For<IEmployeeByIdDataLoader>();
 
         // Act
         var result = await _sut.GetManagerAsync(employee, dataLoader, CancellationToken.None);
@@ -190,7 +191,7 @@ public class EmployeeResolversTests
         var employeeId = Guid.NewGuid();
         var employee = new Employee { Id = employeeId };
         var expected = new LeaveBalanceDto { TotalEntitlement = 20, Taken = 5 };
-        var dataLoader = Substitute.For<IDataLoader<Guid, LeaveBalanceDto>>();
+        var dataLoader = Substitute.For<ILeaveBalanceDataLoader>();
         dataLoader.LoadAsync(employeeId, Arg.Any<CancellationToken>()).Returns(expected);
 
         // Act

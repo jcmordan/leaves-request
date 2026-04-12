@@ -28,7 +28,10 @@
     "companyId": "Company",
     "hireDate": "Hire Date",
     "isActive": "Active",
-    "managerId": "Manager"
+    "managerId": "Manager",
+    "noResultsTitle": "No results found",
+    "noResultsDescription": "We couldn't find anything matching your search or filters. Try adjusting your criteria.",
+    "clearAll": "Clear All"
   },
   "index": {
     "title": "Welcome to Leave Request"
@@ -43,7 +46,8 @@
     "teams": "Teams",
     "approvals": "Approvals",
     "allRequests": "All Requests",
-    "employees": "Employees"
+    "employees": "Employees",
+    "myRequests": "My Requests"
   },
   "layout": {
     "workspace": "Employee Service Portal",
@@ -167,5 +171,45 @@
   "combobox": {
     "search": "Search...",
     "searchPlaceholder": "Type at least {min} characters to search..."
+  },
+  "myRequests": {
+    "title": "My Requests",
+    "description": "View and manage your leave applications and history.",
+    "totalRequests": "Total Requests",
+    "pending": "Pending",
+    "pendingApproval": "Pending Approval",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "leaveBalance": "Leave Balance",
+    "annualLeave": "Annual Leave",
+    "annualLeaveAllocation": "Your annual leave allocation for this period.",
+    "daysLeft": "{remaining} / {total} days left",
+    "taken": "Taken",
+    "remaining": "Remaining",
+    "recentActivity": "Recent Activity",
+    "policyInformation": "Policy Information",
+    "policyDescription": "Our leave policy ensures all employees have adequate time for rest and personal matters while maintaining operational continuity.",
+    "requestLeadTime": "Requests should be submitted at least 2 weeks in advance for planned leave.",
+    "calendarYearInfo": "All leave balances reset on December 31st of each calendar year.",
+    "export": "Export",
+    "newRequest": "New Request",
+    "viewAll": "View All",
+    "noActivity": "No recent activity found.",
+    "period": "Period",
+    "submitted": "Submitted",
+    "actions": "Actions",
+    "viewDetails": "View Details",
+    "edit": "Edit",
+    "days": "days",
+    "status": "Status",
+    "cancelled": "Cancelled",
+    "filter": "Filter",
+    "updatedAsOf": "Updated as of {date}",
+    "pendingDescription": "Awaiting manager approval",
+    "approvedDescription": "Confirmed by HR",
+    "rejectedDescription": "Action required",
+    "cancelledDescription": "Withdrawn by employee",
+    "clearFilters": "Clear All",
+    "noFilters": "No Filters Applied"
   }
 }

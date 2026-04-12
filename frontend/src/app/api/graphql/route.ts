@@ -4,7 +4,7 @@ import { getApiUrl } from "envUtils";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  
+
   const backendUrl = await getApiUrl();
   const body = await req.json();
 
@@ -36,7 +36,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     console.error("BFF Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 

@@ -8,6 +8,7 @@
       <Project Path="src/LeaveManagement.Application.Tests/LeaveManagement.Application.Tests.csproj" />
       <Project Path="src/LeaveManagement.Domain.Tests/LeaveManagement.Domain.Tests.csproj" />
       <Project Path="src/LeaveManagement.Infrastructure.Tests/LeaveManagement.Infrastructure.Tests.csproj" />
+      <Project Path="src/LeaveManagement.UnitTests/LeaveManagement.UnitTests.csproj" />
     </Folder>
   </Folder>
 </Solution>

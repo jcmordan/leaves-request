@@ -8,7 +8,7 @@ import { FragmentType, useFragment } from "@/__generated__";
 import { EMPLOYEE_LEAVE_BALANCE_FRAGMENT } from "../../graphql/EmployeeQueries";
 
 interface EmployeeLeaveBalanceCardProps {
- employeeRef: FragmentType<typeof EMPLOYEE_LEAVE_BALANCE_FRAGMENT>;
+  employeeRef: FragmentType<typeof EMPLOYEE_LEAVE_BALANCE_FRAGMENT>;
 }
 
 export function EmployeeLeaveBalanceCard({

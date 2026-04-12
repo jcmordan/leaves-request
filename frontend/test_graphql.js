@@ -24,7 +24,7 @@ async function test() {
     const res = await fetch("http://localhost:5148/graphql/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, variables: { first: 5 }})
+      body: JSON.stringify({ query, variables: { first: 5 } }),
     });
     const data = await res.json();
     console.log(JSON.stringify(data, null, 2));

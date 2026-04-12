@@ -1,31 +1,31 @@
-'use client'
+"use client";
 
-import { ComponentProps } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
-import { useDebouncedCallback } from 'use-debounce'
-import { useTranslations } from 'next-intl'
+import { ComponentProps } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import { useDebouncedCallback } from "use-debounce";
+import { useTranslations } from "next-intl";
 
-import { Combobox } from '@/components/ui/combobox'
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
-import { MultiCombobox } from '@/components/ui/multi-combobox'
+import { Combobox } from "@/components/ui/combobox";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { MultiCombobox } from "@/components/ui/multi-combobox";
 
-import { BaseInputProps, InputOption } from '../types'
+import { BaseInputProps, InputOption } from "../types";
 
-type ComboboxProps = ComponentProps<typeof Combobox>
-type MultiComboboxProps = ComponentProps<typeof MultiCombobox>
+type ComboboxProps = ComponentProps<typeof Combobox>;
+type MultiComboboxProps = ComponentProps<typeof MultiCombobox>;
 
 type Props = BaseInputProps<
-  Omit<ComboboxProps, 'value' | 'onValueChange' | 'options'> &
-    Omit<MultiComboboxProps, 'value' | 'onValueChange' | 'options'>
+  Omit<ComboboxProps, "value" | "onValueChange" | "options"> &
+    Omit<MultiComboboxProps, "value" | "onValueChange" | "options">
 > & {
-  options: InputOption[]
-  enableLocalFilter?: boolean
-  loading?: boolean
-  onSearch?: (searchTerm: string) => Promise<void>
-  minSearchLength?: number
-  debounceMs?: number
-  multi?: boolean
-}
+  options: InputOption[];
+  enableLocalFilter?: boolean;
+  loading?: boolean;
+  onSearch?: (searchTerm: string) => Promise<void>;
+  minSearchLength?: number;
+  debounceMs?: number;
+  multi?: boolean;
+};
 
 export const FormComboboxInput = ({
   name,
@@ -100,7 +100,9 @@ export const FormComboboxInput = ({
                     ? t("combobox.searchPlaceholder", { min: minSearchLength })
                     : t("combobox.search")
                 }
-                emptyText={loading ? t("loading.pleaseWait") : t("table.noResults")}
+                emptyText={
+                  loading ? t("loading.pleaseWait") : t("table.noResults")
+                }
                 {...otherProps}
               />
             ) : (
@@ -117,7 +119,9 @@ export const FormComboboxInput = ({
                     ? t("combobox.searchPlaceholder", { min: minSearchLength })
                     : t("combobox.search")
                 }
-                emptyText={loading ? t("loading.pleaseWait") : t("table.noResults")}
+                emptyText={
+                  loading ? t("loading.pleaseWait") : t("table.noResults")
+                }
                 {...otherProps}
               />
             )}

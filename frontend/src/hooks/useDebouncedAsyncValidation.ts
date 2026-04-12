@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { useRef, useCallback } from 'react'
-import { useDebouncedCallback } from 'use-debounce'
+import { useRef, useCallback } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 /**
  * A hook that provides a debounced validation function compatible with React Hook Form async validation.
@@ -24,43 +24,48 @@ export const useDebouncedAsyncValidation = <
   T extends (...args: any[]) => Promise<boolean | string>,
 >(
   impl: T,
-  wait: number
+  wait: number,
 ): ((...args: Parameters<T>) => Promise<boolean | string>) => {
   // We track the promise resolution of the current pending validation
-  const debounceRef = useRef<{ resolve: (value: boolean | string) => void } | null>(null)
+  const debounceRef = useRef<{
+    resolve: (value: boolean | string) => void;
+  } | null>(null);
 
   // Use the library's useDebouncedCallback for the actual execution timing
   const debouncedImpl = useDebouncedCallback(
-    async (resolve: (val: boolean | string) => void, ...args: Parameters<T>) => {
+    async (
+      resolve: (val: boolean | string) => void,
+      ...args: Parameters<T>
+    ) => {
       try {
-        const result = await impl(...args)
-        resolve(result)
+        const result = await impl(...args);
+        resolve(result);
       } finally {
         if (debounceRef.current?.resolve === resolve) {
-          debounceRef.current = null
+          debounceRef.current = null;
         }
       }
     },
-    wait
-  )
+    wait,
+  );
 
   return useCallback(
     (...args: Parameters<T>) => {
-      return new Promise<boolean | string>(resolve => {
+      return new Promise<boolean | string>((resolve) => {
         // If there is a pending validation, resolve it as true (valid) to cancel it in the eyes of RHF.
         // This prevents old closures from overriding newer ones or keeping the form isSubmitting/isValidating state stuck
         // if we just never resolved them.
         if (debounceRef.current) {
-          debounceRef.current.resolve(true)
+          debounceRef.current.resolve(true);
         }
 
-        debounceRef.current = { resolve }
+        debounceRef.current = { resolve };
 
         debouncedImpl(resolve, ...args)?.catch(() => {
           // prevent unhandled rejection
-        })
-      })
+        });
+      });
     },
-    [debouncedImpl]
-  )
-}
+    [debouncedImpl],
+  );
+};

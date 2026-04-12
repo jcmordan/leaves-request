@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LeaveManagement.Api.GraphQL.Queries;
 
 [ExtendObjectType(typeof(Query))]
+[Authorize]
 public class LeaveRequestQueries
 {
     [Authorize(Policy = "RequireManager")]
@@ -27,13 +28,14 @@ public class LeaveRequestQueries
         string? after,
         int? last,
         string? before,
+        RequestStatus? status,
         [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService
     )
     {
         var managerId = await currentUserService.GetCurrentEmployeeIdAsync();
         var filter = new PaginationFilter(first, after, last, before);
-        var result = await leaveRequestService.GetTeamAbsencesAsync(managerId, filter);
+        var result = await leaveRequestService.GetTeamAbsencesAsync(managerId, filter, status);
         return result.ToConnection();
     }
 
@@ -43,13 +45,14 @@ public class LeaveRequestQueries
         string? after,
         int? last,
         string? before,
+        RequestStatus? status,
         [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService
     )
     {
         var employeeId = await currentUserService.GetCurrentEmployeeIdAsync();
         var filter = new PaginationFilter(first, after, last, before);
-        var result = await leaveRequestService.GetEmployeeRequestsAsync(employeeId, filter);
+        var result = await leaveRequestService.GetEmployeeRequestsAsync(employeeId, filter, status);
         return result.ToConnection();
     }
 
@@ -59,7 +62,10 @@ public class LeaveRequestQueries
     )
     {
         var employeeId = await currentUserService.GetCurrentEmployeeIdAsync();
-        return await balanceService.GetEmployeeBalanceSummaryAsync(employeeId, DateTime.UtcNow.Year);
+        return await balanceService.GetEmployeeBalanceSummaryAsync(
+            employeeId,
+            DateTime.UtcNow.Year
+        );
     }
 
     [UsePaging(IncludeTotalCount = true)]

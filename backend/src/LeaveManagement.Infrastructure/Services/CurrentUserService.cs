@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using LeaveManagement.Domain.Interfaces;
 using LeaveManagement.Infrastructure.Data;
@@ -17,43 +18,47 @@ public class CurrentUserService(
     public string GetUserEmail()
     {
         return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email)
+            ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(JwtRegisteredClaimNames.Email)
             ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue("preferred_username")
             ?? string.Empty;
     }
 
     public async Task<Guid> GetCurrentEmployeeIdAsync()
     {
-        var email = GetUserEmail();
-        if (string.IsNullOrEmpty(email))
+        var identityId = GetCurrentUserId();
+        if (string.IsNullOrEmpty(identityId))
         {
             return Guid.Empty;
         }
 
-        var employee = await _context
-            .Employees.AsNoTracking()
-            .FirstOrDefaultAsync(e => e.User != null && e.User.Email == email);
-
-        if (employee == null)
+        // 1. Try mapping by local User.Id (Guid) first
+        if (Guid.TryParse(identityId, out var userId))
         {
-            var adId = GetCurrentUserId();
+            var employee = await _context
+                .Employees.AsNoTracking()
+                .FirstOrDefaultAsync(e => e.UserId == userId);
 
-            if (!string.IsNullOrEmpty(adId))
+            if (employee != null)
             {
-                employee = await _context
-                    .Employees.AsNoTracking()
-                    .FirstOrDefaultAsync(e => e.User != null && e.User.ExternalId == adId);
+                return employee.Id;
             }
         }
 
-        return employee?.Id ?? Guid.Empty;
+        // 2. Fallback: Try mapping by User.ExternalId (string) e.g., EntraID OID
+        var employeeByExternal = await _context
+            .Employees.AsNoTracking()
+            .FirstOrDefaultAsync(e => e.User != null && e.User.ExternalId == identityId);
+
+        return employeeByExternal?.Id ?? Guid.Empty;
     }
 
     public string GetCurrentUserId()
     {
-        return _httpContextAccessor.HttpContext?.User?.FindFirstValue(
+        return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(JwtRegisteredClaimNames.Sub)
+            ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(
                 "http://schemas.microsoft.com/identity/claims/objectidentifier"
             )
-            ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
             ?? string.Empty;
     }
 }

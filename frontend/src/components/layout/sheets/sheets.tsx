@@ -18,6 +18,6 @@ export const Sheets = {
   ...EmployeeSheets,
 } as const;
 
-export type SheetName = keyof typeof Sheets
+export type SheetName = keyof typeof Sheets;
 
-export default Sheets
+export default Sheets;

@@ -14,7 +14,6 @@ interface EmployeeProfileHeroProps {
   employeeRef: FragmentType<typeof EMPLOYEE_DETAILS_HERO_FRAGMENT>;
 }
 
-
 export function EmployeeProfileHero({
   employeeRef,
 }: Readonly<EmployeeProfileHeroProps>) {

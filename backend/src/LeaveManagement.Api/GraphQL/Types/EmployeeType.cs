@@ -43,7 +43,9 @@ public class EmployeeType : ObjectType<Employee>
         descriptor
             .Field("leaveBalance")
             .Type<NonNullType<LeaveBalanceType>>()
-            .ResolveWith<EmployeeResolvers>(r => r.GetLeaveBalanceAsync(default!, default!, default))
+            .ResolveWith<EmployeeResolvers>(r =>
+                r.GetLeaveBalanceAsync(default!, default!, default)
+            )
             .Name("leaveBalance");
 
         descriptor

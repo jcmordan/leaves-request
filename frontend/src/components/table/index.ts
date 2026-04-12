@@ -1,3 +1,3 @@
-export * from './simple-table/SimpleTable'
+export * from "./simple-table/SimpleTable";
 
-export * from './utils'
+export * from "./utils";

@@ -6,7 +6,7 @@ import { Employee } from "./EmployeeTable";
 import { Button } from "../../../../../components/ui/button";
 import Link from "next/link";
 import { IconChevronsUpRight, IconPencil } from "@tabler/icons-react";
-import { formatNationalId, getInitials } from "@/utils/formatters";
+import { formatNationalId, getInitials, truncate } from "@/utils/formatters";
 import { usePathname } from "next/navigation";
 import { useSheets } from "@/components/layout/sheets/SheetNavigation";
 
@@ -55,7 +55,7 @@ const EmployeeNameCell = ({ row }: CellContext<Employee, any>) => {
           </span>
         </Link>
         <span className="text-[0.85em] font-medium text-muted-foreground/70 leading-tight truncate">
-          {employee.jobTitle?.name ?? "-"}
+          {truncate(employee.jobTitle?.name, 40)}
         </span>
       </div>
     </div>
@@ -65,7 +65,7 @@ const EmployeeNameCell = ({ row }: CellContext<Employee, any>) => {
 const DepartmentCell = ({ row }: CellContext<Employee, any>) => {
   return (
     <span className="font-mono text-[0.85em] font-bold text-muted-foreground/60 px-2">
-      {row.original.department?.name ?? "-"}
+      {truncate(row.original.department?.name, 50)}
     </span>
   );
 };
@@ -75,7 +75,11 @@ const ActionsCell = ({ row }: CellContext<Employee, any>) => {
   const { openSheet } = useSheets();
 
   const handleEdit = () => {
-    openSheet("EmployeeEditSheet", { employeeId: row.original.id }, { width: "md" });
+    openSheet(
+      "EmployeeEditSheet",
+      { employeeId: row.original.id },
+      { width: "md" },
+    );
   };
 
   return (
@@ -84,19 +88,19 @@ const ActionsCell = ({ row }: CellContext<Employee, any>) => {
         variant="ghost"
         size="icon"
         className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/5"
+        onClick={handleEdit}
       >
-        <Link href={`${pathname}/${row.original.id}`}>
-          <IconChevronsUpRight className="h-6 w-6" />
-        </Link>
+        <IconPencil className="h-8 w-8" />
       </Button>
 
       <Button
         variant="ghost"
         size="icon"
         className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/5"
-        onClick={handleEdit}
       >
-        <IconPencil className="h-6 w-6" />
+        <Link href={`${pathname}/${row.original.id}`}>
+          <IconChevronsUpRight className="h-8 w-8" />
+        </Link>
       </Button>
     </div>
   );

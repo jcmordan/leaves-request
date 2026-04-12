@@ -71,7 +71,6 @@ export const EMPLOYEE_DIRECTORY_QUERY = graphql(`
   }
 `);
 
-
 export const EMPLOYEE_DETAILS_HERO_FRAGMENT = graphql(`
   fragment EmployeeDetailsHero on Employee {
     id
@@ -309,5 +308,3 @@ export const EMPLOYEES_SEARCH_QUERY = graphql(`
     }
   }
 `);
-
-

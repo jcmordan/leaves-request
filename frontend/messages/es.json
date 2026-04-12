@@ -30,7 +30,10 @@
     "companyId": "Compañía",
     "hireDate": "Fecha de Ingreso",
     "isActive": "Activo",
-    "managerId": "Gerente"
+    "managerId": "Gerente",
+    "noResultsTitle": "No se encontraron resultados",
+    "noResultsDescription": "No pudimos encontrar nada que coincida con su búsqueda o filtros. Intente ajustar sus criterios.",
+    "clearAll": "Limpiar Todo"
   },
   "index": {
     "title": "Bienvenido a Solicitudes de Permisos"
@@ -45,7 +48,8 @@
     "teams": "Equipos",
     "approvals": "Aprobaciones",
     "allRequests": "Todas las Solicitudes",
-    "employees": "Empleados"
+    "employees": "Empleados",
+    "myRequests": "Mis Solicitudes"
   },
   "layout": {
     "workspace": "Portal de Servicios al Colaborador",
@@ -165,5 +169,49 @@
   "combobox": {
     "search": "Buscar...",
     "searchPlaceholder": "Escribe al menos {min} caracteres para buscar..."
+  },
+  "myRequests": {
+    "title": "Mis Solicitudes",
+    "description": "Ver y gestionar sus solicitudes de permisos y su historial.",
+    "totalRequests": "Total de Solicitudes",
+    "pending": "Pendiente",
+    "pendingApproval": "Pendiente de Aprobación",
+    "approved": "Aprobado",
+    "rejected": "Rechazado",
+    "leaveBalance": "Balance de Permisos",
+    "annualLeave": "Vacaciones",
+    "annualLeaveAllocation": "Su asignación de vacaciones anuales para este período.",
+    "daysLeft": "{remaining} / {total} días restantes",
+    "taken": "Tomado",
+    "remaining": "Restante",
+    "recentActivity": "Actividad Reciente",
+    "policyInformation": "Información de Política",
+    "policyDescription": "Nuestra política de permisos garantiza que todos los empleados tengan el tiempo adecuado para el descanso y los asuntos personales, manteniendo al mismo tiempo la continuidad operativa.",
+    "requestLeadTime": "Las solicitudes deben presentarse con al menos 2 semanas de antelación para permisos planificados.",
+    "calendarYearInfo": "Todos los saldos de permisos se reinician el 31 de diciembre de cada año natural.",
+    "export": "Exportar",
+    "newRequest": "Nueva Solicitud",
+    "viewAll": "Ver Todo",
+    "noActivity": "No se encontró actividad reciente.",
+    "period": "Período",
+    "submitted": "Enviado",
+    "actions": "Acciones",
+    "viewDetails": "Ver Detalles",
+    "edit": "Editar",
+    "days": "Días",
+    "type": "Tipo",
+    "status": "Estado",
+    "cancel": "Cancelar",
+    "requestedFor": "Solicitado para",
+    "cancelled": "Cancelado",
+    "pendingDescription": "Esperando aprobación",
+    "approvedDescription": "Confirmado por RRHH",
+    "rejectedDescription": "Acción requerida",
+    "cancelledDescription": "Retirado por el empleado",
+    "filter": "Filtrar",
+    "updatedAsOf": "Actualizado al {date}",
+    "clearFilters": "Limpiar todo",
+    "noFilters": "Sin filtros aplicados",
+    "emptyStateTitle": "No se encontraron solicitudes"
   }
 }

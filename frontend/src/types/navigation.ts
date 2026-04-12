@@ -1,15 +1,15 @@
-import { ReactNode } from 'react'
+import { ReactNode } from "react";
 
 export type NavigationItem = {
-  id: string
-  name: string
-  url: string
-  icon: ReactNode
-  location?: 'content' | 'footer'
-}
+  id: string;
+  name: string;
+  url: string;
+  icon: ReactNode;
+  location?: "content" | "footer";
+};
 
 export type Module = NavigationItem & {
-  subModules: SubModule[]
-}
+  subModules: SubModule[];
+};
 
-export type SubModule = NavigationItem & { whiteListed?: boolean }
+export type SubModule = NavigationItem & { whiteListed?: boolean };

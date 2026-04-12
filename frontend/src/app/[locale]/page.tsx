@@ -1,5 +1,5 @@
 import { redirect } from "@/i18n/navigation";
 
 export default function Home() {
-  redirect({ href: `/dashboard`, locale: "es" });
+  redirect({ href: `/my-request`, locale: "es" });
 }

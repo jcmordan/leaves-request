@@ -1,15 +1,15 @@
-'use client'
-import { ComponentProps } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
+"use client";
+import { ComponentProps } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
-import { Textarea } from '@/components/ui/textarea'
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Textarea } from "@/components/ui/textarea";
 
-import { BaseInputProps } from '../types'
+import { BaseInputProps } from "../types";
 
 type Props = BaseInputProps<ComponentProps<typeof Textarea>> & {
-  placeholder?: string
-}
+  placeholder?: string;
+};
 
 export const FormTextArea = ({
   name,
@@ -19,32 +19,32 @@ export const FormTextArea = ({
   disabled,
   ...otherProps
 }: Props) => {
-  const formContext = useFormContext()
+  const formContext = useFormContext();
 
   if (!formContext) {
-    throw new Error('FormTextArea must be used within a FormProvider')
+    throw new Error("FormTextArea must be used within a FormProvider");
   }
 
-  const { control } = formContext
+  const { control } = formContext;
 
   if (!control) {
-    throw new Error('FormTextArea control is not available')
+    throw new Error("FormTextArea control is not available");
   }
 
   return (
     <Controller
       name={name}
       control={control}
-      rules={{ required: required ? 'Field is required' : undefined }}
+      rules={{ required: required ? "Field is required" : undefined }}
       defaultValue={defaultValue}
       render={({ field, fieldState }) => {
-        const { error, invalid } = fieldState
+        const { error, invalid } = fieldState;
 
         return (
           <Field data-invalid={invalid}>
             <FieldLabel htmlFor={name}>
               {label}
-              {required && <span className='text-destructive ml-1'>*</span>}
+              {required && <span className="text-destructive ml-1">*</span>}
             </FieldLabel>
             <Textarea
               {...field}
@@ -56,8 +56,8 @@ export const FormTextArea = ({
             />
             {invalid && <FieldError errors={error ? [error] : []} />}
           </Field>
-        )
+        );
       }}
     />
-  )
-}
+  );
+};

@@ -1,75 +1,77 @@
-'use client'
+"use client";
 
-import { useCallback } from 'react'
+import { useCallback } from "react";
 
-import { useAuthContext } from '@/contexts/AuthProvider'
+import { useAuthContext } from "@/contexts/AuthProvider";
 
 export interface UsePermissionsReturn {
-  hasPermission: (permission: string) => boolean
-  hasModule: (module: string) => boolean
-  hasModulePermission: (module: string) => boolean
-  permissions: string[]
-  modules: string[]
-  loading: boolean
-  error?: Error
+  hasPermission: (permission: string) => boolean;
+  hasModule: (module: string) => boolean;
+  hasModulePermission: (module: string) => boolean;
+  permissions: string[];
+  modules: string[];
+  loading: boolean;
+  error?: Error;
 }
 
 export function usePermissions(): UsePermissionsReturn {
-  const { permissions, modules, loading, error } = useAuthContext()
+  const { permissions, modules, loading, error } = useAuthContext();
 
   const hasPermission = useCallback(
     (permission: string): boolean => {
       if (!permission || permissions.length === 0) {
-        return false
+        return false;
       }
 
       return permissions.some(
-        p => p.localeCompare(permission, undefined, { sensitivity: 'base' }) === 0
-      )
+        (p) =>
+          p.localeCompare(permission, undefined, { sensitivity: "base" }) === 0,
+      );
     },
-    [permissions]
-  )
+    [permissions],
+  );
 
-  const microErpPrefix = 'micro-erp::'
+  const microErpPrefix = "micro-erp::";
 
   const hasModulePermission = useCallback(
     (module: string): boolean => {
       if (!module || permissions.length === 0) {
-        return false
+        return false;
       }
 
-      const lowerModule = module.toLowerCase()
-      const permissionMatches = permissions.some(p => {
-        const lowerP = p.toLowerCase()
+      const lowerModule = module.toLowerCase();
+      const permissionMatches = permissions.some((p) => {
+        const lowerP = p.toLowerCase();
         if (
           lowerP.startsWith(`${microErpPrefix}${lowerModule}::`) ||
           lowerP === `${microErpPrefix}${lowerModule}`
         ) {
-          return true
+          return true;
         }
 
-        const segments = lowerP.replace(microErpPrefix, '').split('::')
+        const segments = lowerP.replace(microErpPrefix, "").split("::");
 
-        return segments.includes(lowerModule)
-      })
+        return segments.includes(lowerModule);
+      });
 
-      return permissionMatches
+      return permissionMatches;
     },
-    [permissions]
-  )
+    [permissions],
+  );
 
   const hasModule = useCallback(
     (module: string): boolean => {
       if (!module || modules.length === 0) {
-        return false
+        return false;
       }
 
       return (
-        modules.some(m => m.toLowerCase() === module.toLowerCase()) && hasModulePermission(module)
-      )
+        modules.some((m) => m.toLowerCase() === module.toLowerCase()) &&
+        hasModulePermission(module)
+      );
     },
-    [modules, hasModulePermission]
-  )
+    [modules, hasModulePermission],
+  );
 
   return {
     hasPermission,
@@ -79,5 +81,5 @@ export function usePermissions(): UsePermissionsReturn {
     modules,
     loading,
     error,
-  }
+  };
 }

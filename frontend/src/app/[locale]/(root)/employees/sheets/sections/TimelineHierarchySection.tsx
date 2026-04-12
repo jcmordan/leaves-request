@@ -12,7 +12,6 @@ import { useServerSideSearch } from "@/hooks/useServerSideSearch";
 import { mergeSearchOptions } from "@/components/forms/helpers";
 import { EMPLOYEE_ENTITIES_INFO_FRAGMENT } from "../../graphql/EmployeeQueries";
 
-
 /**
  * Props for the TimelineHierarchySection component.
  */
@@ -28,63 +27,63 @@ interface TimelineHierarchySectionProps {
  * @param {TimelineHierarchySectionProps} props - The component props.
  * @returns {JSX.Element} The rendered TimelineHierarchySection component.
  */
-export const TimelineHierarchySection = memo(({
-  employeeRef,
-}: TimelineHierarchySectionProps) => {
-  const employee = useFragment(EMPLOYEE_ENTITIES_INFO_FRAGMENT, employeeRef);
+export const TimelineHierarchySection = memo(
+  ({ employeeRef }: TimelineHierarchySectionProps) => {
+    const employee = useFragment(EMPLOYEE_ENTITIES_INFO_FRAGMENT, employeeRef);
 
-  const t = useTranslations("employees");
-  const tc = useTranslations("common");
+    const t = useTranslations("employees");
+    const tc = useTranslations("common");
 
-  const employeeSearch = useEmployeeSearch();
+    const employeeSearch = useEmployeeSearch();
 
-  const {
-    options: searchedManagerOptions,
-    loading: loadingManagers,
-    onSearch: onManagerSearch,
-    triggerInitialSearch: triggerManagerInitialSearch,
-  } = useServerSideSearch(employeeSearch);
+    const {
+      options: searchedManagerOptions,
+      loading: loadingManagers,
+      onSearch: onManagerSearch,
+      triggerInitialSearch: triggerManagerInitialSearch,
+    } = useServerSideSearch(employeeSearch);
 
-  useEffect(() => {
-    triggerManagerInitialSearch().catch(() => {});
-  }, [triggerManagerInitialSearch]);
+    useEffect(() => {
+      triggerManagerInitialSearch().catch(() => {});
+    }, [triggerManagerInitialSearch]);
 
-  const managerOptions = useMemo(() => {
-    const merged = mergeSearchOptions(
-      searchedManagerOptions,
-      employee?.manager
-        ? { id: employee.manager.id, name: employee.manager.fullName }
-        : null
-    );
+    const managerOptions = useMemo(() => {
+      const merged = mergeSearchOptions(
+        searchedManagerOptions,
+        employee?.manager
+          ? { id: employee.manager.id, name: employee.manager.fullName }
+          : null,
+      );
 
-    return [{ label: tc("none"), value: "none" }, ...merged];
-  }, [employee, searchedManagerOptions, tc]);
+      return [{ label: tc("none"), value: "none" }, ...merged];
+    }, [employee, searchedManagerOptions, tc]);
 
-  return (
-    <FormSection title="Timeline & Hierarchy">
-      <div className="grid grid-cols-2 gap-4">
-        <FormDateInput name="hireDate" label={tc("hireDate")} required />
+    return (
+      <FormSection title="Timeline & Hierarchy">
+        <div className="grid grid-cols-2 gap-4">
+          <FormDateInput name="hireDate" label={tc("hireDate")} required />
 
-        <FormComboboxInput
-          name="managerId"
-          label={t("manager")}
-          options={managerOptions}
-          onSearch={onManagerSearch}
-          loading={loadingManagers}
-        />
+          <FormComboboxInput
+            name="managerId"
+            label={t("manager")}
+            options={managerOptions}
+            onSearch={onManagerSearch}
+            loading={loadingManagers}
+          />
 
-        <div className="col-span-1 mt-2">
-          <div className="rounded-lg">
-            <FormSwitch
-              name="isActive"
-              labelPosition="top"
-              label={tc("active")}
-            />
+          <div className="col-span-1 mt-2">
+            <div className="rounded-lg">
+              <FormSwitch
+                name="isActive"
+                labelPosition="top"
+                label={tc("active")}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </FormSection>
-  );
-});
+      </FormSection>
+    );
+  },
+);
 
 TimelineHierarchySection.displayName = "TimelineHierarchySection";

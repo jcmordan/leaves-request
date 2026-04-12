@@ -98,16 +98,16 @@ pnpm manage-i18n add "my.key.path" "English value" "Spanish value"
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start dev server with Turbopack |
-| `pnpm build` | Production build |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run ESLint |
-| `pnpm type-check` | Run TypeScript type checking |
-| `pnpm codegen` | Generate GraphQL types |
-| `pnpm format` | Format code with Prettier |
-| `pnpm manage-i18n` | Manage i18n translation keys |
+| Command            | Description                     |
+| ------------------ | ------------------------------- |
+| `pnpm dev`         | Start dev server with Turbopack |
+| `pnpm build`       | Production build                |
+| `pnpm start`       | Start production server         |
+| `pnpm lint`        | Run ESLint                      |
+| `pnpm type-check`  | Run TypeScript type checking    |
+| `pnpm codegen`     | Generate GraphQL types          |
+| `pnpm format`      | Format code with Prettier       |
+| `pnpm manage-i18n` | Manage i18n translation keys    |
 
 ## Docker
 

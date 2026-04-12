@@ -29,7 +29,7 @@ public static class ConnectionHelper
             endCursor: paginationResult.EndCursor
         );
 
-        return new Connection<TNode>(edges, pageInfo);
+        return new Connection<TNode>(edges, pageInfo, paginationResult.TotalCount ?? 0);
     }
 
     /**

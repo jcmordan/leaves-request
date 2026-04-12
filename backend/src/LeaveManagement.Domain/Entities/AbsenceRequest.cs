@@ -8,9 +8,7 @@ public class AbsenceRequest
 {
     public Guid Id { get; set; }
     public Guid EmployeeId { get; set; }
-    public Employee? Employee { get; set; }
     public Guid AbsenceTypeId { get; set; }
-    public AbsenceType? AbsenceType { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public RequestStatus Status { get; set; }
@@ -21,6 +19,8 @@ public class AbsenceRequest
     public DateTime CreatedAt { get; set; }
     public Guid RequesterEmployeeId { get; set; }
     public Employee? RequesterEmployee { get; set; }
+    public Employee? Employee { get; set; }
+    public AbsenceType? AbsenceType { get; set; }
     public ICollection<Attachment> Attachments { get; set; } = [];
     public ICollection<ApprovalHistory> ApprovalHistories { get; set; } = [];
 }

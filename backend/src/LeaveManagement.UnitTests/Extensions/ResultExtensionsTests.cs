@@ -20,7 +20,7 @@ public class ResultExtensionsTests
         var minimalResult = result.ToMinimalResult();
 
         // Assert
-        minimalResult.GetType().Name.Should().Be("Ok");
+        minimalResult.Should().BeOfType<Ok>();
     }
 
     [Fact]

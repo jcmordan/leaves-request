@@ -8,7 +8,7 @@ public class EmployeeByIdDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : BatchDataLoader<Guid, Employee>(batchScheduler, options)
+) : BatchDataLoader<Guid, Employee>(batchScheduler, options), IEmployeeByIdDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 

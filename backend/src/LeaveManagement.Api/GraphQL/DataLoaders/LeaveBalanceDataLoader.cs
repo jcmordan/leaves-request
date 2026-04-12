@@ -10,7 +10,7 @@ public class LeaveBalanceDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : BatchDataLoader<Guid, LeaveBalanceDto>(batchScheduler, options)
+) : BatchDataLoader<Guid, LeaveBalanceDto>(batchScheduler, options), ILeaveBalanceDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 

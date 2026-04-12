@@ -8,7 +8,7 @@ public class EmployeeResolvers
 {
     public Task<Company?> GetCompanyAsync(
         [Parent] Employee employee,
-        CompanyByIdDataLoader dataLoader,
+        ICompanyByIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
@@ -17,7 +17,7 @@ public class EmployeeResolvers
 
     public Task<Department?> GetDepartmentAsync(
         [Parent] Employee employee,
-        DepartmentByIdDataLoader dataLoader,
+        IDepartmentByIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
@@ -26,7 +26,7 @@ public class EmployeeResolvers
 
     public Task<DepartmentSection?> GetDepartmentSectionAsync(
         [Parent] Employee employee,
-        DepartmentSectionByIdDataLoader dataLoader,
+        IDepartmentSectionByIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
@@ -39,7 +39,7 @@ public class EmployeeResolvers
 
     public async Task<IEnumerable<Employee>> GetSubordinatesAsync(
         [Parent] Employee employee,
-        SubordinatesByEmployeeIdDataLoader dataLoader,
+        ISubordinatesByEmployeeIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
@@ -50,7 +50,7 @@ public class EmployeeResolvers
     [GraphQLName("jobTitle")]
     public Task<JobTitle?> GetJobTitleAsync(
         [Parent] Employee employee,
-        JobTitleByIdDataLoader dataLoader,
+        IJobTitleByIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
@@ -63,7 +63,7 @@ public class EmployeeResolvers
 
     public Task<Employee?> GetManagerAsync(
         [Parent] Employee employee,
-        EmployeeByIdDataLoader dataLoader,
+        IEmployeeByIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
@@ -76,7 +76,7 @@ public class EmployeeResolvers
 
     public Task<LeaveBalanceDto?> GetLeaveBalanceAsync(
         [Parent] Employee employee,
-        LeaveBalanceDataLoader dataLoader,
+        ILeaveBalanceDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {

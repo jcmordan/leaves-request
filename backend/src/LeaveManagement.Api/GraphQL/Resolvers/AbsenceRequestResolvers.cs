@@ -12,7 +12,7 @@ public class AbsenceRequestResolvers
 {
     public Task<Employee?> GetRequesterEmployeeAsync(
         [Parent] AbsenceRequest absenceRequest,
-        EmployeeByIdDataLoader dataLoader,
+        IEmployeeByIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
@@ -21,7 +21,7 @@ public class AbsenceRequestResolvers
 
     public Task<Employee?> GetEmployeeAsync(
         [Parent] AbsenceRequest absenceRequest,
-        EmployeeByIdDataLoader dataLoader,
+        IEmployeeByIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
@@ -30,7 +30,7 @@ public class AbsenceRequestResolvers
 
     public Task<AbsenceType?> GetAbsenceTypeAsync(
         [Parent] AbsenceRequest absenceRequest,
-        AbsenceTypeByIdDataLoader dataLoader,
+        IAbsenceTypeByIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
@@ -39,7 +39,7 @@ public class AbsenceRequestResolvers
 
     public async Task<IEnumerable<Attachment>> GetAttachmentsAsync(
         [Parent] AbsenceRequest absenceRequest,
-        AttachmentsByAbsenceRequestIdDataLoader dataLoader,
+        IAttachmentsByAbsenceRequestIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {
@@ -49,7 +49,7 @@ public class AbsenceRequestResolvers
 
     public async Task<IEnumerable<ApprovalHistory>> GetApprovalHistoriesAsync(
         [Parent] AbsenceRequest absenceRequest,
-        ApprovalHistoriesByAbsenceRequestIdDataLoader dataLoader,
+        IApprovalHistoriesByAbsenceRequestIdDataLoader dataLoader,
         CancellationToken cancellationToken
     )
     {

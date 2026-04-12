@@ -15,7 +15,7 @@ public class JobTitleByIdDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : BatchDataLoader<Guid, JobTitle>(batchScheduler, options)
+) : BatchDataLoader<Guid, JobTitle>(batchScheduler, options), IJobTitleByIdDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 

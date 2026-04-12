@@ -15,7 +15,7 @@ public class SubordinatesByEmployeeIdDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : GroupedDataLoader<Guid, Employee>(batchScheduler, options)
+) : GroupedDataLoader<Guid, Employee>(batchScheduler, options), ISubordinatesByEmployeeIdDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 

@@ -15,7 +15,7 @@ public class DepartmentSectionByIdDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : BatchDataLoader<Guid, DepartmentSection>(batchScheduler, options)
+) : BatchDataLoader<Guid, DepartmentSection>(batchScheduler, options), IDepartmentSectionByIdDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 

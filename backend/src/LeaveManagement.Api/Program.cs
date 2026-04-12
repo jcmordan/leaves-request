@@ -158,16 +158,16 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
 
 // DataLoaders registration in DI
-builder.Services.AddScoped<CompanyByIdDataLoader>();
-builder.Services.AddScoped<DepartmentByIdDataLoader>();
-builder.Services.AddScoped<DepartmentSectionByIdDataLoader>();
-builder.Services.AddScoped<SubordinatesByEmployeeIdDataLoader>();
-builder.Services.AddScoped<JobTitleByIdDataLoader>();
-builder.Services.AddScoped<EmployeeByIdDataLoader>();
-builder.Services.AddScoped<AbsenceTypeByIdDataLoader>();
-builder.Services.AddScoped<AttachmentsByAbsenceRequestIdDataLoader>();
-builder.Services.AddScoped<ApprovalHistoriesByAbsenceRequestIdDataLoader>();
-builder.Services.AddScoped<LeaveBalanceDataLoader>();
+builder.Services.AddScoped<ICompanyByIdDataLoader, CompanyByIdDataLoader>();
+builder.Services.AddScoped<IDepartmentByIdDataLoader, DepartmentByIdDataLoader>();
+builder.Services.AddScoped<IDepartmentSectionByIdDataLoader, DepartmentSectionByIdDataLoader>();
+builder.Services.AddScoped<ISubordinatesByEmployeeIdDataLoader, SubordinatesByEmployeeIdDataLoader>();
+builder.Services.AddScoped<IJobTitleByIdDataLoader, JobTitleByIdDataLoader>();
+builder.Services.AddScoped<IEmployeeByIdDataLoader, EmployeeByIdDataLoader>();
+builder.Services.AddScoped<IAbsenceTypeByIdDataLoader, AbsenceTypeByIdDataLoader>();
+builder.Services.AddScoped<IAttachmentsByAbsenceRequestIdDataLoader, AttachmentsByAbsenceRequestIdDataLoader>();
+builder.Services.AddScoped<IApprovalHistoriesByAbsenceRequestIdDataLoader, ApprovalHistoriesByAbsenceRequestIdDataLoader>();
+builder.Services.AddScoped<ILeaveBalanceDataLoader, LeaveBalanceDataLoader>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpLogging(logging =>
@@ -194,16 +194,16 @@ builder
     .AddTypeExtension<AuthMutations>()
     .AddType<EmployeeType>()
     .AddType<AbsenceRequestType>()
-    .AddDataLoader<CompanyByIdDataLoader>()
-    .AddDataLoader<DepartmentByIdDataLoader>()
-    .AddDataLoader<DepartmentSectionByIdDataLoader>()
-    .AddDataLoader<SubordinatesByEmployeeIdDataLoader>()
-    .AddDataLoader<JobTitleByIdDataLoader>()
-    .AddDataLoader<EmployeeByIdDataLoader>()
-    .AddDataLoader<AbsenceTypeByIdDataLoader>()
-    .AddDataLoader<AttachmentsByAbsenceRequestIdDataLoader>()
-    .AddDataLoader<ApprovalHistoriesByAbsenceRequestIdDataLoader>()
-    .AddDataLoader<LeaveBalanceDataLoader>()
+    .AddDataLoader<ICompanyByIdDataLoader, CompanyByIdDataLoader>()
+    .AddDataLoader<IDepartmentByIdDataLoader, DepartmentByIdDataLoader>()
+    .AddDataLoader<IDepartmentSectionByIdDataLoader, DepartmentSectionByIdDataLoader>()
+    .AddDataLoader<ISubordinatesByEmployeeIdDataLoader, SubordinatesByEmployeeIdDataLoader>()
+    .AddDataLoader<IJobTitleByIdDataLoader, JobTitleByIdDataLoader>()
+    .AddDataLoader<IEmployeeByIdDataLoader, EmployeeByIdDataLoader>()
+    .AddDataLoader<IAbsenceTypeByIdDataLoader, AbsenceTypeByIdDataLoader>()
+    .AddDataLoader<IAttachmentsByAbsenceRequestIdDataLoader, AttachmentsByAbsenceRequestIdDataLoader>()
+    .AddDataLoader<IApprovalHistoriesByAbsenceRequestIdDataLoader, ApprovalHistoriesByAbsenceRequestIdDataLoader>()
+    .AddDataLoader<ILeaveBalanceDataLoader, LeaveBalanceDataLoader>()
     .AddProjections()
     .AddFiltering()
     .AddSorting()

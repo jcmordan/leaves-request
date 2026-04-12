@@ -14,7 +14,7 @@ public class ApprovalHistoriesByAbsenceRequestIdDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : GroupedDataLoader<Guid, ApprovalHistory>(batchScheduler, options)
+) : GroupedDataLoader<Guid, ApprovalHistory>(batchScheduler, options), IApprovalHistoriesByAbsenceRequestIdDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 

@@ -31,7 +31,7 @@ export function CredentialsForm({
   isLoading,
   error,
 }: CredentialsFormProps) {
-  const t = useTranslations("Auth");
+  const t = useTranslations("auth");
 
   const methods = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),

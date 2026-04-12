@@ -376,9 +376,13 @@ public class LeaveRequestService : ILeaveRequestService
     }
 
     /// <inheritdoc/>
-    public async Task<PaginationResult<AbsenceRequest>> GetAbsenceRequestsAsync(PaginationFilter filter)
+    public async Task<PaginationResult<AbsenceRequest>> GetAbsenceRequestsAsync(PaginationFilter filter, RequestStatus? status = null)
     {
         IQueryable<AbsenceRequest> query = _context.AbsenceRequests;
+        if (status.HasValue)
+        {
+            query = query.Where(r => r.Status == status.Value);
+        }
         return await PagingHelper.ApplyPagingAsync(query, filter);
     }
 
@@ -390,16 +394,24 @@ public class LeaveRequestService : ILeaveRequestService
     }
 
     /// <inheritdoc/>
-    public async Task<PaginationResult<AbsenceRequest>> GetTeamAbsencesAsync(Guid managerId, PaginationFilter filter)
+    public async Task<PaginationResult<AbsenceRequest>> GetTeamAbsencesAsync(Guid managerId, PaginationFilter filter, RequestStatus? status = null)
     {
         IQueryable<AbsenceRequest> query = _context.AbsenceRequests.Where(r => r.Employee!.ManagerId == managerId);
+        if (status.HasValue)
+        {
+            query = query.Where(r => r.Status == status.Value);
+        }
         return await PagingHelper.ApplyPagingAsync(query, filter);
     }
 
     /// <inheritdoc/>
-    public async Task<PaginationResult<AbsenceRequest>> GetEmployeeRequestsAsync(Guid employeeId, PaginationFilter filter)
+    public async Task<PaginationResult<AbsenceRequest>> GetEmployeeRequestsAsync(Guid employeeId, PaginationFilter filter, RequestStatus? status = null)
     {
         IQueryable<AbsenceRequest> query = _context.AbsenceRequests.Where(r => r.EmployeeId == employeeId);
+        if (status.HasValue)
+        {
+            query = query.Where(r => r.Status == status.Value);
+        }
         return await PagingHelper.ApplyPagingAsync(query, filter);
     }
 

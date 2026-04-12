@@ -30,7 +30,7 @@ function StatCard({ title, value, icon: Icon, trend, avatars }: StatCardProps) {
       </CardHeader>
       <CardContent>
         <div className="flex items-end gap-3">
-          <div className="text-3xl font-black text-primary tracking-tight">
+          <div className="text-3xl font-black text-primary tracking-tight text-right">
             {format.number(value)}
           </div>
           {trend && (
@@ -64,7 +64,6 @@ function StatCard({ title, value, icon: Icon, trend, avatars }: StatCardProps) {
     </Card>
   );
 }
-
 
 type Props = {
   statsQueryRef: FragmentType<typeof EMPLOYEE_STATS_FRAGMENT>;

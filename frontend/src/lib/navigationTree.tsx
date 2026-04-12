@@ -1,8 +1,8 @@
-import { IconHome } from '@tabler/icons-react'
+import { IconHome } from "@tabler/icons-react";
 
-import { Module } from '@/types/navigation'
+import { Module } from "@/types/navigation";
 
-type TranslationFunction = (key: string) => string
+type TranslationFunction = (key: string) => string;
 
 /**
  * Navigation tree configuration.
@@ -29,11 +29,11 @@ type TranslationFunction = (key: string) => string
 export const getNavigationTree = (t: TranslationFunction): Module[] => {
   return [
     {
-      id: 'home',
-      name: t('modules.home'),
-      url: '/',
+      id: "home",
+      name: t("modules.home"),
+      url: "/",
       icon: <IconHome size={26} />,
       subModules: [],
     },
-  ]
-}
+  ];
+};

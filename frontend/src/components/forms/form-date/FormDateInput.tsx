@@ -1,18 +1,18 @@
-'use client'
+"use client";
 
-import { Controller, useFormContext } from 'react-hook-form'
+import { Controller, useFormContext } from "react-hook-form";
 
 import { DatePicker, DatePickerProps } from "@/components/ui/date-picker";
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
-import { cn } from '@/lib/utils'
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { cn } from "@/lib/utils";
 
-import { BaseInputProps } from '../types'
+import { BaseInputProps } from "../types";
 
 type Props = BaseInputProps<
   Omit<DatePickerProps, "value" | "onChange" | "id">
 > & {
-  defaultValue?: string
-}
+  defaultValue?: string;
+};
 
 export const FormDateInput = ({
   name,
@@ -22,13 +22,13 @@ export const FormDateInput = ({
   disabled,
   ...pickerProps
 }: Props) => {
-  const formContext = useFormContext()
+  const formContext = useFormContext();
 
   if (!formContext) {
-    throw new Error('FormDateInput must be used within a FormProvider')
+    throw new Error("FormDateInput must be used within a FormProvider");
   }
 
-  const { control } = formContext
+  const { control } = formContext;
 
   return (
     <Controller
@@ -37,18 +37,18 @@ export const FormDateInput = ({
       rules={{ required }}
       defaultValue={defaultValue}
       render={({ field, fieldState }) => {
-        const { error, invalid } = fieldState
+        const { error, invalid } = fieldState;
 
         // Convert value to Date, handling both string and Date formats
-        let date: Date | undefined = undefined
+        let date: Date | undefined = undefined;
         if (field.value) {
           if (field.value instanceof Date) {
-            date = field.value
-          } else if (typeof field.value === 'string') {
-            const parsedDate = new Date(field.value)
+            date = field.value;
+          } else if (typeof field.value === "string") {
+            const parsedDate = new Date(field.value);
             // Check if the date is valid
             if (!isNaN(parsedDate.getTime())) {
-              date = parsedDate
+              date = parsedDate;
             }
           }
         }
@@ -56,11 +56,11 @@ export const FormDateInput = ({
         const handleDateChange = (selectedDate: Date | null): void => {
           if (selectedDate) {
             // Store date as ISO string
-            field.onChange(selectedDate.toISOString())
+            field.onChange(selectedDate.toISOString());
           } else {
-            field.onChange(undefined)
+            field.onChange(undefined);
           }
-        }
+        };
 
         return (
           <Field data-invalid={invalid}>
@@ -82,5 +82,5 @@ export const FormDateInput = ({
         );
       }}
     />
-  )
-}
+  );
+};

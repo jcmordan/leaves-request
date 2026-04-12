@@ -1,121 +1,139 @@
-'use client'
+"use client";
 
-import { usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
-import { usePermissions } from '@/hooks/usePermissions'
-import { getNavigationTree } from '@/lib/navigationTree'
-import { Module } from '@/types/navigation'
+import { usePermissions } from "@/hooks/usePermissions";
+import { getNavigationTree } from "@/lib/navigationTree";
+import { Module } from "@/types/navigation";
 
 export interface NotificationItem {
-  id: string
-  title: string
-  description?: string
-  time?: string
-  isUrgent?: boolean
-  href: string | null
+  id: string;
+  title: string;
+  description?: string;
+  time?: string;
+  isUrgent?: boolean;
+  href: string | null;
   // Extended properties for specific modules
-  type?: string
-  createdAt?: string
-  metadata?: Record<string, string>
-  onClick?: () => void
-  onDismiss?: () => void
+  type?: string;
+  createdAt?: string;
+  metadata?: Record<string, string>;
+  onClick?: () => void;
+  onDismiss?: () => void;
 }
 
 interface NavigationContextProps {
-  selectedModule: Module | null
-  setSelectedModule: (module: Module | null) => void
-  modules: Module[]
-  notifications: NotificationItem[]
-  setNotifications: (notifications: NotificationItem[]) => void
-  loading: boolean
+  selectedModule: Module | null;
+  setSelectedModule: (module: Module | null) => void;
+  modules: Module[];
+  notifications: NotificationItem[];
+  setNotifications: (notifications: NotificationItem[]) => void;
+  loading: boolean;
 }
 
-const NavigationContext = createContext<NavigationContextProps | undefined>(undefined)
+const NavigationContext = createContext<NavigationContextProps | undefined>(
+  undefined,
+);
 
-export const NavigationProvider = ({ children }: { children: React.ReactNode }) => {
-  const [selectedModule, setSelectedModule] = useState<Module | null>(null)
-  const [manualSelection, setManualSelection] = useState<Module | null>(null)
-  const [notifications, setNotifications] = useState<NotificationItem[]>([])
+export const NavigationProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [selectedModule, setSelectedModule] = useState<Module | null>(null);
+  const [manualSelection, setManualSelection] = useState<Module | null>(null);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
-  const pathname = usePathname()
-  const t = useTranslations()
-  const tRef = useRef(t)
-  tRef.current = t
-  const { hasModule, hasModulePermission, loading: permissionsLoading } = usePermissions()
+  const pathname = usePathname();
+  const t = useTranslations();
+  const tRef = useRef(t);
+  tRef.current = t;
+  const {
+    hasModule,
+    hasModulePermission,
+    loading: permissionsLoading,
+  } = usePermissions();
 
   // ... (existing code: stableT, allModules, modules memo) ...
-  const stableT = useCallback((key: string) => tRef.current(key), [])
+  const stableT = useCallback((key: string) => tRef.current(key), []);
 
-  const allModules = useMemo(() => getNavigationTree(stableT), [stableT])
+  const allModules = useMemo(() => getNavigationTree(stableT), [stableT]);
 
   const modules = useMemo(() => {
-    return allModules.filter(module => {
+    return allModules.filter((module) => {
       // Always show home module, even during loading
-      if (module.id === 'home') {
-        return true
+      if (module.id === "home") {
+        return true;
       }
 
       // While permissions are loading, hide other modules
       if (permissionsLoading) {
-        return false
+        return false;
       }
 
       // Filter modules based on permissions
-      const hasModuleAccess = hasModule(module.id)
+      const hasModuleAccess = hasModule(module.id);
 
       if (!hasModuleAccess) {
-        return false
+        return false;
       }
 
-      module.subModules = module.subModules?.filter(subModule => {
-        return subModule.whiteListed ?? hasModulePermission(subModule.id)
-      })
+      module.subModules = module.subModules?.filter((subModule) => {
+        return subModule.whiteListed ?? hasModulePermission(subModule.id);
+      });
 
-      return true
-    })
-  }, [allModules, hasModule, hasModulePermission, permissionsLoading])
+      return true;
+    });
+  }, [allModules, hasModule, hasModulePermission, permissionsLoading]);
 
   useEffect(() => {
     if (permissionsLoading) {
-      setLoading(true)
+      setLoading(true);
 
-      return
+      return;
     }
 
     if (manualSelection) {
-      setSelectedModule(manualSelection)
-      setLoading(false)
+      setSelectedModule(manualSelection);
+      setLoading(false);
 
-      return
+      return;
     }
 
     const [matchedModule] = modules
-      .filter(module => {
+      .filter((module) => {
         if (pathname === module.url) {
-          return true
+          return true;
         }
 
-        return pathname.startsWith(`${module.url}/`)
+        return pathname.startsWith(`${module.url}/`);
       })
-      .sort((a, b) => b.url.length - a.url.length)
+      .sort((a, b) => b.url.length - a.url.length);
 
     if (matchedModule) {
-      setSelectedModule(matchedModule)
+      setSelectedModule(matchedModule);
     } else {
-      setSelectedModule(null)
+      setSelectedModule(null);
     }
 
-    setLoading(false)
-  }, [pathname, modules, manualSelection, permissionsLoading])
+    setLoading(false);
+  }, [pathname, modules, manualSelection, permissionsLoading]);
 
   const handleSetSelectedModule = (module: Module | null) => {
-    setManualSelection(module)
-    setSelectedModule(module)
-  }
+    setManualSelection(module);
+    setSelectedModule(module);
+  };
 
   return (
     <NavigationContext.Provider
@@ -130,14 +148,14 @@ export const NavigationProvider = ({ children }: { children: React.ReactNode }) 
     >
       {children}
     </NavigationContext.Provider>
-  )
-}
+  );
+};
 
 export const useNavigation = () => {
-  const context = useContext(NavigationContext)
+  const context = useContext(NavigationContext);
   if (context === undefined) {
-    throw new Error('useNavigation must be used within a NavigationProvider')
+    throw new Error("useNavigation must be used within a NavigationProvider");
   }
 
-  return context
-}
+  return context;
+};

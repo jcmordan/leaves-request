@@ -18,8 +18,8 @@ export function ApolloWrapper({ children }: { children: React.ReactNode }) {
   }, [accessToken]);
 
   useEffect(() => {
-    if ((session as any)?.error === 'RefreshAccessTokenError') {
-      signOut({ callbackUrl: '/', redirect: true }).catch(() => {
+    if ((session as any)?.error === "RefreshAccessTokenError") {
+      signOut({ callbackUrl: "/", redirect: true }).catch(() => {
         // Handle sign-out error silently
       });
     }

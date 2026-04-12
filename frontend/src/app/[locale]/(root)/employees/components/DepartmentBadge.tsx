@@ -14,15 +14,21 @@ const departmentColorMap: Record<string, string> = {
 
 export function DepartmentBadge({ department }: { department: string }) {
   const t = useTranslations("Departments");
-  
+
   // Normalize key to camelCase for lookup
-  const key = department.charAt(0).toLowerCase() + department.slice(1).replace(/\s+/g, '');
-  const colors = departmentColorMap[key] || "bg-gray-50 text-gray-700 border-gray-100";
+  const key =
+    department.charAt(0).toLowerCase() +
+    department.slice(1).replace(/\s+/g, "");
+  const colors =
+    departmentColorMap[key] || "bg-gray-50 text-gray-700 border-gray-100";
 
   return (
-    <Badge 
-      variant="outline" 
-      className={cn("px-2.5 py-0.5 font-bold uppercase tracking-wider text-[10px] rounded-full", colors)}
+    <Badge
+      variant="outline"
+      className={cn(
+        "px-2.5 py-0.5 font-bold uppercase tracking-wider text-[10px] rounded-full",
+        colors,
+      )}
     >
       {t(key, { default: department })}
     </Badge>

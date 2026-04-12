@@ -1,15 +1,15 @@
-'use client'
+"use client";
 
-import { ChangeEvent, ComponentProps, ReactNode } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
+import { ChangeEvent, ComponentProps, ReactNode } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
-import { BaseInputProps } from '../types'
+import { BaseInputProps } from "../types";
 
-type MaskType = 'number' | 'currency' | 'integer' | 'percentage' | RegExp
+type MaskType = "number" | "currency" | "integer" | "percentage" | RegExp;
 
 type Props = BaseInputProps<ComponentProps<typeof Input>> &
   Partial<Pick<ComponentProps<typeof Controller>, "rules">> & {
@@ -20,72 +20,72 @@ type Props = BaseInputProps<ComponentProps<typeof Input>> &
 
 const applyMask = (value: string, mask: MaskType): string => {
   if (!mask) {
-    return value
+    return value;
   }
 
   // Pre-built masks
-  if (mask === 'number') {
+  if (mask === "number") {
     // Allow numbers with optional decimal point
-    return value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1')
+    return value.replace(/[^\d.]/g, "").replace(/(\..*)\./g, "$1");
   }
 
-  if (mask === 'integer') {
+  if (mask === "integer") {
     // Allow only integers
-    return value.replace(/\D/g, '')
+    return value.replace(/\D/g, "");
   }
 
-  if (mask === 'currency') {
+  if (mask === "currency") {
     // Remove non-numeric characters except decimal point
-    const cleaned = value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1')
+    const cleaned = value.replace(/[^\d.]/g, "").replace(/(\..*)\./g, "$1");
 
     // Split into integer and decimal parts
-    const parts = cleaned.split('.')
+    const parts = cleaned.split(".");
 
     // Format integer part with thousand separators
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     // Limit decimal places to 2
     if (parts[1]) {
-      parts[1] = parts[1].substring(0, 2)
+      parts[1] = parts[1].substring(0, 2);
     }
 
-    return parts.join('.')
+    return parts.join(".");
   }
 
-  if (mask === 'percentage') {
+  if (mask === "percentage") {
     // Allow only integers between 0 and 100
-    const cleaned = value.replace(/\D/g, '')
-    const num = parseInt(cleaned, 10)
+    const cleaned = value.replace(/\D/g, "");
+    const num = parseInt(cleaned, 10);
 
     if (isNaN(num)) {
-      return ''
+      return "";
     }
 
     if (num > 100) {
-      return '100'
+      return "100";
     }
 
-    return String(num)
+    return String(num);
   }
 
   // Custom regex mask
   if (mask instanceof RegExp) {
-    const matches = value.match(mask)
+    const matches = value.match(mask);
 
-    return matches ? matches[0] : ''
+    return matches ? matches[0] : "";
   }
 
-  return value
-}
+  return value;
+};
 
 const unmaskValue = (value: string, mask: MaskType): string => {
-  if (mask === 'currency') {
+  if (mask === "currency") {
     // Remove thousand separators for storage
-    return value.replace(/,/g, '')
+    return value.replace(/,/g, "");
   }
 
-  return value
-}
+  return value;
+};
 
 export const FormTextInput = ({
   name,
@@ -100,16 +100,16 @@ export const FormTextInput = ({
   mask,
   ...otherProps
 }: Props) => {
-  const formContext = useFormContext()
+  const formContext = useFormContext();
 
   if (!formContext) {
-    throw new Error('FormTextInput must be used within a FormProvider')
+    throw new Error("FormTextInput must be used within a FormProvider");
   }
 
-  const { control } = formContext
+  const { control } = formContext;
 
   if (!control) {
-    throw new Error('FormTextInput control is not available')
+    throw new Error("FormTextInput control is not available");
   }
 
   return (
@@ -119,36 +119,38 @@ export const FormTextInput = ({
       rules={{ ...rules, required }}
       defaultValue={defaultValue}
       render={({ field, fieldState }) => {
-        const { error, invalid } = fieldState
+        const { error, invalid } = fieldState;
 
         const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-          const inputValue = e.target.value
+          const inputValue = e.target.value;
 
           if (mask) {
-            const maskedValue = applyMask(inputValue, mask)
-            const unmaskedValue = unmaskValue(maskedValue, mask)
+            const maskedValue = applyMask(inputValue, mask);
+            const unmaskedValue = unmaskValue(maskedValue, mask);
 
             // Update the field with unmasked value for form state
-            field.onChange(unmaskedValue)
+            field.onChange(unmaskedValue);
           } else {
-            field.onChange(inputValue)
+            field.onChange(inputValue);
           }
-        }
+        };
 
         const handleBlur = () => {
-          if (mask === 'currency' && field.value) {
-            const val = String(field.value)
-            const parts = val.split('.')
-            const decimal = (parts[1] || '').padEnd(2, '0').substring(0, 2)
-            const formatted = `${parts[0] || '0'}.${decimal}`
-            field.onChange(formatted)
+          if (mask === "currency" && field.value) {
+            const val = String(field.value);
+            const parts = val.split(".");
+            const decimal = (parts[1] || "").padEnd(2, "0").substring(0, 2);
+            const formatted = `${parts[0] || "0"}.${decimal}`;
+            field.onChange(formatted);
           }
-          field.onBlur()
-        }
+          field.onBlur();
+        };
 
         // Display masked value
         const displayValue =
-          mask && field.value ? applyMask(String(field.value), mask) : (field.value ?? '')
+          mask && field.value
+            ? applyMask(String(field.value), mask)
+            : (field.value ?? "");
 
         return (
           <Field id={`${name}-field`} data-invalid={invalid}>
@@ -175,7 +177,7 @@ export const FormTextInput = ({
                 className={cn(
                   startAdornment && "pl-8",
                   endAdornment && "pr-12",
-                  "bg-muted"
+                  "bg-muted",
                 )}
                 {...otherProps}
               />
@@ -190,5 +192,5 @@ export const FormTextInput = ({
         );
       }}
     />
-  )
-}
+  );
+};

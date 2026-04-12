@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import { ApolloClient, type DocumentNode } from '@apollo/client'
-import { useApolloClient } from '@apollo/client/react'
-import { useEffect, useRef } from 'react'
+import { ApolloClient, type DocumentNode } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useEffect, useRef } from "react";
 
-import { logger } from './logger'
+import { logger } from "./logger";
 
-const getLog = () => logger.child({ module: 'apollo-cache-hydration' })
+const getLog = () => logger.child({ module: "apollo-cache-hydration" });
 
 /**
  * Hydrates Apollo cache with server-fetched data
@@ -16,25 +16,25 @@ export function hydrateCache<TData>(
   client: ApolloClient,
   query: DocumentNode,
   data: TData,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
 ): void {
   try {
     client.writeQuery({
       query,
       data,
       variables,
-    })
+    });
   } catch (error) {
     // If cache write fails, log but don't throw
     // The component will still work with the data passed as prop
-    getLog().error({ error }, 'Failed to hydrate Apollo cache')
+    getLog().error({ error }, "Failed to hydrate Apollo cache");
   }
 }
 
 interface ApolloCacheHydratorProps<TData> {
-  query: DocumentNode
-  data: TData | undefined
-  variables?: Record<string, unknown>
+  query: DocumentNode;
+  data: TData | undefined;
+  variables?: Record<string, unknown>;
 }
 
 /**
@@ -45,16 +45,16 @@ export function ApolloCacheHydrator<TData>({
   data,
   variables,
 }: ApolloCacheHydratorProps<TData>) {
-  const client = useApolloClient()
-  const hasHydrated = useRef(false)
+  const client = useApolloClient();
+  const hasHydrated = useRef(false);
 
   useEffect(() => {
     if (data && !hasHydrated.current) {
-      getLog().debug('Hydrating Apollo cache from server data')
-      hydrateCache(client, query, data, variables)
-      hasHydrated.current = true
+      getLog().debug("Hydrating Apollo cache from server data");
+      hydrateCache(client, query, data, variables);
+      hasHydrated.current = true;
     }
-  }, [client, query, data, variables])
+  }, [client, query, data, variables]);
 
-  return null
+  return null;
 }

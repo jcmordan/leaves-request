@@ -1,15 +1,15 @@
-'use client'
+"use client";
 
-import { ReactNode } from 'react'
+import { ReactNode } from "react";
 
-import { usePermissions } from '@/hooks/usePermissions'
+import { usePermissions } from "@/hooks/usePermissions";
 
 type ProtectedComponentProps = {
-  permission?: string
-  module?: string
-  fallback?: ReactNode
-  children: ReactNode
-}
+  permission?: string;
+  module?: string;
+  fallback?: ReactNode;
+  children: ReactNode;
+};
 
 export function ProtectedComponent({
   permission,
@@ -17,23 +17,23 @@ export function ProtectedComponent({
   fallback = null,
   children,
 }: ProtectedComponentProps) {
-  const { hasPermission, hasModule, loading } = usePermissions()
+  const { hasPermission, hasModule, loading } = usePermissions();
 
   if (loading) {
-    return null
+    return null;
   }
 
   if (permission) {
     if (!hasPermission(permission)) {
-      return <>{fallback}</>
+      return <>{fallback}</>;
     }
   }
 
   if (module) {
     if (!hasModule(module)) {
-      return <>{fallback}</>
+      return <>{fallback}</>;
     }
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }

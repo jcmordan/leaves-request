@@ -12,7 +12,7 @@ function FieldLabel({ className, ...props }: FieldPrimitive.Label.Props) {
       data-slot="field-label"
       className={cn(
         "mb-2 ml-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground",
-        className
+        className,
       )}
       {...props}
     />

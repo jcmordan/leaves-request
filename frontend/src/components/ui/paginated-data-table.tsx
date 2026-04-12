@@ -1,18 +1,18 @@
-'use client'
+"use client";
 
-import { type ColumnDef } from '@tanstack/react-table'
-import { useTranslations } from 'next-intl'
+import { type ColumnDef } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
-import { Button } from '@/components/ui/button'
-import { DataTable } from '@/components/ui/data-table'
-import { useUrlPagination } from '@/hooks/useUrlPagination'
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
+import { useUrlPagination } from "@/hooks/useUrlPagination";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 
 interface PageInfo {
-  hasNextPage?: boolean | null
-  hasPreviousPage?: boolean | null
-  startCursor?: string | null
-  endCursor?: string | null
+  hasNextPage?: boolean | null;
+  hasPreviousPage?: boolean | null;
+  startCursor?: string | null;
+  endCursor?: string | null;
 }
 
 interface PaginatedDataTableProps<TData, TValue> {
@@ -25,7 +25,7 @@ interface PaginatedDataTableProps<TData, TValue> {
   onPreviousPage?: () => void;
   className?: string;
   containerClassName?: string;
-  density?: 'comfortable' | 'standard' | 'compact';
+  density?: "comfortable" | "standard" | "compact";
 }
 
 export function PaginatedDataTable<TData, TValue>({
@@ -38,9 +38,8 @@ export function PaginatedDataTable<TData, TValue>({
   onPreviousPage,
   className,
   containerClassName,
-  density = 'standard',
+  density = "standard",
 }: Readonly<PaginatedDataTableProps<TData, TValue>>) {
-  const tCommon = useTranslations("common");
   const pagination = useUrlPagination(pageInfo);
 
   const handleNext = onNextPage ?? pagination.handleNextPage;

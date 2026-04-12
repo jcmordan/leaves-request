@@ -7,7 +7,6 @@ import { PreloadQuery } from "@/lib/apollo-client";
 import { EmployeeDetailsView } from "@/app/[locale]/(root)/employees/[employee_id]/components/EmployeeDetailsView";
 import { EMPLOYEE_DETAILS_QUERY } from "../graphql/EmployeeQueries";
 
-
 type PageProps = {
   params: Promise<{ locale: string; employee_id: string }>;
 };

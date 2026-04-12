@@ -30,7 +30,6 @@ export const employeeFormSchema = z.object({
 
 export type EmployeeFormValues = z.infer<typeof employeeFormSchema>;
 
-
 export const EmployeeEditFormContent = ({
   employeeRef,
 }: {
@@ -50,4 +49,3 @@ export const EmployeeEditFormContent = ({
     </div>
   );
 };
-

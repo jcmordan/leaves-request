@@ -1,8 +1,8 @@
 type Props = {
-  title: string
-  description?: string
-  children: React.ReactNode
-}
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+};
 
 const PageContainer = ({ title, description, children }: Props) => {
   return (
@@ -11,7 +11,7 @@ const PageContainer = ({ title, description, children }: Props) => {
       {description && <p>{description}</p>}
       {children}
     </div>
-  )
-}
+  );
+};
 
-export default PageContainer
+export default PageContainer;

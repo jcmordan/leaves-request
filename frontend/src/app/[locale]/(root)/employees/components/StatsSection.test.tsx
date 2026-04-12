@@ -1,61 +1,47 @@
-import type { ReactNode } from 'react'
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
-import { StatsSection } from './StatsSection'
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { StatsSection } from "./StatsSection";
+import { useFragment } from "@/__generated__";
 
-const useFragmentMock = vi.fn()
-
-vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string, values?: { value?: string }) =>
-    values?.value ? `${key}:${values.value}` : key,
+// Mock next-intl
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
   useFormatter: () => ({
-    number: (value: number) => `#${value}`,
+    number: (val: number) => val.toString(),
   }),
-}))
+}));
 
-vi.mock('@/__generated__', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/__generated__')>()
-  return {
-    ...actual,
-    useFragment: (...args: unknown[]) => useFragmentMock(...args),
-  }
-})
+// Mock @/__generated__
+vi.mock("@/__generated__", () => ({
+  useFragment: vi.fn(),
+  graphql: (s: string) => s,
+}));
 
-vi.mock('@/components/ui/card', () => ({
-  Card: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-  CardHeader: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-  CardTitle: ({ children }: { children: ReactNode }) => <h3>{children}</h3>,
-  CardContent: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-}))
+describe("StatsSection", () => {
+  const mockStats = {
+    employeeStats: {
+      total: 100,
+      active: 80,
+      onLeave: 15,
+      inactive: 5,
+    },
+  };
 
-vi.mock('lucide-react', () => ({
-  Users: () => <span />,
-  UserCheck: () => <span />,
-  Plane: () => <span />,
-  TrendingUp: () => <span />,
-  UserX: () => <span />,
-}))
+  it("renders all stat cards with correct values", () => {
+    (useFragment as any).mockReturnValue(mockStats);
 
-describe('StatsSection', () => {
-  it('renders all employee stat cards from fragment data', () => {
-    useFragmentMock.mockReturnValue({
-      employeeStats: {
-        total: 100,
-        active: 80,
-        onLeave: 10,
-        inactive: 10,
-      },
-    })
+    render(<StatsSection statsQueryRef={{} as any} />);
 
-    render(<StatsSection statsQueryRef={{} as never} />)
+    expect(screen.getByText("statsTotal")).toBeInTheDocument();
+    expect(screen.getByText("100")).toBeInTheDocument();
 
-    expect(screen.getByText('statsTotal')).toBeInTheDocument()
-    expect(screen.getByText('statsActive')).toBeInTheDocument()
-    expect(screen.getByText('statsOnLeave')).toBeInTheDocument()
-    expect(screen.getByText('statsInactive')).toBeInTheDocument()
+    expect(screen.getByText("statsActive")).toBeInTheDocument();
+    expect(screen.getByText("80")).toBeInTheDocument();
 
-    expect(screen.getByText('#100')).toBeInTheDocument()
-    expect(screen.getByText('#80')).toBeInTheDocument()
-    expect(screen.getAllByText('#10')).toHaveLength(2)
-  })
-})
+    expect(screen.getByText("statsOnLeave")).toBeInTheDocument();
+    expect(screen.getByText("15")).toBeInTheDocument();
+
+    expect(screen.getByText("statsInactive")).toBeInTheDocument();
+    expect(screen.getByText("5")).toBeInTheDocument();
+  });
+});

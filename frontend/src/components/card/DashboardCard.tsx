@@ -1,4 +1,4 @@
-import { ComponentProps, type JSX } from 'react'
+import { ComponentProps, type JSX } from "react";
 
 import {
   Card,
@@ -8,15 +8,15 @@ import {
   CardContent,
   CardTitle,
   CardAction,
-} from '@/components/ui/card'
+} from "@/components/ui/card";
 
-type Props = Omit<ComponentProps<typeof Card>, 'title' | 'subtitle'> & {
-  title?: React.ReactNode
-  subtitle?: React.ReactNode
-  action?: JSX.Element
-  footer?: JSX.Element
-  children?: React.ReactNode
-}
+type Props = Omit<ComponentProps<typeof Card>, "title" | "subtitle"> & {
+  title?: React.ReactNode;
+  subtitle?: React.ReactNode;
+  action?: JSX.Element;
+  footer?: JSX.Element;
+  children?: React.ReactNode;
+};
 
 const DashboardCard = ({
   title,
@@ -28,7 +28,7 @@ const DashboardCard = ({
   ...props
 }: Props) => {
   return (
-    <Card className={`pl-2 ${className ?? ''}`} {...props}>
+    <Card className={`pl-2 ${className ?? ""}`} {...props}>
       <CardHeader>
         {title && <CardTitle>{title}</CardTitle>}
         {subtitle && <CardDescription>{subtitle}</CardDescription>}
@@ -37,7 +37,7 @@ const DashboardCard = ({
       <CardContent>{children}</CardContent>
       {footer && <CardFooter>{footer}</CardFooter>}
     </Card>
-  )
-}
+  );
+};
 
-export default DashboardCard
+export default DashboardCard;

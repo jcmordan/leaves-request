@@ -1,9 +1,6 @@
 using LeaveManagement.Api.GraphQL.DataLoaders;
 using LeaveManagement.Application.DTOs;
-using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Domain.Entities;
-using LeaveManagement.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagement.Api.GraphQL.Resolvers;
 

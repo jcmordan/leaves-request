@@ -14,7 +14,7 @@ import { InputOption } from "./types";
 export const mergeSearchOptions = (
   searchedOptions: InputOption[],
   currentEntity: { id: string; name: string } | null | undefined,
-  extraCheck: boolean = true
+  extraCheck: boolean = true,
 ): InputOption[] => {
   const combined = [...searchedOptions];
 

@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { Loader2 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useEffect, useRef } from 'react'
+import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useMemo, useEffect, useRef } from "react";
 import {
   FormProvider,
   useForm,
@@ -10,10 +10,15 @@ import {
   type FieldValues,
 } from "react-hook-form";
 
-import { LoadingSkeleton } from '@/components/card/LoadingCard'
-import { useSheets } from '@/components/layout/sheets/SheetNavigation'
-import { Button } from '@/components/ui/button'
-import { SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { LoadingSkeleton } from "@/components/card/LoadingCard";
+import { useSheets } from "@/components/layout/sheets/SheetNavigation";
+import { Button } from "@/components/ui/button";
+import {
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 type FormSheetProps<TFieldValues extends FieldValues> = {
   title: string | React.ReactNode;
@@ -39,7 +44,7 @@ export const FormSheet = <TFieldValues extends FieldValues>({
   onSubmit,
   children,
   defaultValues,
-  mode = 'onChange',
+  mode = "onChange",
   submitting = false,
   loading = false,
   disabled = false,
@@ -52,53 +57,62 @@ export const FormSheet = <TFieldValues extends FieldValues>({
   showFooter = true,
   className,
 }: FormSheetProps<TFieldValues>) => {
-  const { closeSheet, setOptions, sheetOptions } = useSheets()
-  const t = useTranslations('common')
-  const tLoading = useTranslations('loading')
+  const { closeSheet, setOptions, sheetOptions } = useSheets();
+  const t = useTranslations("common");
+  const tLoading = useTranslations("loading");
   const formMethods = useForm<TFieldValues>({
     defaultValues,
     mode,
-  })
+  });
 
-  const isInitialMount = useRef(true)
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     if (isInitialMount.current) {
-      isInitialMount.current = false
+      isInitialMount.current = false;
 
-      return
+      return;
     }
 
     if (defaultValues) {
-      formMethods.reset(defaultValues)
+      formMethods.reset(defaultValues);
     }
-  }, [defaultValues, formMethods])
+  }, [defaultValues, formMethods]);
 
   useEffect(() => {
     if (className && !sheetOptions?.width) {
-      setOptions({ width: className })
+      setOptions({ width: className });
     }
-  }, [className, setOptions, sheetOptions?.width])
+  }, [className, setOptions, sheetOptions?.width]);
 
   const handleSubmit = useCallback(
     async (values: TFieldValues) => {
-      await onSubmit(values)
+      await onSubmit(values);
     },
-    [onSubmit]
-  )
+    [onSubmit],
+  );
 
   const formSubmitHandler = useMemo(
     () => formMethods.handleSubmit(handleSubmit),
-    [formMethods, handleSubmit]
-  )
+    [formMethods, handleSubmit],
+  );
 
-  const defaultSubmitLabel = useMemo(() => submitLabel ?? t('save'), [submitLabel, t])
+  const defaultSubmitLabel = useMemo(
+    () => submitLabel ?? t("save"),
+    [submitLabel, t],
+  );
 
-  const defaultCancelLabel = useMemo(() => cancelLabel ?? t('cancel'), [cancelLabel, t])
+  const defaultCancelLabel = useMemo(
+    () => cancelLabel ?? t("cancel"),
+    [cancelLabel, t],
+  );
 
-  const loadingDescription = useMemo(() => tLoading('pleaseWait'), [tLoading])
+  const loadingDescription = useMemo(() => tLoading("pleaseWait"), [tLoading]);
 
-  const isLoadingOrSubmitting = useMemo(() => loading || submitting, [loading, submitting])
+  const isLoadingOrSubmitting = useMemo(
+    () => loading || submitting,
+    [loading, submitting],
+  );
 
   return (
     <FormProvider {...formMethods}>
@@ -151,6 +165,6 @@ export const FormSheet = <TFieldValues extends FieldValues>({
       </form>
     </FormProvider>
   );
-}
+};
 
-export default FormSheet
+export default FormSheet;

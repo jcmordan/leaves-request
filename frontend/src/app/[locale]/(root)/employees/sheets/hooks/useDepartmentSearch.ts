@@ -1,12 +1,15 @@
 import { useLazyQuery } from "@apollo/client/react";
 import { useMemo } from "react";
-import { DepartmentsSearchQuery, DepartmentsSearchQueryVariables } from "@/__generated__/graphql";
+import {
+  DepartmentsSearchQuery,
+  DepartmentsSearchQueryVariables,
+} from "@/__generated__/graphql";
 import { InputOption } from "@/components/forms/types";
 import { DEPARTMENTS_SEARCH_QUERY } from "../../graphql/EmployeeQueries";
 
 type SearchFunction = (
   searchTerm: string,
-  after?: string
+  after?: string,
 ) => Promise<{
   items: InputOption[];
   hasNextPage: boolean;
@@ -30,7 +33,7 @@ export const useDepartmentSearch = (): SearchFunction => {
     () =>
       async (
         searchTerm: string,
-        after?: string
+        after?: string,
       ): Promise<{
         items: InputOption[];
         hasNextPage: boolean;
@@ -56,6 +59,6 @@ export const useDepartmentSearch = (): SearchFunction => {
           endCursor: pageInfo?.endCursor ?? null,
         };
       },
-    [searchDepartments]
+    [searchDepartments],
   );
 };

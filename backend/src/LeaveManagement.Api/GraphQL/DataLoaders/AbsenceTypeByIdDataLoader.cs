@@ -14,7 +14,7 @@ public class AbsenceTypeByIdDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : BatchDataLoader<Guid, AbsenceType>(batchScheduler, options)
+) : BatchDataLoader<Guid, AbsenceType>(batchScheduler, options), IAbsenceTypeByIdDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 

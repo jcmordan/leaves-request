@@ -14,7 +14,7 @@ public class AttachmentsByAbsenceRequestIdDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : GroupedDataLoader<Guid, Attachment>(batchScheduler, options)
+) : GroupedDataLoader<Guid, Attachment>(batchScheduler, options), IAttachmentsByAbsenceRequestIdDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 

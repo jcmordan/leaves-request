@@ -65,6 +65,59 @@ public class HolidayServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task CalculateWorkingDaysAsync_ShouldHandleMixedHolidaysAndWeekends()
+    {
+        // Friday 2024-01-05 to Tuesday 2024-01-09
+        // Friday (Work)
+        // Saturday (Weekend)
+        // Sunday (Weekend)
+        // Monday 2024-01-08 (Holiday)
+        // Tuesday (Work)
+        
+        var startDate = new DateTime(2024, 1, 5, 0, 0, 0, DateTimeKind.Utc);
+        var endDate = new DateTime(2024, 1, 9, 0, 0, 0, DateTimeKind.Utc);
+        
+        var holiday = new DateTime(2024, 1, 8, 0, 0, 0, DateTimeKind.Utc);
+        _context.PublicHolidays.Add(new PublicHoliday 
+        { 
+            Id = Guid.NewGuid(), 
+            Date = holiday, 
+            Name = "Monday Holiday", 
+            CountryCode = "US" 
+        });
+        await _context.SaveChangesAsync();
+
+        var result = await _sut.CalculateWorkingDaysAsync(startDate, endDate);
+
+        // Friday and Tuesday are working days. Sat/Sun/Mon-holiday are excluded.
+        result.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task CalculateWorkingDaysAsync_ShouldHandleHolidayOnWeekend()
+    {
+        // Saturday is a holiday
+        var saturday = new DateTime(2024, 1, 6, 0, 0, 0, DateTimeKind.Utc);
+        _context.PublicHolidays.Add(new PublicHoliday 
+        { 
+            Id = Guid.NewGuid(), 
+            Date = saturday, 
+            Name = "Saturday Holiday", 
+            CountryCode = "US" 
+        });
+        await _context.SaveChangesAsync();
+
+        var startDate = new DateTime(2024, 1, 5, 0, 0, 0, DateTimeKind.Utc); // Fri
+        var endDate = new DateTime(2024, 1, 8, 0, 0, 0, DateTimeKind.Utc);   // Mon
+
+        var result = await _sut.CalculateWorkingDaysAsync(startDate, endDate);
+
+        // Friday and Monday are working days. Saturday and Sunday are excluded.
+        // Even if Saturday is a holiday, it's already excluded as a weekend.
+        result.Should().Be(2);
+    }
+
+    [Fact]
     public async Task CalculateWorkingDaysAsync_ShouldThrow_WhenStartAfterEnd()
     {
         var startDate = new DateTime(2024, 1, 2);

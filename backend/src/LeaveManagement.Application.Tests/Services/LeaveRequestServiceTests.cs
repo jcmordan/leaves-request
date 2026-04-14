@@ -65,20 +65,38 @@ public class LeaveRequestServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task SubmitRequestAsync_StartDateInPast_ShouldThrowArgumentException()
+    public async Task SubmitRequestAsync_StartDateInPast_ShouldSaveRequest()
     {
-        var act = () =>
-            _sut.SubmitRequestAsync(
-                _employeeId,
-                _absenceTypeId,
-                DateTime.UtcNow.AddDays(-1),
-                DateTime.UtcNow,
-                "Reason"
-            );
+        // Arrange
+        var endDate = DateTime.UtcNow;
+        var startDate = endDate.AddDays(-1);
 
-        await act.Should()
-            .ThrowAsync<ArgumentException>()
-            .WithMessage("Start date cannot be in the past.");
+        _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
+        _balanceService.GetEmployeeBalanceAsync(_employeeId, startDate.Year, _absenceTypeId)
+            .Returns(new LeaveBalanceDto { Remaining = 10 });
+
+        // Act
+        var result = await _sut.SubmitRequestAsync(
+            _employeeId,
+            _absenceTypeId,
+            startDate,
+            endDate,
+            "Reason"
+        );
+
+        // Assert
+        result.Should().NotBeNull();
+        result.EmployeeId.Should().Be(_employeeId);
+        result.Status.Should().Be(RequestStatus.Pending);
+        result.TotalDaysRequested.Should().Be(2);
+
+        var savedRequest = await _context.AbsenceRequests.FirstOrDefaultAsync(r =>
+            r.Id == result.Id
+        );
+
+        savedRequest.Should().NotBeNull();
+        savedRequest!.StartDate.Should().Be(startDate);
+        savedRequest!.Reason.Should().Be("Reason");
     }
 
     [Fact]
@@ -218,6 +236,122 @@ public class LeaveRequestServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task SubmitRequestAsync_RequiresDoctor_MissingInfo_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var medicalTypeId = Guid.NewGuid();
+        _context.AbsenceTypes.Add(new AbsenceType
+        {
+            Id = medicalTypeId,
+            Name = "Medical",
+            RequiresDoctor = true,
+            IsActive = true
+        });
+        await _context.SaveChangesAsync();
+
+        var startDate = DateTime.UtcNow.AddDays(1);
+        var endDate = DateTime.UtcNow.AddDays(2);
+
+        // Act
+        var act = () => _sut.SubmitRequestAsync(_employeeId, medicalTypeId, startDate, endDate, "Fever");
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("Diagnosis and Treating Doctor are mandatory for this leave type.");
+    }
+
+    [Fact]
+    public async Task SubmitRequestAsync_RequiresAttachment_MissingFile_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var medicalTypeId = Guid.NewGuid();
+        _context.AbsenceTypes.Add(new AbsenceType
+        {
+            Id = medicalTypeId,
+            Name = "Medical",
+            RequiresAttachment = true,
+            IsActive = true
+        });
+        await _context.SaveChangesAsync();
+
+        var startDate = DateTime.UtcNow.AddDays(1);
+        var endDate = DateTime.UtcNow.AddDays(2);
+
+        // Act
+        var act = () => _sut.SubmitRequestAsync(_employeeId, medicalTypeId, startDate, endDate, "Fever");
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("An attachment is required for this leave type.");
+    }
+
+    [Fact]
+    public async Task SubmitRequestAsync_InvalidFileFormat_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var startDate = DateTime.UtcNow.AddDays(1);
+        var endDate = DateTime.UtcNow.AddDays(2);
+        using var stream = new MemoryStream(new byte[] { 1, 2, 3 });
+
+        _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
+        _balanceService.GetEmployeeBalanceAsync(_employeeId, startDate.Year, _absenceTypeId)
+            .Returns(new LeaveBalanceDto { Remaining = 10 });
+
+        // Act
+        var act = () => _sut.SubmitRequestAsync(
+            _employeeId,
+            _absenceTypeId,
+            startDate,
+            endDate,
+            "Reason",
+            fileStream: stream,
+            fileName: "test.exe"
+        );
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("Invalid file format. Only PDF, JPG, and PNG are allowed.");
+    }
+
+    [Fact]
+    public async Task SubmitRequestAsync_WithDiagnosisAndDoctor_ShouldSaveRequest()
+    {
+        // Arrange
+        var medicalTypeId = Guid.NewGuid();
+        _context.AbsenceTypes.Add(new AbsenceType
+        {
+            Id = medicalTypeId,
+            Name = "Medical",
+            RequiresDoctor = true,
+            IsActive = true
+        });
+        await _context.SaveChangesAsync();
+
+        var startDate = DateTime.UtcNow.AddDays(1);
+        var endDate = DateTime.UtcNow.AddDays(2);
+
+        _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
+        _balanceService.GetEmployeeBalanceAsync(_employeeId, startDate.Year, medicalTypeId)
+            .Returns(new LeaveBalanceDto { Remaining = 10 });
+
+        // Act
+        var result = await _sut.SubmitRequestAsync(
+            _employeeId,
+            medicalTypeId,
+            startDate,
+            endDate,
+            "Fever",
+            diagnosis: "Influenza",
+            treatingDoctor: "Dr. Gregory House"
+        );
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Diagnosis.Should().Be("Influenza");
+        result.TreatingDoctor.Should().Be("Dr. Gregory House");
+    }
+
+    [Fact]
     public async Task ApproveRequestAsync_DirectManager_ShouldApprove()
     {
         var managerId = Guid.NewGuid();
@@ -252,9 +386,96 @@ public class LeaveRequestServiceTests : IDisposable
 
         var result = await _sut.ApproveRequestAsync(request.Id, managerId, "Approved by manager");
 
-        result.Should().BeTrue();
-        request.Status.Should().Be(RequestStatus.Approved);
+        result.Should().NotBeNull();
+        result.Id.Should().Be(request.Id);
+        result.Status.Should().Be(RequestStatus.Approved);
         request.ApprovalHistories.Should().ContainSingle(h => h.Action == ApprovalAction.Approved);
+    }
+
+    [Fact]
+    public async Task SubmitRequestAsync_WithSubType_ShouldSaveRequest()
+    {
+        // Arrange
+        var subTypeId = Guid.NewGuid();
+        _context.AbsenceTypes.Add(new AbsenceType
+        {
+            Id = subTypeId,
+            Name = "Maternity",
+            ParentId = _absenceTypeId,
+            IsActive = true
+        });
+        await _context.SaveChangesAsync();
+
+        var startDate = DateTime.UtcNow.AddDays(1);
+        var endDate = DateTime.UtcNow.AddDays(2);
+
+        _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
+        _balanceService.GetEmployeeBalanceAsync(_employeeId, startDate.Year, _absenceTypeId)
+            .Returns(new LeaveBalanceDto { Remaining = 10 });
+
+        // Act
+        var result = await _sut.SubmitRequestAsync(
+            _employeeId,
+            _absenceTypeId,
+            startDate,
+            endDate,
+            "Reason",
+            absenceSubTypeId: subTypeId
+        );
+
+        // Assert
+        result.Should().NotBeNull();
+        result.AbsenceSubTypeId.Should().Be(subTypeId);
+    }
+
+    [Fact]
+    public async Task SubmitRequestAsync_WithAttachment_ShouldSaveRequest()
+    {
+        // Arrange
+        var medicalTypeId = Guid.NewGuid();
+        _context.AbsenceTypes.Add(new AbsenceType
+        {
+            Id = medicalTypeId,
+            Name = "Medical",
+            RequiresAttachment = true,
+            IsActive = true
+        });
+
+        // Setup configuration for file path
+        var tempPath = Path.Combine(Path.GetTempPath(), "LeaveManagementTests_" + Guid.NewGuid().ToString());
+        _context.Configurations.Add(new Configuration { Key = "AttachmentBasePath", Value = tempPath });
+        
+        await _context.SaveChangesAsync();
+
+        var startDate = DateTime.UtcNow.AddDays(1);
+        var endDate = DateTime.UtcNow.AddDays(2);
+        using var stream = new MemoryStream(new byte[] { 1, 2, 3 });
+
+        _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
+        _balanceService.GetEmployeeBalanceAsync(_employeeId, startDate.Year, medicalTypeId)
+            .Returns(new LeaveBalanceDto { Remaining = 10 });
+
+        // Act
+        var result = await _sut.SubmitRequestAsync(
+            _employeeId,
+            medicalTypeId,
+            startDate,
+            endDate,
+            "Fever",
+            fileStream: stream,
+            fileName: "test.pdf"
+        );
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Attachments.Should().HaveCount(1);
+        result.Attachments.First().FileName.Should().Be("test.pdf");
+
+        // Cleanup
+        if (Directory.Exists(tempPath))
+        {
+            Directory.Delete(tempPath, true);
+        }
     }
 
     [Fact]
@@ -323,8 +544,9 @@ public class LeaveRequestServiceTests : IDisposable
 
         // HR approves medical leave
         var hrResult = await _sut.ApproveRequestAsync(request.Id, hrId, "HR approval");
-        hrResult.Should().BeTrue();
-        request.Status.Should().Be(RequestStatus.Approved);
+        hrResult.Should().NotBeNull();
+        hrResult.Id.Should().Be(request.Id);
+        hrResult.Status.Should().Be(RequestStatus.Approved);
     }
 
     [Fact]
@@ -397,7 +619,8 @@ public class LeaveRequestServiceTests : IDisposable
         _context.ChangeTracker.Clear();
 
         var result = await _sut.RejectRequestAsync(request.Id, approverId, "No vacation for you");
-        result.Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Id.Should().Be(request.Id);
 
         _context.ChangeTracker.Clear();
         var reloadedRequest = await _context
@@ -428,8 +651,9 @@ public class LeaveRequestServiceTests : IDisposable
 
         var result = await _sut.CancelRequestAsync(request.Id, "Change of plans");
 
-        result.Should().BeTrue();
-        request.Status.Should().Be(RequestStatus.Cancelled);
+        result.Should().NotBeNull();
+        result.Id.Should().Be(request.Id);
+        result.Status.Should().Be(RequestStatus.Cancelled);
     }
 
     [Fact]

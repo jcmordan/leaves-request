@@ -16,15 +16,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FragmentType, useFragment } from "@/__generated__";
-import {
-  MY_REQUEST_ITEM_FRAGMENT,
-  CANCEL_REQUEST_MUTATION,
-} from "../graphql/MyRequestsQueries";
+import { SHARED_REQUEST_ITEM_FRAGMENT } from "@/app/[locale]/(root)/requests/graphql/RequestFragments";
+import { CANCEL_REQUEST_MUTATION } from "@/app/[locale]/(root)/requests/graphql/RequestMutations";
 
 interface CancelRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
-  requestRef: FragmentType<typeof MY_REQUEST_ITEM_FRAGMENT> | null;
+  requestRef?: FragmentType<typeof SHARED_REQUEST_ITEM_FRAGMENT> | null;
   onSuccess?: () => void;
 }
 
@@ -43,7 +41,7 @@ export function CancelRequestModal({
   const { locale } = useParams();
   const dateLocale = locale === "es" ? es : enUS;
 
-  const request = useFragment(MY_REQUEST_ITEM_FRAGMENT, requestRef);
+  const request = useFragment(SHARED_REQUEST_ITEM_FRAGMENT, requestRef);
 
   const [cancelRequest, { loading }] = useMutation(CANCEL_REQUEST_MUTATION, {
     onCompleted: (data) => {
@@ -107,7 +105,7 @@ export function CancelRequestModal({
               <Calendar className="text-primary w-5 h-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-on-surface-variant/50 leading-none mb-1">
+              <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/50 leading-none mb-1">
                 {t("requestSummary")}
               </span>
               <span className="text-sm font-bold text-primary">
@@ -120,6 +118,7 @@ export function CancelRequestModal({
         {/* Action Buttons */}
         <div className="px-8 pb-8 flex flex-col gap-3">
           <Button
+            type="button"
             variant="destructive"
             className="w-full py-6 rounded-xl font-headline font-bold text-sm shadow-lg shadow-error/20 h-auto flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.98]"
             onClick={handleCancel}

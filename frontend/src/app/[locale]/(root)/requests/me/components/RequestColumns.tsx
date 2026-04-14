@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useRouter, useParams } from "next/navigation";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 import {
   RequestStatus,
@@ -105,7 +106,13 @@ const ActionsCell = ({
   onCancel?: (request: RequestItem) => void;
 }) => {
   const t = useTranslations("requests");
+  const router = useRouter();
+  const { locale } = useParams<{ locale: string }>();
   const request = row.original;
+
+  const handleViewDetails = () => {
+    router.push(`/${locale}/requests/${request.id}`);
+  };
 
   return (
     <div className="flex gap-2 justify-end">
@@ -121,6 +128,8 @@ const ActionsCell = ({
       <Button
         variant="ghost"
         className="h-8 w-8 hover:bg-white transition-colors"
+        onClick={handleViewDetails}
+        title={t("viewDetails")}
       >
         <IconChevronsUpRight />
       </Button>

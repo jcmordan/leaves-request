@@ -1,37 +1,15 @@
 import { graphql } from "@/__generated__";
+import { SHARED_BALANCE_FRAGMENT } from "../../graphql/RequestFragments";
+import { CANCEL_REQUEST_MUTATION } from "../../graphql/RequestMutations";
 
-export const MY_BALANCE_FRAGMENT = graphql(`
-  fragment MyRequests_BalanceFields on LeaveBalanceDto {
-    id
-    employeeId
-    totalEntitlement
-    taken
-    remaining
-    availablePercentage
-    totalRequests
-    pendingRequests
-    approvedRequests
-    rejectedRequests
-    cancelledRequests
-  }
-`);
+export { SHARED_BALANCE_FRAGMENT as MY_BALANCE_FRAGMENT };
+export { CANCEL_REQUEST_MUTATION };
 
 export const MY_REQUEST_ITEM_FRAGMENT = graphql(`
   fragment MyRequests_ItemFields on AbsenceRequest {
-    id
-    startDate
-    endDate
+    ...Shared_RequestItemFields
     status
-    reason
     createdAt
-    absenceType {
-      id
-      name
-    }
-    employee {
-      id
-      fullName
-    }
     requesterEmployee {
       id
       fullName
@@ -63,7 +41,7 @@ export const MY_REQUESTS_QUERY = graphql(`
     $status: RequestStatus
   ) {
     myBalance {
-      ...MyRequests_BalanceFields
+      ...Shared_BalanceFields
     }
     myRequests(
       first: $first
@@ -77,22 +55,6 @@ export const MY_REQUESTS_QUERY = graphql(`
   }
 `);
 
-export const CANCEL_REQUEST_MUTATION = graphql(`
-  mutation MyRequests_CancelMutation($input: CancelLeaveRequestInput!) {
-    cancelLeaveRequest(input: $input) {
-      request {
-        id
-        status
-      }
-      balance {
-        ...MyRequests_BalanceFields
-      }
-    }
-  }
-`);
-
-
-
 export const SUBMIT_LEAVE_REQUEST_MUTATION = graphql(`
   mutation MyRequests_SubmitMutation($input: SubmitLeaveRequestInput!) {
     submitLeaveRequest(input: $input) {
@@ -100,7 +62,7 @@ export const SUBMIT_LEAVE_REQUEST_MUTATION = graphql(`
         ...MyRequests_ItemFields
       }
       balance {
-        ...MyRequests_BalanceFields
+        ...Shared_BalanceFields
       }
     }
   }

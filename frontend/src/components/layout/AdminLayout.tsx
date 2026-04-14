@@ -29,7 +29,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
   const getNavigation = () => {
     const baseNav = [
-      { name: t("myRequests"), href: "/my-requests", icon: Clock },
+      { name: t("myRequests"), href: "/requests/me", icon: Clock },
       { name: t("employees"), href: "/employees", icon: UserCircle },
     ];
 

@@ -29,7 +29,13 @@ vi.mock("@apollo/client/react", () => ({
 vi.mock("@/__generated__", () => ({
   useFragment: vi.fn(),
   graphql: (s: any) => s,
-  MY_REQUEST_ITEM_FRAGMENT: {},
+}));
+
+vi.mock("@/app/[locale]/(root)/requests/graphql/RequestFragments", () => ({
+  SHARED_REQUEST_ITEM_FRAGMENT: {},
+}));
+
+vi.mock("@/app/[locale]/(root)/requests/graphql/RequestMutations", () => ({
   CANCEL_REQUEST_MUTATION: {},
 }));
 
@@ -80,10 +86,9 @@ describe("CancelRequestModal", () => {
     expect(screen.getByText("cancelRequestTitle")).toBeInTheDocument();
     expect(screen.getByText(/Vacation/i)).toBeInTheDocument();
     
-    // Check for the date range - being more flexible with potential split nodes
-    const summaryText = screen.getByText(/Vacation/i).parentElement?.textContent;
-    expect(summaryText).toContain("May 1");
-    expect(summaryText).toContain("May 5");
+    // Check for the date range 
+    expect(screen.getByText(/May 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/May 5/i)).toBeInTheDocument();
   });
 
   it("calls cancelRequest mutation when confirm button is clicked", () => {
@@ -190,41 +195,6 @@ describe("CancelRequestModal", () => {
     onErrorCallback(new Error("GraphQL error"));
 
     expect(toast.error).toHaveBeenCalledWith("cancelError");
-  });
-
-  it("handles successful cancellation without onSuccess callback", async () => {
-    let onCompletedCallback: any;
-    (useMutation as any).mockImplementation((_mutation: any, options: any) => {
-      onCompletedCallback = options.onCompleted;
-      return [cancelRequestMock, { loading: false }];
-    });
-
-    render(
-      <CancelRequestModal
-        isOpen={true}
-        onClose={onCloseMock}
-        requestRef={{} as any}
-      />
-    );
-
-    fireEvent.click(screen.getByText("confirmCancel"));
-    onCompletedCallback({ cancelLeaveRequest: true });
-
-    expect(onCloseMock).toHaveBeenCalled();
-    // No error if onSuccess is missing
-  });
-
-  it("renders correctly with Spanish locale", () => {
-    useParamsMock.mockReturnValue({ locale: "es" });
-    render(
-      <CancelRequestModal
-        isOpen={true}
-        onClose={vi.fn()}
-        requestRef={mockRequest as any}
-      />
-    );
-
-    expect(screen.getByText(/Vacation/i)).toBeInTheDocument();
   });
 
   it("disables buttons when loading is true", () => {

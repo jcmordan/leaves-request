@@ -8,7 +8,7 @@ import { FragmentType, useFragment } from "@/__generated__";
 import { MY_REQUESTS_CONNECTION_FRAGMENT } from "../graphql/MyRequestsQueries";
 import { RequestStatus } from "@/__generated__/graphql";
 import { EmptyState } from "@/components/ui/empty-state";
-import { CancelRequestModal } from "./CancelRequestModal";
+import { CancelRequestModal } from "@/components/requests/CancelRequestModal";
 
 interface RequestsTableProps {
   requestsRef?: FragmentType<typeof MY_REQUESTS_CONNECTION_FRAGMENT> | null;

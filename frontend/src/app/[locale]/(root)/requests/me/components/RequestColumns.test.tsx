@@ -8,15 +8,37 @@ vi.mock("next-intl", () => ({
     key === "approved" ? "status_approved" : key,
 }));
 
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    back: vi.fn(),
+  }),
+  useParams: () => ({
+    locale: "en",
+  }),
+}));
+
 // Mock @/__generated__
 vi.mock("@/__generated__", () => ({
   graphql: (s: string) => s,
+  useFragment: (fragment: any, data: any) => data,
   RequestStatus: {
     Approved: "APPROVED",
     Pending: "PENDING",
     Rejected: "REJECTED",
     Cancelled: "CANCELLED",
   },
+}));
+
+// Mock @/i18n/navigation
+vi.mock("@/i18n/navigation", () => ({
+  Link: ({ children, href }: any) => <a href={href}>{children}</a>,
+}));
+
+// Mock CancelRequestModal
+vi.mock("@/components/requests/CancelRequestModal", () => ({
+  CancelRequestModal: () => <div data-testid="cancel-modal" />,
 }));
 
 // Helper to render a hook in a test component

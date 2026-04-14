@@ -74,3 +74,49 @@ export const MY_REQUESTS_QUERY = graphql(`
     }
   }
 `);
+
+export const CANCEL_REQUEST_MUTATION = graphql(`
+  mutation CancelLeaveRequest($input: CancelLeaveRequestInput!) {
+    cancelLeaveRequest(input: $input) {
+      ...MyRequestItemFragment
+    }
+  }
+`);
+
+
+
+export const SUBMIT_LEAVE_REQUEST_MUTATION = graphql(`
+  mutation SubmitLeaveRequest($input: SubmitLeaveRequestInput!) {
+    submitLeaveRequest(input: $input) {
+      ...MyRequestItemFragment
+    }
+  }
+`);
+
+export const ABSENCE_TYPES_QUERY_FRAGMENT = graphql(`
+  fragment AbsenceTypesFragment on AbsenceTypesConnection {
+    nodes {
+      id
+      parentId
+      name
+      requiresAttachment
+      requiresDoctor
+      deductsFromBalance
+      calculationType
+      maxDaysPerYear
+    }
+  }
+`);
+
+export const SUBMIT_LEAVE_REQUEST_QUERY = graphql(`
+  query SubmitLeaveRequests($year: Int!) {
+    absenceTypes(first: 20) {
+      ...AbsenceTypesFragment
+    }
+    publicHolidays(year: $year) {
+      id
+      date
+      name
+    }
+  }
+`);

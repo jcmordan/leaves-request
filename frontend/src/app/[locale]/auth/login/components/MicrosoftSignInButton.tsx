@@ -22,7 +22,7 @@ const MicrosoftLogo = () => (
  * Button that triggers Microsoft Entra ID sign-in flow.
  */
 export function MicrosoftSignInButton({ onClick }: MicrosoftSignInButtonProps) {
-  const t = useTranslations("Auth");
+  const t = useTranslations("auth");
 
   return (
     <button

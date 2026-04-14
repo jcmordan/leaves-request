@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 
 export function LoginDivider() {
-  const t = useTranslations("Auth");
+  const t = useTranslations("auth");
 
   return (
     <div className="relative my-8 flex items-center">

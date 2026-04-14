@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import { FragmentType, useFragment } from "@/__generated__";
 import { MY_BALANCE_FRAGMENT } from "../graphql/MyRequestsQueries";
 import { IconWallet } from "@tabler/icons-react";
+import { useSheets } from "@/components/layout/sheets/SheetNavigation";
+import { Button } from "@/components/ui/button";
 
 interface LeaveBalanceSectionProps {
   balanceRef: FragmentType<typeof MY_BALANCE_FRAGMENT>;
@@ -17,13 +19,25 @@ interface LeaveBalanceSectionProps {
  * Adheres to the "No-Line" rule and utilizes brand gradients for primary CTAs.
  */
 export function LeaveBalanceSection({ balanceRef }: LeaveBalanceSectionProps) {
-  const t = useTranslations("myRequests");
+  const t = useTranslations("requests");
   const params = useParams();
-  const locale = params.locale as string;
   const balance = useFragment(MY_BALANCE_FRAGMENT, balanceRef);
+  const { openSheet } = useSheets();
+
+  const locale = params.locale as string;
   const { totalEntitlement, taken, remaining } = balance;
   const currentYear = new Date().getFullYear();
   const lastUpdated = "Oct 24, 2023"; // TODO: Fetch from actual data if available
+
+  const handleNewRequest = () => {
+    openSheet(
+      "SubmitAbsentRequestSheet",
+      {},
+      {
+        width: "lg",
+      },
+    );
+  };
 
   return (
     <div className="w-full bg-surface-container-lowest rounded-xl p-6 shadow-sm flex flex-col border border-surface-container/50">
@@ -91,12 +105,15 @@ export function LeaveBalanceSection({ balanceRef }: LeaveBalanceSectionProps) {
         </div>
       </div>
 
-      <Link href={`/${locale}/requests/new`} className="mt-8 block">
-        <button className="w-full py-2.5 bg-gradient-to-br from-primary to-primary-container text-white text-xs font-bold rounded-lg shadow-md flex items-center justify-center gap-2 hover:opacity-90 transition-opacity uppercase tracking-widest">
-          <Plus className="w-4 h-4" />
-          {t("newRequest")}
-        </button>
-      </Link>
+      <Button
+        className="w-full h-12 bg-linear-to-br from-primary to-primary-container text-white text-xs font-bold rounded-lg shadow-md flex items-center justify-center gap-2 hover:opacity-90 transition-opacity uppercase tracking-widest"
+        variant="default"
+        size="lg"
+        onClick={handleNewRequest}
+      >
+        <Plus className="w-4 h-4" />
+        {t("newRequest")}
+      </Button>
     </div>
   );
 }

@@ -2,6 +2,8 @@
 
 import { createContext, useContext, ReactNode } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useLocale } from "next-intl";
+import { useSearchParams } from "next/navigation";
 
 export type Role =
   | "Admin"
@@ -35,6 +37,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { data: session, status } = useSession();
+  const locale = useLocale();
+  const searchParams = useSearchParams();
   const isLoading = status === "loading";
   const isAuthenticated = status === "authenticated";
 
@@ -51,11 +55,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     provider: string = "microsoft-entra-id",
     credentials?: Record<string, string>,
   ) => {
-    await signIn(provider, { ...credentials, callbackUrl: "/" });
+    const callbackUrl = searchParams.get("callbackUrl") || "/";
+    await signIn(provider, { ...credentials, callbackUrl });
   };
 
   const logout = async () => {
-    await signOut({ callbackUrl: "/es/auth/login" });
+    await signOut({ callbackUrl: `/${locale}/auth/login` });
   };
 
   const contextValue: AuthContextType = {

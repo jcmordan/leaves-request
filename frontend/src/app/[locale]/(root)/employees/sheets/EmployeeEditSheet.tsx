@@ -81,7 +81,7 @@ export const EmployeeEditSheet = () => {
       defaultValues={defaultValues}
       loading={loadingEmployee}
       submitting={updating}
-      className="md:w-[540px] lg:w-[600px] bg-white" // Adjusted width and set white background per design
+      className="bg-white"
     >
       <EmployeeEditFormContent employeeRef={employeeData?.employee} />
     </FormSheet>

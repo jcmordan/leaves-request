@@ -49,7 +49,8 @@
     "approvals": "Aprobaciones",
     "allRequests": "Todas las Solicitudes",
     "employees": "Empleados",
-    "myRequests": "Mis Solicitudes"
+    "myRequests": "Mis Solicitudes",
+    "newRequest": "Nueva Solicitud"
   },
   "layout": {
     "workspace": "Portal de Servicios al Colaborador",
@@ -170,7 +171,7 @@
     "search": "Buscar...",
     "searchPlaceholder": "Escribe al menos {min} caracteres para buscar..."
   },
-  "myRequests": {
+  "requests": {
     "title": "Mis Solicitudes",
     "description": "Ver y gestionar sus solicitudes de permisos y su historial.",
     "totalRequests": "Total de Solicitudes",
@@ -212,6 +213,46 @@
     "updatedAsOf": "Actualizado al {date}",
     "clearFilters": "Limpiar todo",
     "noFilters": "Sin filtros aplicados",
-    "emptyStateTitle": "No se encontraron solicitudes"
+    "emptyStateTitle": "No se encontraron solicitudes",
+    "cancelRequestTitle": "Cancelar Solicitud",
+    "cancelRequestConfirmation": "¿Estás seguro de que quieres cancelar esta solicitud? Esta acción no se puede deshacer.",
+    "confirmCancel": "Sí, cancelar solicitud",
+    "keepRequest": "Mantener solicitud",
+    "requestSummary": "Resumen de la solicitud",
+    "cancelSuccess": "La solicitud ha sido cancelada con éxito.",
+    "cancelError": "No se pudo cancelar la solicitud. Por favor, inténtelo de nuevo.",
+    "cancelling": "Cancelando...",
+    "submitNewRequest": "Enviar Nueva Solicitud",
+    "schedule": "Planificación",
+    "additionalDetails": "Detalles Adicionales",
+    "corporateManagement": "Gestión de Ausencias Corporativas Refidomsa",
+    "absenceCategory": "Categoría de Ausencia",
+    "absenceType": "Tipo de Ausencia",
+    "absenceSubtype": "Subtipo de Ausencia",
+    "selectType": "Seleccionar Tipo",
+    "selectSubtype": "Seleccionar Subtipo",
+    "startDate": "Fecha de Inicio",
+    "requestedDays": "Días Solicitados",
+    "calculatedEndDate": "Fecha de Finalización Calculada",
+    "totalUnits": "Unidades Totales",
+    "medicalLeaveDetails": "Detalles de Licencia Médica",
+    "medicalEvidence": "Evidencia Médica",
+    "diagnosis": "Diagnóstico / Motivo",
+    "treatingDoctor": "Médico Tratante",
+    "medicalCertificate": "Certificado Médico / Docs de Respaldo",
+    "uploadEvidence": "Subir Evidencia Clínica",
+    "maxFileSize": "PDF, HEIC o JPEG (Máx. 15MB)",
+    "additionalComments": "Comentarios Adicionales",
+    "commentsPlaceholder": "Proporcione cualquier contexto adicional para la revisión del supervisor...",
+    "saveAsDraft": "Guardar como Borrador",
+    "submitRequest": "Enviar Solicitud",
+    "submitSuccess": "Solicitud de licencia enviada con éxito",
+    "submitError": "No se pudo enviar la solicitud",
+    "minReasonError": "El motivo debe tener al menos 3 caracteres",
+    "invalidAbsenceType": "Tipo de ausencia inválido",
+    "invalidSubtype": "Subtipo inválido",
+    "startDateRequired": "La fecha de inicio es requerida",
+    "minDaysError": "Mínimo 0.5 días",
+    "day": "Día"
   }
 }

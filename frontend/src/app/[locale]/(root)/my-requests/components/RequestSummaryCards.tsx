@@ -24,7 +24,7 @@ interface RequestSummaryCardsProps {
 export function RequestSummaryCards({
   myBalanceRef,
 }: RequestSummaryCardsProps) {
-  const t = useTranslations("myRequests");
+  const t = useTranslations("requests");
   const router = useRouter();
   const { locale } = useParams();
 

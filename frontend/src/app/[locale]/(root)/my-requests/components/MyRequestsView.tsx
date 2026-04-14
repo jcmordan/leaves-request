@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl";
  */
 export default function MyRequestsView() {
   const searchParams = useSearchParams();
-  const t = useTranslations("myRequests");
+  const t = useTranslations("requests");
 
   const after = searchParams.get("after");
   const before = searchParams.get("before");

@@ -20,9 +20,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={(cn("h-full antialiased"), manrope.variable, inter.variable)}
+      className={cn("h-full antialiased", manrope.variable, inter.variable)}
+      suppressHydrationWarning={true}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col" suppressHydrationWarning={true}>
+        {children}
+      </body>
     </html>
   );
 }

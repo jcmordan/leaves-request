@@ -10,22 +10,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagement.Application.Services;
 
-public class LeaveRequestService : ILeaveRequestService
+public class LeaveRequestService(
+    LeaveManagementDbContext context,
+    IHolidayService holidayService,
+    IBalanceService balanceService
+    ) : ILeaveRequestService
 {
-    private readonly LeaveManagementDbContext _context;
-    private readonly IHolidayService _holidayService;
-    private readonly IBalanceService _balanceService;
-
-    public LeaveRequestService(
-        LeaveManagementDbContext context,
-        IHolidayService holidayService,
-        IBalanceService balanceService
-    )
-    {
-        _context = context;
-        _holidayService = holidayService;
-        _balanceService = balanceService;
-    }
+    private readonly LeaveManagementDbContext _context = context;
+    private readonly IHolidayService _holidayService = holidayService;
+    private readonly IBalanceService _balanceService = balanceService;
 
     public async Task<AbsenceRequest> SubmitRequestAsync(
         Guid employeeId,
@@ -33,16 +26,14 @@ public class LeaveRequestService : ILeaveRequestService
         DateTime startDate,
         DateTime endDate,
         string reason,
+        Guid? absenceSubTypeId = null,
         string? diagnosis = null,
         string? treatingDoctor = null,
-        byte[]? attachment = null,
+        System.IO.Stream? fileStream = null,
         string? fileName = null
     )
     {
-        if (startDate.Date < DateTime.UtcNow.Date)
-        {
-            throw new ArgumentException("Start date cannot be in the past.");
-        }
+
 
         if (startDate > endDate)
         {
@@ -63,7 +54,7 @@ public class LeaveRequestService : ILeaveRequestService
             );
         }
 
-        if (absenceType.RequiresAttachment && (attachment == null || fileName == null))
+        if (absenceType.RequiresAttachment && (fileStream == null || fileName == null))
         {
             throw new ArgumentException("An attachment is required for this leave type.");
         }
@@ -124,6 +115,7 @@ public class LeaveRequestService : ILeaveRequestService
             Id = Guid.NewGuid(),
             EmployeeId = employeeId,
             AbsenceTypeId = absenceTypeId,
+            AbsenceSubTypeId = absenceSubTypeId,
             StartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc),
             EndDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc),
             Status = RequestStatus.Pending,
@@ -135,15 +127,17 @@ public class LeaveRequestService : ILeaveRequestService
             RequesterEmployeeId = employeeId,
         };
 
-        if (attachment != null && fileName != null)
+        if (fileStream != null && fileName != null)
         {
+            var filePath = await SaveFileAsync(fileStream, fileName);
             request.Attachments.Add(
                 new Attachment
                 {
                     Id = Guid.NewGuid(),
                     FileName = fileName,
                     FileType = "application/octet-stream",
-                    Data = attachment,
+                    FilePath = filePath,
+                    FileSize = fileStream.Length,
                     UploadedAt = DateTime.UtcNow,
                 }
             );
@@ -160,9 +154,10 @@ public class LeaveRequestService : ILeaveRequestService
         DateTime startDate,
         DateTime endDate,
         string reason,
+        Guid? absenceSubTypeId = null,
         string? diagnosis = null,
         string? treatingDoctor = null,
-        byte[]? attachment = null,
+        System.IO.Stream? fileStream = null,
         string? fileName = null
     )
     {
@@ -209,15 +204,27 @@ public class LeaveRequestService : ILeaveRequestService
         request.TreatingDoctor = treatingDoctor;
         request.Status = RequestStatus.Pending; // Return to pending
 
-        if (attachment != null && !string.IsNullOrEmpty(fileName))
+        if (absenceSubTypeId.HasValue)
         {
+            var subType = await _context.AbsenceTypes.FindAsync(absenceSubTypeId.Value);
+            if (subType == null || subType.ParentId != request.AbsenceTypeId)
+            {
+                throw new Exception("Invalid absence subtype.");
+            }
+            request.AbsenceSubTypeId = absenceSubTypeId.Value;
+        }
+
+        if (fileStream != null && !string.IsNullOrEmpty(fileName))
+        {
+            var filePath = await SaveFileAsync(fileStream, fileName);
             request.Attachments.Add(
                 new Attachment
                 {
                     Id = Guid.NewGuid(),
                     FileName = fileName,
                     FileType = "application/octet-stream",
-                    Data = attachment,
+                    FilePath = filePath,
+                    FileSize = fileStream.Length,
                     UploadedAt = DateTime.UtcNow,
                 }
             );
@@ -227,7 +234,7 @@ public class LeaveRequestService : ILeaveRequestService
         return request;
     }
 
-    public async Task<bool> ApproveRequestAsync(Guid requestId, Guid approverId, string comment)
+    public async Task<AbsenceRequest> ApproveRequestAsync(Guid requestId, Guid approverId, string comment)
     {
         var request =
             await _context
@@ -285,10 +292,10 @@ public class LeaveRequestService : ILeaveRequestService
 
         await _context.SaveChangesAsync();
 
-        return true;
+        return request;
     }
 
-    public async Task<bool> RequestModificationAsync(
+    public async Task<AbsenceRequest> RequestModificationAsync(
         Guid requestId,
         Guid approverId,
         string comment
@@ -313,10 +320,10 @@ public class LeaveRequestService : ILeaveRequestService
 
         await _context.SaveChangesAsync();
 
-        return true;
+        return request;
     }
 
-    public async Task<bool> RejectRequestAsync(Guid requestId, Guid approverId, string comment)
+    public async Task<AbsenceRequest> RejectRequestAsync(Guid requestId, Guid approverId, string comment)
     {
         var request =
             await _context
@@ -350,10 +357,10 @@ public class LeaveRequestService : ILeaveRequestService
 
         await _context.SaveChangesAsync();
 
-        return true;
+        return request;
     }
 
-    public async Task<bool> CancelRequestAsync(Guid requestId, string reason)
+    public async Task<AbsenceRequest> CancelRequestAsync(Guid requestId, string reason)
     {
         var request =
             await _context
@@ -372,7 +379,7 @@ public class LeaveRequestService : ILeaveRequestService
 
         await _context.SaveChangesAsync();
 
-        return true;
+        return request;
     }
 
     /// <inheritdoc/>
@@ -419,5 +426,26 @@ public class LeaveRequestService : ILeaveRequestService
     public async Task<AbsenceRequest?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         return await _context.AbsenceRequests.FindAsync(new object[] { id }, ct);
+    }
+
+    private async Task<string> SaveFileAsync(System.IO.Stream fileStream, string fileName)
+    {
+        var basePathConfig = await _context.Configurations.FirstOrDefaultAsync(c => c.Key == "AttachmentBasePath");
+        string basePath = basePathConfig?.Value ?? "uploads";
+
+        if (!System.IO.Directory.Exists(basePath))
+        {
+            System.IO.Directory.CreateDirectory(basePath);
+        }
+
+        string uniqueFileName = $"{Guid.NewGuid()}_{fileName}";
+        string filePath = System.IO.Path.Combine(basePath, uniqueFileName);
+
+        using (var fs = new System.IO.FileStream(filePath, System.IO.FileMode.Create))
+        {
+            await fileStream.CopyToAsync(fs);
+        }
+
+        return filePath;
     }
 }

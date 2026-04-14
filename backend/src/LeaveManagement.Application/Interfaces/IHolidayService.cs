@@ -9,4 +9,5 @@ public interface IHolidayService
     Task<bool> IsHolidayAsync(DateTime date);
     Task<bool> IsWeekendAsync(DateTime date);
     Task<int> SyncPublicHolidaysAsync(int year, string countryCode);
+    Task<List<LeaveManagement.Domain.Entities.PublicHoliday>> GetPublicHolidaysAsync(int year);
 }

@@ -16,7 +16,7 @@ import { daysBetween } from "@/utils/dateUtils";
 export type RequestItem = MyRequestItemFragmentFragment;
 
 const StatusCell = ({ row }: CellContext<RequestItem, any>) => {
-  const t = useTranslations("myRequests");
+  const t = useTranslations("requests");
   const status = row.original.status;
 
   switch (status) {
@@ -98,8 +98,13 @@ const DaysCell = ({ row }: CellContext<RequestItem, any>) => {
   );
 };
 
-const ActionsCell = ({ row }: CellContext<RequestItem, any>) => {
-  const t = useTranslations("myRequests");
+const ActionsCell = ({
+  row,
+  onCancel,
+}: CellContext<RequestItem, any> & {
+  onCancel?: (request: RequestItem) => void;
+}) => {
+  const t = useTranslations("requests");
   const request = row.original;
 
   return (
@@ -108,6 +113,7 @@ const ActionsCell = ({ row }: CellContext<RequestItem, any>) => {
         <Button
           variant="ghost"
           className="h-8 w-8 hover:bg-white transition-colors"
+          onClick={() => onCancel?.(request)}
         >
           <IconCancel />
         </Button>
@@ -122,8 +128,8 @@ const ActionsCell = ({ row }: CellContext<RequestItem, any>) => {
   );
 };
 
-export const useRequestColumns = () => {
-  const t = useTranslations("myRequests");
+export const useRequestColumns = (onCancel?: (request: RequestItem) => void) => {
+  const t = useTranslations("requests");
 
   const columns: ColumnDef<RequestItem>[] = [
     {
@@ -159,7 +165,7 @@ export const useRequestColumns = () => {
     {
       id: "actions",
       header: "",
-      cell: ActionsCell,
+      cell: (props) => <ActionsCell {...props} onCancel={onCancel} />,
     },
   ];
 

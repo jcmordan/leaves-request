@@ -30,6 +30,9 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("uuidv7()");
 
+                    b.Property<Guid?>("AbsenceSubTypeId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("AbsenceTypeId")
                         .HasColumnType("uuid");
 
@@ -60,9 +63,8 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<int>("TotalDaysRequested")
                         .HasColumnType("integer");
@@ -72,6 +74,8 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .HasColumnType("character varying(128)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AbsenceSubTypeId");
 
                     b.HasIndex("AbsenceTypeId");
 
@@ -153,9 +157,8 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("StatusAfterAction")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("StatusAfterAction")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -176,14 +179,18 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.Property<Guid>("AbsenceRequestId")
                         .HasColumnType("uuid");
 
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("FileType")
                         .IsRequired()
@@ -220,6 +227,36 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
+                });
+
+            modelBuilder.Entity("LeaveManagement.Domain.Entities.Configuration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.ToTable("Configurations");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.Department", b =>
@@ -571,6 +608,11 @@ namespace LeaveManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.AbsenceRequest", b =>
                 {
+                    b.HasOne("LeaveManagement.Domain.Entities.AbsenceType", "AbsenceSubType")
+                        .WithMany()
+                        .HasForeignKey("AbsenceSubTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("LeaveManagement.Domain.Entities.AbsenceType", "AbsenceType")
                         .WithMany()
                         .HasForeignKey("AbsenceTypeId")
@@ -592,6 +634,8 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .HasForeignKey("RequesterEmployeeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("AbsenceSubType");
 
                     b.Navigation("AbsenceType");
 

@@ -10,6 +10,7 @@ export * from "./form-date/FormTimeInput";
 
 export * from "./form-input/FormTextInput";
 export * from "./form-input/FormTextArea";
+export * from "./form-input/FormFileInput";
 
 export * from "./form-radio/FormRadio";
 export * from "./form-radio/FormRichRadioGroup";

@@ -9,6 +9,7 @@ public class Attachment
     public AbsenceRequest? AbsenceRequest { get; set; }
     public string FileName { get; set; } = string.Empty;
     public string FileType { get; set; } = string.Empty;
-    public byte[] Data { get; set; } = Array.Empty<byte>();
+    public string FilePath { get; set; } = string.Empty;
+    public long FileSize { get; set; }
     public DateTime UploadedAt { get; set; }
 }

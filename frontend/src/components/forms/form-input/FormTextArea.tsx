@@ -53,6 +53,7 @@ export const FormTextArea = ({
               aria-invalid={invalid}
               aria-describedby={error ? `${name}-error` : undefined}
               {...otherProps}
+              className="bg-muted"
             />
             {invalid && <FieldError errors={error ? [error] : []} />}
           </Field>

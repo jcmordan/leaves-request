@@ -1,7 +1,9 @@
 import { graphql } from "@/__generated__";
 
 export const MY_BALANCE_FRAGMENT = graphql(`
-  fragment MyBalanceFragment on LeaveBalanceDto {
+  fragment MyRequests_BalanceFields on LeaveBalanceDto {
+    id
+    employeeId
     totalEntitlement
     taken
     remaining
@@ -15,7 +17,7 @@ export const MY_BALANCE_FRAGMENT = graphql(`
 `);
 
 export const MY_REQUEST_ITEM_FRAGMENT = graphql(`
-  fragment MyRequestItemFragment on AbsenceRequest {
+  fragment MyRequests_ItemFields on AbsenceRequest {
     id
     startDate
     endDate
@@ -38,9 +40,9 @@ export const MY_REQUEST_ITEM_FRAGMENT = graphql(`
 `);
 
 export const MY_REQUESTS_CONNECTION_FRAGMENT = graphql(`
-  fragment MyRequestsConnectionFragment on MyRequestsConnection {
+  fragment MyRequests_ConnectionFields on MyRequestsConnection {
     nodes {
-      ...MyRequestItemFragment
+      ...MyRequests_ItemFields
     }
     totalCount
     pageInfo {
@@ -53,7 +55,7 @@ export const MY_REQUESTS_CONNECTION_FRAGMENT = graphql(`
 `);
 
 export const MY_REQUESTS_QUERY = graphql(`
-  query GetMyRequests(
+  query MyRequests_GetMyRequests(
     $first: Int
     $after: String
     $last: Int
@@ -61,7 +63,7 @@ export const MY_REQUESTS_QUERY = graphql(`
     $status: RequestStatus
   ) {
     myBalance {
-      ...MyBalanceFragment
+      ...MyRequests_BalanceFields
     }
     myRequests(
       first: $first
@@ -70,7 +72,64 @@ export const MY_REQUESTS_QUERY = graphql(`
       before: $before
       status: $status
     ) {
-      ...MyRequestsConnectionFragment
+      ...MyRequests_ConnectionFields
+    }
+  }
+`);
+
+export const CANCEL_REQUEST_MUTATION = graphql(`
+  mutation MyRequests_CancelMutation($input: CancelLeaveRequestInput!) {
+    cancelLeaveRequest(input: $input) {
+      request {
+        id
+        status
+      }
+      balance {
+        ...MyRequests_BalanceFields
+      }
+    }
+  }
+`);
+
+
+
+export const SUBMIT_LEAVE_REQUEST_MUTATION = graphql(`
+  mutation MyRequests_SubmitMutation($input: SubmitLeaveRequestInput!) {
+    submitLeaveRequest(input: $input) {
+      request {
+        ...MyRequests_ItemFields
+      }
+      balance {
+        ...MyRequests_BalanceFields
+      }
+    }
+  }
+`);
+
+export const ABSENCE_TYPES_QUERY_FRAGMENT = graphql(`
+  fragment MyRequests_TypeFields on AbsenceTypesConnection {
+    nodes {
+      id
+      parentId
+      name
+      requiresAttachment
+      requiresDoctor
+      deductsFromBalance
+      calculationType
+      maxDaysPerYear
+    }
+  }
+`);
+
+export const SUBMIT_LEAVE_REQUEST_QUERY = graphql(`
+  query MyRequests_GetAbsenceTypesForForm($year: Int!) {
+    absenceTypes(first: 20) {
+      ...MyRequests_TypeFields
+    }
+    publicHolidays(year: $year) {
+      id
+      date
+      name
     }
   }
 `);

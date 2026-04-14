@@ -7,6 +7,9 @@ namespace LeaveManagement.Application.DTOs;
 /// </summary>
 public class LeaveBalanceDto
 {
+    public Guid Id { get; set; }
+    public Guid EmployeeId { get; set; }
+
     public int TotalEntitlement { get; set; }
     public int Taken { get; set; }
     public int Remaining { get; set; }

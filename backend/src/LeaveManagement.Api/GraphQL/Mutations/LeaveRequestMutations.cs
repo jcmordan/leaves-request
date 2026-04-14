@@ -1,9 +1,5 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using HotChocolate;
-using HotChocolate.Types;
 using LeaveManagement.Api.GraphQL.InputTypes;
+using LeaveManagement.Application.DTOs;
 using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Interfaces;
@@ -15,9 +11,10 @@ public class LeaveRequestMutations(ILogger<LeaveRequestMutations> logger)
 {
     private readonly ILogger<LeaveRequestMutations> _logger = logger;
 
-    public async Task<AbsenceRequest> SubmitLeaveRequest(
+    public async Task<LeaveRequestOperationPayload> SubmitLeaveRequest(
         [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService,
+        [Service] IBalanceService balanceService,
         SubmitLeaveRequestInput input,
         CancellationToken ct
     )
@@ -39,7 +36,7 @@ public class LeaveRequestMutations(ILogger<LeaveRequestMutations> logger)
             fileName = input.File.Name;
         }
 
-        return await leaveRequestService.SubmitRequestAsync(
+        var request = await leaveRequestService.SubmitRequestAsync(
             employeeId,
             input.AbsenceTypeId,
             input.StartDate,
@@ -51,46 +48,80 @@ public class LeaveRequestMutations(ILogger<LeaveRequestMutations> logger)
             fileStream,
             fileName
         );
+
+        var balance = await balanceService.GetEmployeeBalanceSummaryAsync(
+            employeeId,
+            DateTime.UtcNow.Year
+        );
+
+        return new LeaveRequestOperationPayload(request, balance);
     }
 
-    public async Task<AbsenceRequest> ApproveLeaveRequest(
+    public async Task<LeaveRequestOperationPayload> ApproveLeaveRequest(
         [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService,
+        [Service] IBalanceService balanceService,
         ApproveLeaveRequestInput input,
         CancellationToken ct
     )
     {
         var approverId = await currentUserService.GetCurrentEmployeeIdAsync();
 
-        return await leaveRequestService.ApproveRequestAsync(
+        var request = await leaveRequestService.ApproveRequestAsync(
             input.RequestId,
             approverId,
             input.Comment
         );
+
+        var balance = await balanceService.GetEmployeeBalanceSummaryAsync(
+            request.EmployeeId,
+            DateTime.UtcNow.Year
+        );
+
+        return new LeaveRequestOperationPayload(request, balance);
     }
 
-    public async Task<AbsenceRequest> RejectLeaveRequest(
+    public async Task<LeaveRequestOperationPayload> RejectLeaveRequest(
         [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService,
+        [Service] IBalanceService balanceService,
         RejectLeaveRequestInput input,
         CancellationToken ct
     )
     {
         var approverId = await currentUserService.GetCurrentEmployeeIdAsync();
 
-        return await leaveRequestService.RejectRequestAsync(
+        var request = await leaveRequestService.RejectRequestAsync(
             input.RequestId,
             approverId,
             input.Comment
         );
+
+        var balance = await balanceService.GetEmployeeBalanceSummaryAsync(
+            request.EmployeeId,
+            DateTime.UtcNow.Year
+        );
+
+        return new LeaveRequestOperationPayload(request, balance);
     }
 
-    public async Task<AbsenceRequest> CancelLeaveRequest(
+    public async Task<LeaveRequestOperationPayload> CancelLeaveRequest(
         [Service] ILeaveRequestService leaveRequestService,
+        [Service] IBalanceService balanceService,
         CancelLeaveRequestInput input,
         CancellationToken ct
     )
     {
-        return await leaveRequestService.CancelRequestAsync(input.RequestId, input.Reason);
+        var request = await leaveRequestService.CancelRequestAsync(input.RequestId, input.Reason);
+
+        var balance = await balanceService.GetEmployeeBalanceSummaryAsync(
+            request.EmployeeId,
+            DateTime.UtcNow.Year
+        );
+
+        return new LeaveRequestOperationPayload(request, balance);
     }
 }
+
+public record LeaveRequestOperationPayload(AbsenceRequest Request, LeaveBalanceDto Balance);
+

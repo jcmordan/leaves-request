@@ -173,7 +173,7 @@
     "search": "Search...",
     "searchPlaceholder": "Type at least {min} characters to search..."
   },
-  "myRequests": {
+  "requests": {
     "title": "My Requests",
     "description": "View and manage your leave applications and history.",
     "totalRequests": "Total Requests",
@@ -202,6 +202,7 @@
     "viewDetails": "View Details",
     "edit": "Edit",
     "days": "days",
+    "day": "day",
     "type": "Type",
     "status": "Status",
     "requestedFor": "Requested For",
@@ -252,6 +253,10 @@
     "invalidAbsenceType": "Invalid absence type",
     "invalidSubtype": "Invalid subtype",
     "startDateRequired": "Start date is required",
-    "minDaysError": "Minimum 0.5 days"
+    "endDateRequired": "End date is required",
+    "minDaysError": "Minimum 0.5 days",
+    "diagnosisRequired": "Diagnosis is required",
+    "treatingDoctorRequired": "Treating physician is required",
+    "attachmentRequired": "Supporting document is required"
   }
 }

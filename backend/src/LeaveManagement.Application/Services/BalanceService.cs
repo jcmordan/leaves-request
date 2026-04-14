@@ -88,6 +88,8 @@ public class BalanceService(LeaveManagementDbContext context) : IBalanceService
 
         return new LeaveBalanceDto
         {
+            Id = employeeId,
+            EmployeeId = employeeId,
             TotalEntitlement = totalEntitlement,
             Taken = totalTaken,
             Remaining = totalEntitlement - totalTaken,

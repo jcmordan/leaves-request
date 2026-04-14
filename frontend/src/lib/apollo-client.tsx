@@ -7,10 +7,12 @@ import {
   registerApolloClient,
 } from "@apollo/client-integration-nextjs";
 import { auth } from "@/auth";
+import { getApiUrl } from "../../envUtils";
 
 import possibleTypes from "../__generated__/possibleTypes";
 
 import { authErrorLink } from "./apollo-error-link";
+import { HttpLink } from "@apollo/client";
 
 export const DEFAULT_PAGE_SIZE = 5;
 
@@ -57,6 +59,11 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(
     const session = await auth();
     const token = session?.accessToken;
 
+    const uri =
+      typeof window === "undefined" ? await getApiUrl() : "/api/graphql";
+
+    console.log("uri", uri);
+
     return new ApolloClient({
       cache: new InMemoryCache({
         possibleTypes: possibleTypes.possibleTypes,
@@ -82,14 +89,13 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(
       }),
       link: authErrorLink.concat(
         new UploadHttpLink({
-          uri: "/api/graphql",
+          uri,
           fetchOptions: defaultFetchOptions,
           headers: {
             authorization: token ? `Bearer ${token}` : "",
             "Apollo-Require-Preflight": "true",
           },
         }) as any,
-
       ),
       defaultOptions: defautApolloOptions,
     });
@@ -97,8 +103,12 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(
 );
 
 export function createServerClient(accessToken?: string | null) {
-  const uploadLink = new UploadHttpLink({
-    uri: "/api/graphql",
+  const isServer = typeof window === "undefined";
+
+  const httpLink = new HttpLink({
+    uri: isServer
+      ? process.env.GRAPHQL_ENDPOINT || "http://localhost:5148/graphql/"
+      : "/api/graphql",
     fetchOptions: defaultFetchOptions,
   });
 
@@ -141,7 +151,7 @@ export function createServerClient(accessToken?: string | null) {
         },
       },
     }),
-    link: authErrorLink.concat(authLink.concat(uploadLink as any)),
+    link: authErrorLink.concat(authLink.concat(httpLink as any)),
     defaultOptions: defautApolloOptions,
   });
 }

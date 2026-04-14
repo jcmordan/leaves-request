@@ -252,7 +252,11 @@
     "invalidAbsenceType": "Tipo de ausencia inválido",
     "invalidSubtype": "Subtipo inválido",
     "startDateRequired": "La fecha de inicio es requerida",
+    "endDateRequired": "La fecha de finalización es requerida",
     "minDaysError": "Mínimo 0.5 días",
+    "diagnosisRequired": "El diagnóstico es requerido",
+    "treatingDoctorRequired": "El médico tratante es requerido",
+    "attachmentRequired": "La evidencia médica es requerida",
     "day": "Día"
   }
 }

@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
       // For multipart requests, we forward the raw body and the original Content-Type (which includes the boundary)
       body = await req.blob();
       headers["Content-Type"] = contentType;
-      console.log("BFF: Proxying multipart request with preflight headers");
     } else {
       // For JSON requests, we parse and re-stringify (default behavior)
       const jsonBody = await req.json();
@@ -32,10 +31,9 @@ export async function POST(req: NextRequest) {
       headers["Content-Type"] = "application/json";
     }
 
-    const targetUrl = backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl;
+    const targetUrl = backendUrl;
     
     console.log(`BFF: Proxying to ${targetUrl}`);
-    console.log("BFF Request Headers:", JSON.stringify(headers, null, 2));
 
     const response = await fetch(targetUrl, {
       method: "POST",

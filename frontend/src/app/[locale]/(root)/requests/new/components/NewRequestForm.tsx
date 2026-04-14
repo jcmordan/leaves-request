@@ -42,8 +42,10 @@ import { ABSENCE_TYPES_QUERY } from "../graphql/NewRequestQueries";
 const CreateRequestMutation = graphql(`
   mutation CreateRequest($input: SubmitLeaveRequestInput!) {
     submitLeaveRequest(input: $input) {
-      id
-      status
+      request {
+        id
+        status
+      }
     }
   }
 `);
@@ -148,7 +150,7 @@ export default function NewRequestForm() {
               <div className="space-y-2">
                 <Label htmlFor="absenceTypeId">{t("absenceTypeLabel")} *</Label>
                 <Select
-                  onValueChange={(val) => {
+                  onValueChange={(val: string) => {
                     form.setValue("absenceTypeId", val);
                   }}
                 >
@@ -156,7 +158,7 @@ export default function NewRequestForm() {
                     <SelectValue placeholder={t("selectTypePlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {absenceTypes.map((type) => (
+                    {absenceTypes.map((type: any) => (
                       <SelectItem key={type.id} value={type.id}>
                         {type.name}
                       </SelectItem>

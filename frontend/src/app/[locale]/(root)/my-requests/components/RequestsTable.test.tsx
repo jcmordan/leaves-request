@@ -19,11 +19,16 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: vi.fn(),
   }),
+  useParams: () => ({ locale: "en" }),
   useSearchParams: () => ({
     get: vi.fn(),
     toString: () => "",
   }),
   usePathname: () => "/en/my-requests",
+}));
+// Mock CancelRequestModal to avoid Apollo dependency
+vi.mock("./CancelRequestModal", () => ({
+  CancelRequestModal: () => <div data-testid="cancel-modal" />,
 }));
 
 // Mock useRequestColumns

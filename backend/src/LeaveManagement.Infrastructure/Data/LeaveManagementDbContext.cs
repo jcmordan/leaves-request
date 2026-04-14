@@ -23,18 +23,24 @@ public class LeaveManagementDbContext(DbContextOptions<LeaveManagementDbContext>
     public DbSet<AbsenceRequest> AbsenceRequests { get; set; }
     public DbSet<Attachment> Attachments { get; set; }
     public DbSet<ApprovalHistory> ApprovalHistories { get; set; }
+    public DbSet<Configuration> Configurations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Load .env from root for migrations/design-time tools
-        var currentDir = Directory.GetCurrentDirectory();
-        var envPath = Path.GetFullPath(Path.Combine(currentDir, "../../../.env"));
-        if (File.Exists(envPath))
+        // Load .env from root, searching up in the directory tree
+        var currentDirInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
+        while (currentDirInfo != null && !File.Exists(Path.Combine(currentDirInfo.FullName, ".env")))
         {
-            DotNetEnv.Env.Load(envPath);
+            currentDirInfo = currentDirInfo.Parent;
         }
+
+        if (currentDirInfo != null)
+        {
+            DotNetEnv.Env.Load(Path.Combine(currentDirInfo.FullName, ".env"));
+        }
+
 
         if (Database.IsNpgsql())
         {

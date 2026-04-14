@@ -2,6 +2,6 @@ namespace LeaveManagement.Domain.Enums;
 
 public enum CalculationType
 {
-    WorkingDays,
-    CalendarDays,
+    WorkingDays = 0,
+    CalendarDays = 1,
 }

@@ -98,3 +98,4 @@ TestResult.xml
 nunit-*.xml
 
 .stitch/
+uploads/

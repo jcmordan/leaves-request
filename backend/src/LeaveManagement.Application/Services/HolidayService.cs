@@ -104,7 +104,12 @@ public class HolidayService : IHolidayService
         await _context.SaveChangesAsync();
         return addedCount;
     }
-
+    
+    public async Task<List<PublicHoliday>> GetPublicHolidaysAsync(int year)
+    {
+        return await _context.PublicHolidays.AsNoTracking().Where(h => h.Date.Year == year).ToListAsync();
+    }
+    
     private class NagerHoliday
     {
         public DateTime Date { get; set; }

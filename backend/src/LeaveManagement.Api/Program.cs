@@ -21,9 +21,25 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
+using Path = System.IO.Path;
 
-// Load environment variables from .env file in the root directory
-Env.Load(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "../../.env"));
+// Load environment variables from .env file, searching up in the directory tree
+var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
+while (currentDir != null && !File.Exists(Path.Combine(currentDir.FullName, ".env")))
+{
+    currentDir = currentDir.Parent;
+}
+
+if (currentDir != null)
+{
+    Env.Load(Path.Combine(currentDir.FullName, ".env"));
+}
+else
+{
+    // Fallback if not found, but we should log this or throw if it's required
+    Console.WriteLine("Warning: .env file not found in current or parent directories.");
+}
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +55,14 @@ var connectionString =
     Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException(
+        "Database connection string is not configured. Please set DB_CONNECTION_STRING in your .env file or " +
+        "DefaultConnection in appsettings.json."
+    );
+}
+
 builder.Services.AddPooledDbContextFactory<LeaveManagementDbContext>(options =>
     options.UseNpgsql(connectionString, b => b.MigrationsAssembly("LeaveManagement.Infrastructure"))
 );
@@ -46,6 +70,7 @@ builder.Services.AddPooledDbContextFactory<LeaveManagementDbContext>(options =>
 builder.Services.AddScoped(sp =>
     sp.GetRequiredService<IDbContextFactory<LeaveManagementDbContext>>().CreateDbContext()
 );
+
 
 // Authentication
 builder
@@ -178,6 +203,7 @@ builder.Services.AddHttpLogging(logging =>
 // HotChocolate GraphQL
 builder
     .Services.AddGraphQLServer()
+    .AddType<UploadType>()
     .ModifyCostOptions(o => o.MaxFieldCost = 2000)
     .AddAuthorization()
     .AddQueryType<Query>()
@@ -187,6 +213,7 @@ builder
     .AddTypeExtension<JobTitleQueries>()
     .AddTypeExtension<CompanyQueries>()
     .AddTypeExtension<DepartmentSectionQueries>()
+    .AddTypeExtension<HolidayQueries>()
     .AddMutationType<Mutation>()
     .AddTypeExtension<LeaveRequestMutations>()
     .AddTypeExtension<EmployeeMutations>()

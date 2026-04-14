@@ -22,12 +22,16 @@ export const getSubmitRequestSchema = (
   z
     .object({
       absenceTypeId: z.string().uuid(t("invalidAbsenceType")),
-      absenceSubTypeId: z.string().uuid(t("invalidSubtype")).optional().nullable(),
+      absenceSubTypeId: z
+        .string()
+        .uuid(t("invalidSubtype"))
+        .optional()
+        .nullable(),
       startDate: z.coerce.date({
-        error: t("startDateRequired"),
+        errorMap: () => ({ message: t("startDateRequired") }),
       }),
       endDate: z.coerce.date({
-        error: t("endDateRequired"),
+        errorMap: () => ({ message: t("endDateRequired") }),
       }),
       requestedDays: z.number().min(0.5, t("minDaysError")),
       diagnosis: z.string().optional().nullable(),

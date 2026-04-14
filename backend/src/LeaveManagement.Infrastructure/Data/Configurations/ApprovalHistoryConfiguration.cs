@@ -15,7 +15,6 @@ public class ApprovalHistoryConfiguration : IEntityTypeConfiguration<ApprovalHis
             builder.Property(ah => ah.Id).HasDefaultValueSql("uuidv7()");
         }
         builder.Property(ah => ah.Action).HasConversion<string>();
-        builder.Property(ah => ah.StatusAfterAction).HasConversion<string>();
 
         builder.HasOne(ah => ah.Approver)
             .WithMany()

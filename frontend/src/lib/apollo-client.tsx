@@ -1,5 +1,5 @@
-import { HttpLink } from "@apollo/client";
 import { SetContextLink } from "@apollo/client/link/context";
+import UploadHttpLink from "apollo-upload-client/UploadHttpLink.mjs";
 import { relayStylePagination } from "@apollo/client/utilities";
 import {
   ApolloClient,
@@ -81,13 +81,15 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(
         },
       }),
       link: authErrorLink.concat(
-        new HttpLink({
+        new UploadHttpLink({
           uri: "/api/graphql",
           fetchOptions: defaultFetchOptions,
           headers: {
             authorization: token ? `Bearer ${token}` : "",
+            "Apollo-Require-Preflight": "true",
           },
-        }),
+        }) as any,
+
       ),
       defaultOptions: defautApolloOptions,
     });
@@ -95,7 +97,7 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(
 );
 
 export function createServerClient(accessToken?: string | null) {
-  const httpLink = new HttpLink({
+  const uploadLink = new UploadHttpLink({
     uri: "/api/graphql",
     fetchOptions: defaultFetchOptions,
   });
@@ -139,7 +141,7 @@ export function createServerClient(accessToken?: string | null) {
         },
       },
     }),
-    link: authErrorLink.concat(authLink.concat(httpLink)),
+    link: authErrorLink.concat(authLink.concat(uploadLink as any)),
     defaultOptions: defautApolloOptions,
   });
 }

@@ -28,6 +28,7 @@ type SheetProps<N extends SheetName> =
 type SheetOptions = {
   width?: "sm" | "md" | "lg" | "xl" | "full" | string;
   side?: "top" | "right" | "bottom" | "left";
+  className?: string;
 };
 
 const sheetContext = createContext<{
@@ -37,13 +38,11 @@ const sheetContext = createContext<{
     params: SheetProps<N>,
     options?: SheetOptions,
   ) => void;
-  registerContainer: (container: HTMLElement | null) => void;
   setOptions: (options: SheetOptions) => void;
   sheetOptions: SheetOptions;
 }>({
   closeSheet: () => ({}),
   openSheet: () => ({}),
-  registerContainer: () => ({}),
   setOptions: () => ({}),
   sheetOptions: {},
 });
@@ -66,6 +65,7 @@ export const useSheetParams = () => {
     const sheetParamsStr = searchParams.get("sheetParams");
     const sheetWidth = searchParams.get("sheetWidth") as SheetOptions["width"];
     const sheetSide = searchParams.get("sheetSide") as SheetOptions["side"];
+    const sheetClassName = searchParams.get("sheetClassName");
 
     if (!sheetName || !Sheets[sheetName]) {
       return {
@@ -90,6 +90,7 @@ export const useSheetParams = () => {
       sheetOptions: {
         width: sheetWidth,
         side: sheetSide ?? "right",
+        className: sheetClassName ?? undefined,
       },
     };
   }, [searchParams]);
@@ -103,72 +104,87 @@ export const SheetProvider = ({ children }: Props) => {
   const searchParams = useSearchParams();
   const { SheetComponent, sheetParams, sheetOptions } = useSheetParams();
 
-  const [sheetContainer, setSheetContainer] = useState<HTMLElement | null>(
-    null,
-  );
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
-  const registerContainer = useCallback((container: HTMLElement | null) => {
-    setSheetContainer(container);
+  const handleContainerReady = useCallback((node: HTMLDivElement | null) => {
+    setContainer(node);
   }, []);
 
   // Helper to build URL with search params
-  const buildUrl = (updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams);
+  const buildUrl = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams);
 
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value === null) {
-        params.delete(key);
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value === null) {
+          params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      });
+
+      const queryString = params.toString();
+
+      return queryString ? `${pathname}?${queryString}` : pathname;
+    },
+    [searchParams, pathname],
+  );
+
+  const openSheet = useCallback(
+    <N extends SheetName>(
+      sheetName: N,
+      params: SheetProps<N>,
+      options: SheetOptions = { width: "md", side: "right" },
+    ) => {
+      const currentSheetName = searchParams.get("sheetName");
+      const currentSheetParams = searchParams.get("sheetParams");
+
+      const updates: Record<string, string | null> = {
+        sheetName,
+        sheetParams: JSON.stringify(params),
+        sheetWidth: options?.width ?? null,
+        sheetSide: options?.side ?? null,
+        sheetClassName: options?.className ?? null,
+      };
+
+      if (currentSheetName) {
+        updates.prevSheetName = currentSheetName;
+        updates.prevSheetParams = currentSheetParams;
       } else {
-        params.set(key, value);
+        updates.prevSheetName = null;
+        updates.prevSheetParams = null;
       }
-    });
 
-    const queryString = params.toString();
-
-    return queryString ? `${pathname}?${queryString}` : pathname;
-  };
-
-  const openSheet = <N extends SheetName>(
-    sheetName: N,
-    params: SheetProps<N>,
-    options: SheetOptions = { width: "md", side: "right" },
-  ) => {
-    const currentSheetName = searchParams.get("sheetName");
-    const currentSheetParams = searchParams.get("sheetParams");
-
-    const updates: Record<string, string | null> = {
-      sheetName,
-      sheetParams: JSON.stringify(params),
-      sheetWidth: options?.width ?? null,
-      sheetSide: options?.side ?? null,
-    };
-
-    if (currentSheetName) {
-      updates.prevSheetName = currentSheetName;
-      updates.prevSheetParams = currentSheetParams;
-    } else {
-      updates.prevSheetName = null;
-      updates.prevSheetParams = null;
-    }
-
-    router.replace(buildUrl(updates));
-  };
-
-  const setOptions = (options: SheetOptions) => {
-    const updates: Record<string, string | null> = {};
-    if (options.width) {
-      updates.sheetWidth = options.width;
-    }
-    if (options.side) {
-      updates.sheetSide = options.side;
-    }
-
-    if (Object.keys(updates).length > 0) {
       router.replace(buildUrl(updates));
-    }
-  };
+    },
+    [router, searchParams, buildUrl],
+  );
 
-  const closeSheet = () => {
+  const setOptions = useCallback(
+    (options: SheetOptions) => {
+      const updates: Record<string, string | null> = {};
+      if (options.width) {
+        updates.sheetWidth = options.width;
+      }
+      if (options.side) {
+        updates.sheetSide = options.side;
+      }
+      if (options.className) {
+        updates.sheetClassName = options.className;
+      }
+
+      const newUrl = buildUrl(updates);
+      const currentUrl =
+        pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+
+      if (Object.keys(updates).length > 0 && newUrl !== currentUrl) {
+        router.replace(newUrl);
+      }
+    },
+    [router, buildUrl, pathname, searchParams],
+  );
+
+  const closeSheet = useCallback(() => {
     const prevSheetName = searchParams.get("prevSheetName");
     const prevSheetParams = searchParams.get("prevSheetParams");
 
@@ -181,6 +197,7 @@ export const SheetProvider = ({ children }: Props) => {
           prevSheetParams: null,
           sheetWidth: null,
           sheetSide: null,
+          sheetClassName: null,
         }),
       );
     } else {
@@ -190,20 +207,15 @@ export const SheetProvider = ({ children }: Props) => {
           sheetParams: null,
           sheetWidth: null,
           sheetSide: null,
+          sheetClassName: null,
         }),
       );
     }
-  };
+  }, [router, buildUrl, searchParams]);
 
   const handleClickOutside = (e: PointerDownOutsideEvent) => {
     e.preventDefault();
   };
-
-  const [container, setContainer] = useState<HTMLDivElement | null>(null);
-
-  const handleContainerReady = useCallback((node: HTMLDivElement | null) => {
-    setContainer(node);
-  }, []);
 
   const currentSize = useMemo(() => {
     if (!sheetOptions.width) {
@@ -216,21 +228,19 @@ export const SheetProvider = ({ children }: Props) => {
   }, [sheetOptions.width]);
 
   const customClassName = useMemo(() => {
-    if (!sheetOptions.width) {
-      return undefined;
-    }
-
-    return ["sm", "md", "lg", "xl", "full"].includes(sheetOptions.width)
+    const standardWidths = ["sm", "md", "lg", "xl", "full"];
+    const widthClass = standardWidths.includes(sheetOptions.width || "")
       ? undefined
       : sheetOptions.width;
-  }, [sheetOptions.width]);
+
+    return cn(widthClass, sheetOptions.className);
+  }, [sheetOptions.width, sheetOptions.className]);
 
   return (
     <sheetContext.Provider
       value={{
         closeSheet,
         openSheet,
-        registerContainer,
         setOptions,
         sheetOptions,
       }}
@@ -247,7 +257,6 @@ export const SheetProvider = ({ children }: Props) => {
         <SheetContent
           side={sheetOptions.side}
           size={currentSize}
-          container={sheetContainer}
           className={cn("p-0", customClassName)}
           onPointerDownOutside={handleClickOutside}
           onContainerReady={handleContainerReady}

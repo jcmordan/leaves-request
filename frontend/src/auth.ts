@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 import Credentials from "next-auth/providers/credentials";
 import { getApiUrl } from "envUtils";
+import { decodeJwt } from "jose";
 
 const {
   AUTH_MICROSOFT_ENTRA_ID_ID,
@@ -125,6 +126,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.accessToken = account.access_token;
         token.idToken = account.id_token;
       }
+
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -132,9 +134,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.accessToken = user.accessToken;
         }
       }
+
       if (profile) {
         token.oid = (profile.oid as string) || (profile.sub as string);
       }
+
+      // Check if JWT is expired or about to expire
+      if (token.accessToken) {
+        try {
+          const decoded = decodeJwt(token.accessToken);
+          if (decoded.exp) {
+            const now = Math.floor(Date.now() / 1000);
+            const safetyBuffer = 60; // 60 seconds
+
+            if (decoded.exp < now + safetyBuffer) {
+              console.log(
+                "[AUTH] Access token about to expire, forcing logout",
+              );
+              return null;
+            }
+          }
+        } catch (error) {
+          console.error("[AUTH] Error decoding access token:", error);
+          return null;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {

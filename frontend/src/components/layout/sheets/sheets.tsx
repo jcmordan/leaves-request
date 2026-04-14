@@ -13,9 +13,11 @@
  */
 
 import * as EmployeeSheets from "@/app/[locale]/(root)/employees/sheets";
+import * as MyRequestSheets from "@/app/[locale]/(root)/my-requests/sheets";
 
 export const Sheets = {
   ...EmployeeSheets,
+  ...MyRequestSheets,
 } as const;
 
 export type SheetName = keyof typeof Sheets;

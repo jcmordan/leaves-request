@@ -8,6 +8,7 @@ import {
   useForm,
   type UseFormProps,
   type FieldValues,
+  type Resolver,
 } from "react-hook-form";
 
 import { LoadingSkeleton } from "@/components/card/LoadingCard";
@@ -37,6 +38,7 @@ type FormSheetProps<TFieldValues extends FieldValues> = {
   footer?: React.ReactNode;
   showFooter?: boolean;
   className?: string;
+  resolver?: Resolver<TFieldValues>;
 };
 
 export const FormSheet = <TFieldValues extends FieldValues>({
@@ -56,6 +58,7 @@ export const FormSheet = <TFieldValues extends FieldValues>({
   footer,
   showFooter = true,
   className,
+  resolver,
 }: FormSheetProps<TFieldValues>) => {
   const { closeSheet, setOptions, sheetOptions } = useSheets();
   const t = useTranslations("common");
@@ -63,6 +66,7 @@ export const FormSheet = <TFieldValues extends FieldValues>({
   const formMethods = useForm<TFieldValues>({
     defaultValues,
     mode,
+    resolver,
   });
 
   const isInitialMount = useRef(true);
@@ -80,10 +84,10 @@ export const FormSheet = <TFieldValues extends FieldValues>({
   }, [defaultValues, formMethods]);
 
   useEffect(() => {
-    if (className && !sheetOptions?.width) {
-      setOptions({ width: className });
+    if (className && className !== sheetOptions?.className) {
+      setOptions({ className });
     }
-  }, [className, setOptions, sheetOptions?.width]);
+  }, [className, setOptions, sheetOptions?.className]);
 
   const handleSubmit = useCallback(
     async (values: TFieldValues) => {
@@ -116,7 +120,10 @@ export const FormSheet = <TFieldValues extends FieldValues>({
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formSubmitHandler} className="flex flex-col h-full">
+      <form
+        onSubmit={formSubmitHandler}
+        className="flex flex-col flex-1 h-full min-h-0"
+      >
         <SheetHeader className="bg-white">
           <SheetTitle>
             <span className="text-lg font-semibold pt-4">{title}</span>
@@ -131,36 +138,38 @@ export const FormSheet = <TFieldValues extends FieldValues>({
           )}
         </div>
         {showFooter && (
-          <SheetFooter className="flex flex-row justify-between items-center gap-2 pb-8 pt-8">
-            {footer ?? (
-              <>
-                <div>{secondaryAction}</div>
-                <div className="flex flex-row gap-2">
-                  <Button
-                    size="lg"
-                    type="button"
-                    variant="outline"
-                    onClick={closeSheet}
-                  >
-                    {defaultCancelLabel}
-                  </Button>
-                  {allowSubmit && (
+          <div className="border-t border-outline-variant/10 bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <SheetFooter className="flex flex-row justify-between items-center gap-2 pb-8 pt-8 px-8">
+              {footer ?? (
+                <>
+                  <div>{secondaryAction}</div>
+                  <div className="flex flex-row gap-2">
                     <Button
-                      type="submit"
-                      variant="default"
-                      size="lg"
-                      disabled={isLoadingOrSubmitting || disabled}
+                      size="xl"
+                      type="button"
+                      variant="outline"
+                      onClick={closeSheet}
                     >
-                      {submitting ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : null}
-                      {defaultSubmitLabel}
+                      {defaultCancelLabel}
                     </Button>
-                  )}
-                </div>
-              </>
-            )}
-          </SheetFooter>
+                    {allowSubmit && (
+                      <Button
+                        type="submit"
+                        variant="default"
+                        size="xl"
+                        disabled={isLoadingOrSubmitting || disabled}
+                      >
+                        {submitting ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : null}
+                        {defaultSubmitLabel}
+                      </Button>
+                    )}
+                  </div>
+                </>
+              )}
+            </SheetFooter>
+          </div>
         )}
       </form>
     </FormProvider>

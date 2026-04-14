@@ -11,14 +11,17 @@ import {
   Building2,
   UserCircle,
   ClockPlusIcon,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/layout/Logo";
 import { SheetPortalTarget } from "@/components/layout/sheets/SheetPortalTarget";
+import { useSheets } from "@/components/layout/sheets/SheetNavigation";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
+  const { openSheet } = useSheets();
   const pathname = usePathname();
   const t = useTranslations("navigation");
   const tLayout = useTranslations("layout");
@@ -27,7 +30,6 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   const getNavigation = () => {
     const baseNav = [
       { name: t("myRequests"), href: "/my-requests", icon: Clock },
-      { name: t("requests"), href: "/requests", icon: ClockPlusIcon },
       { name: t("employees"), href: "/employees", icon: UserCircle },
     ];
 
@@ -53,7 +55,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex w-full bg-surface-container-low text-foreground font-sans">
       {/* Sidebar Navigation */}
-      <aside className="w-72 bg-sidebar-primary text-white flex flex-col shadow-ambient z-40 transition-all duration-300">
+      <aside className="w-72 bg-sidebar-primary text-white flex flex-col shadow-ambient z-40 transition-all duration-300 h-dvh">
         <div className="p-8 mb-4">
           <Logo />
         </div>
@@ -89,8 +91,20 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           })}
         </nav>
 
+        <div className="px-6 mb-4">
+          <Button
+            onClick={() =>
+              openSheet("SubmitAbsentRequestSheet", {}, { width: "lg" })
+            }
+            className="w-full h-12 bg-secondary text-on-secondary hover:bg-secondary/90 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 group transition-all"
+          >
+            <Plus className="h-4 w-4 group-hover:scale-110 transition-transform" />
+            {t("newRequest")}
+          </Button>
+        </div>
+
         <div className="p-8 text-[10px] font-bold uppercase tracking-[0.2em] text-on-primary-container/40">
-          v0.1.0-beta / refidomsa corp
+          REFIDOMSA © 2026
         </div>
       </aside>
 

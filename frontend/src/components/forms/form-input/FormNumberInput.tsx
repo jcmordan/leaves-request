@@ -8,9 +8,13 @@ import { Input } from "@/components/ui/input";
 
 import { BaseInputProps } from "../types";
 
-const PREFIX = "$ ";
+
 type Props = BaseInputProps<ComponentProps<typeof Input>> &
-  Pick<ComponentProps<typeof Controller>, "rules">;
+  Pick<ComponentProps<typeof Controller>, "rules"> & {
+    prefix?: string;
+    format?: "number" | "currency";
+    allowDecimal?: boolean;
+  };
 
 export const FormNumberInput = ({
   name,
@@ -19,6 +23,9 @@ export const FormNumberInput = ({
   rules,
   defaultValue,
   disabled,
+  prefix,
+  format = "number",
+  allowDecimal = false,
   ...otherProps
 }: Props) => {
   const formContext = useFormContext();
@@ -36,13 +43,17 @@ export const FormNumberInput = ({
         .toString()
         .split(",")
         .join("")
-        .replace(PREFIX, "");
+        .replace(prefix ?? "", "");
 
       onChange(event);
     };
 
   // Extract type from otherProps since NumericFormat only accepts "text" | "tel" | "password"
   const { type: _type, ...restProps } = otherProps;
+
+  const formatProps = allowDecimal
+    ? { decimalScale: 2, decimalSeparator: "." }
+    : {};
 
   return (
     <Controller
@@ -66,13 +77,13 @@ export const FormNumberInput = ({
               customInput={Input}
               thousandSeparator
               fixedDecimalScale
-              decimalScale={2}
-              decimalSeparator="."
-              prefix={PREFIX}
+              prefix={prefix}
               valueIsNumericString={false}
               disabled={disabled}
               aria-invalid={invalid}
               aria-describedby={error ? `${name}-error` : undefined}
+              className="bg-muted"
+              {...formatProps}
               {...restProps}
             />
             {invalid && <FieldError errors={error ? [error] : []} />}

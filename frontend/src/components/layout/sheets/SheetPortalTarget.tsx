@@ -1,8 +1,4 @@
-"use client";
-
-import { useEffect, useRef } from "react";
-
-import { useSheets } from "./SheetNavigation";
+import React from "react";
 
 interface SheetPortalTargetProps {
   className?: string;
@@ -18,20 +14,5 @@ export const SheetPortalTarget = ({
   className,
   children,
 }: SheetPortalTargetProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { registerContainer } = useSheets();
-
-  useEffect(() => {
-    if (containerRef.current) {
-      registerContainer(containerRef.current);
-    }
-
-    return () => registerContainer(null);
-  }, [registerContainer]);
-
-  return (
-    <div ref={containerRef} className={className}>
-      {children}
-    </div>
-  );
+  return <div className={className}>{children}</div>;
 };

@@ -1,12 +1,14 @@
-import { ListFilter, X, RotateCcw, Search } from "lucide-react";
+import { ListFilter, X, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useState } from "react";
 import { PaginatedDataTable } from "@/components/ui/paginated-data-table";
-import { useRequestColumns } from "./RequestColumns";
+import { useRequestColumns, RequestItem } from "./RequestColumns";
 import { FragmentType, useFragment } from "@/__generated__";
 import { MY_REQUESTS_CONNECTION_FRAGMENT } from "../graphql/MyRequestsQueries";
 import { RequestStatus } from "@/__generated__/graphql";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CancelRequestModal } from "./CancelRequestModal";
 
 interface RequestsTableProps {
   requestsRef?: FragmentType<typeof MY_REQUESTS_CONNECTION_FRAGMENT> | null;
@@ -17,13 +19,23 @@ interface RequestsTableProps {
  * Displays the recent activity of leave requests in a paginated data table.
  */
 export function RequestsTable({ requestsRef }: RequestsTableProps) {
-  const t = useTranslations("myRequests");
+  const t = useTranslations("requests");
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(
+    null,
+  );
+
+  const handleCancelClick = (request: RequestItem) => {
+    setSelectedRequest(request);
+    setIsCancelModalOpen(true);
+  };
+
   const requests = useFragment(MY_REQUESTS_CONNECTION_FRAGMENT, requestsRef);
-  const columns = useRequestColumns();
+  const columns = useRequestColumns(handleCancelClick);
 
   const nodes = requests?.nodes || [];
 
@@ -123,6 +135,12 @@ export function RequestsTable({ requestsRef }: RequestsTableProps) {
           containerClassName="flex flex-col flex-1"
         />
       )}
+
+      <CancelRequestModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        requestRef={selectedRequest}
+      />
     </div>
   );
 }

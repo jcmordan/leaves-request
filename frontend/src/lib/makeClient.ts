@@ -1,4 +1,4 @@
-import { HttpLink } from "@apollo/client";
+import UploadHttpLink from "apollo-upload-client/UploadHttpLink.mjs";
 import { relayStylePagination } from "@apollo/client/utilities";
 import { ApolloClient, InMemoryCache } from "@apollo/client-integration-nextjs";
 
@@ -28,7 +28,7 @@ const generateFieldPolicies = (registry: Record<string, string[] | false>) => {
 const graphqlUri = "/api/graphql";
 
 export function makeClient(accessToken?: string | null) {
-  const httpLink = new HttpLink({
+  const uploadLink = new UploadHttpLink({
     uri: graphqlUri,
     fetchOptions: {
       credentials: "same-origin",
@@ -39,7 +39,7 @@ export function makeClient(accessToken?: string | null) {
   });
 
   return new ApolloClient({
-    link: authErrorLink.concat(httpLink),
+    link: authErrorLink.concat(uploadLink as any),
     cache: new InMemoryCache({
       possibleTypes: possibleTypes.possibleTypes,
       typePolicies: {

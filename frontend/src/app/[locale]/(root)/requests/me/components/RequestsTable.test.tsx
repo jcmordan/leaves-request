@@ -24,10 +24,10 @@ vi.mock("next/navigation", () => ({
     get: vi.fn(),
     toString: () => "",
   }),
-  usePathname: () => "/en/my-requests",
+  usePathname: () => "/en/requests/me",
 }));
 // Mock CancelRequestModal to avoid Apollo dependency
-vi.mock("./CancelRequestModal", () => ({
+vi.mock("@/components/requests/CancelRequestModal", () => ({
   CancelRequestModal: () => <div data-testid="cancel-modal" />,
 }));
 

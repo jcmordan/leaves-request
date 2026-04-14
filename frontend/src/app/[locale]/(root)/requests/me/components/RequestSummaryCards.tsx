@@ -81,7 +81,7 @@ export function RequestSummaryCards({
   ];
 
   const handleFilter = (status: RequestStatus) => {
-    router.push(`/${locale}/my-requests?status=${status}`);
+    router.push(`/${locale}/requests/me?status=${status}`);
   };
 
   return (

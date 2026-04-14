@@ -444,7 +444,7 @@ public class LeaveRequestServiceTests : IDisposable
         // Setup configuration for file path
         var tempPath = Path.Combine(Path.GetTempPath(), "LeaveManagementTests_" + Guid.NewGuid().ToString());
         _context.Configurations.Add(new Configuration { Key = "AttachmentBasePath", Value = tempPath });
-        
+
         await _context.SaveChangesAsync();
 
         var startDate = DateTime.UtcNow.AddDays(1);
@@ -732,5 +732,206 @@ public class LeaveRequestServiceTests : IDisposable
         result.Items.Should().HaveCount(1);
         result.Items.First().Id.Should().Be(pendingRequest.Id);
         result.Items.First().Status.Should().Be(RequestStatus.Pending);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_WithValidId_ShouldReturnRequest()
+    {
+        // Arrange
+        var request = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = _employeeId,
+            AbsenceTypeId = _absenceTypeId,
+            StartDate = DateTime.UtcNow.AddDays(10),
+            EndDate = DateTime.UtcNow.AddDays(11),
+            Status = RequestStatus.Pending,
+            RequesterEmployeeId = _employeeId,
+            Reason = "Valid ID test"
+        };
+        _context.AbsenceRequests.Add(request);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.GetByIdAsync(request.Id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(request.Id);
+        result.Reason.Should().Be("Valid ID test");
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_WithInvalidId_ShouldReturnNull()
+    {
+        // Act
+        var result = await _sut.GetByIdAsync(Guid.NewGuid());
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task SubmitRequestAsync_CalendarDays_ShouldCalculateCorrectly()
+    {
+        // Arrange
+        var calendarTypeId = Guid.NewGuid();
+        _context.AbsenceTypes.Add(new AbsenceType
+        {
+            Id = calendarTypeId,
+            Name = "Calendar Days Type",
+            CalculationType = CalculationType.CalendarDays,
+            IsActive = true
+        });
+        await _context.SaveChangesAsync();
+
+        var startDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc); // Thursday
+        var endDate = new DateTime(2026, 1, 4, 0, 0, 0, DateTimeKind.Utc);   // Sunday (4 days total)
+
+        _balanceService.GetEmployeeBalanceAsync(_employeeId, startDate.Year, calendarTypeId)
+            .Returns(new LeaveBalanceDto { Remaining = 10 });
+
+        // Act
+        var result = await _sut.SubmitRequestAsync(_employeeId, calendarTypeId, startDate, endDate, "Test");
+
+        // Assert
+        result.TotalDaysRequested.Should().Be(4);
+    }
+
+    [Fact]
+    public async Task SubmitRequestAsync_ExceedsMaxDays_ShouldThrowException()
+    {
+        // Arrange
+        var maxDaysTypeId = Guid.NewGuid();
+        _context.AbsenceTypes.Add(new AbsenceType
+        {
+            Id = maxDaysTypeId,
+            Name = "Limited Type",
+            MaxDaysPerYear = 5,
+            IsActive = true
+        });
+        await _context.SaveChangesAsync();
+
+        var startDate = DateTime.UtcNow.AddDays(1);
+        var endDate = DateTime.UtcNow.AddDays(10);
+        _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(8);
+
+        // Act
+        var act = () => _sut.SubmitRequestAsync(_employeeId, maxDaysTypeId, startDate, endDate, "Test");
+
+        // Assert
+        await act.Should().ThrowAsync<Exception>()
+            .WithMessage("*exceed the maximum of 5 days*");
+    }
+
+    [Fact]
+    public async Task SubmitRequestAsync_ZeroDays_ShouldThrowException()
+    {
+        // Arrange
+        var startDate = DateTime.UtcNow.AddDays(1);
+        var endDate = DateTime.UtcNow.AddDays(1);
+        _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(0);
+
+        // Act
+        var act = () => _sut.SubmitRequestAsync(_employeeId, _absenceTypeId, startDate, endDate, "Test");
+
+        // Assert
+        await act.Should().ThrowAsync<Exception>()
+            .WithMessage("The selected dates do not result in any days.");
+    }
+
+    [Fact]
+    public async Task RequestModificationAsync_ValidId_ShouldUpdateStatus()
+    {
+        // Arrange
+        var request = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = _employeeId,
+            Status = RequestStatus.Pending,
+            RequesterEmployeeId = _employeeId
+        };
+        _context.AbsenceRequests.Add(request);
+        await _context.SaveChangesAsync();
+        var approverId = Guid.NewGuid();
+
+        // Act
+        var result = await _sut.RequestModificationAsync(request.Id, approverId, "Need more info");
+
+        // Assert
+        result.Status.Should().Be(RequestStatus.ModificationRequested);
+    }
+
+    [Fact]
+    public async Task ApproveRequestAsync_NotPending_ShouldThrowException()
+    {
+        // Arrange
+        var request = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = _employeeId,
+            AbsenceTypeId = _absenceTypeId,
+            Status = RequestStatus.Approved,
+            RequesterEmployeeId = _employeeId,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.AbsenceRequests.Add(request);
+
+        var approverId = Guid.NewGuid();
+        _context.Employees.Add(new Employee { Id = approverId, FullName = "Approver", EmployeeCode = "A1", NationalId = "N1", IsActive = true, HireDate = DateTime.UtcNow });
+        
+        await _context.SaveChangesAsync();
+
+        // Act
+        var act = () => _sut.ApproveRequestAsync(request.Id, approverId, "Approved");
+
+        // Assert
+        await act.Should().ThrowAsync<Exception>().WithMessage("Only pending requests can be approved.");
+    }
+
+    [Fact]
+    public async Task ApproveRequestAsync_NonManager_ShouldThrowException()
+    {
+        // Arrange
+        var managerId = Guid.NewGuid();
+        var employee = await _context.Employees.FindAsync(_employeeId);
+        employee!.ManagerId = managerId;
+        await _context.SaveChangesAsync();
+
+        var request = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = _employeeId,
+            AbsenceTypeId = _absenceTypeId,
+            Status = RequestStatus.Pending,
+            Employee = employee,
+            RequesterEmployeeId = _employeeId,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.AbsenceRequests.Add(request);
+
+        var otherPersonId = Guid.NewGuid();
+        _context.Employees.Add(new Employee { Id = otherPersonId, FullName = "Other", EmployeeCode = "O1", NationalId = "NO1", IsActive = true, HireDate = DateTime.UtcNow });
+
+        await _context.SaveChangesAsync();
+
+        // Act
+        var act = () => _sut.ApproveRequestAsync(request.Id, otherPersonId, "Random person approving");
+
+        // Assert
+        await act.Should().ThrowAsync<Exception>().WithMessage("Only the direct manager can approve this request.");
+    }
+
+    [Fact]
+    public async Task GetAbsenceRequestsAsync_WithFilter_ShouldReturnResults()
+    {
+        // Arrange
+        var filter = new PaginationFilter { First = 10 };
+        
+        // Act
+        var result = await _sut.GetAbsenceRequestsAsync(filter, RequestStatus.Pending);
+
+        // Assert
+        result.Should().NotBeNull();
     }
 }

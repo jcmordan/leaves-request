@@ -30,6 +30,11 @@ public class AbsenceRequestConfiguration : IEntityTypeConfiguration<AbsenceReque
         builder.HasOne(ar => ar.AbsenceType)
             .WithMany()
             .HasForeignKey(ar => ar.AbsenceTypeId);
+
+        builder.HasOne(ar => ar.AbsenceSubType)
+            .WithMany()
+            .HasForeignKey(ar => ar.AbsenceSubTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasMany(ar => ar.Attachments)
             .WithOne(a => a.AbsenceRequest)

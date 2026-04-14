@@ -78,7 +78,9 @@ public class LeaveRequestQueries
     )
     {
         var filter = new PaginationFilter(first, after, last, before);
+        
         var result = await leaveRequestService.GetAbsenceTypesAsync(filter);
+
         return result.ToConnection();
     }
 

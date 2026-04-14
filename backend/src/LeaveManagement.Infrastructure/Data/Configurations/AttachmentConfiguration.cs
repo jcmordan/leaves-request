@@ -12,7 +12,7 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
         builder.Property(a => a.Id).ValueGeneratedOnAdd().HasDefaultValueSql("uuidv7()");
         builder.Property(a => a.FileName).IsRequired().HasMaxLength(256);
         builder.Property(a => a.FileType).IsRequired().HasMaxLength(128);
-        builder.Property(a => a.Data).IsRequired();
+        builder.Property(a => a.FilePath).IsRequired().HasMaxLength(512);
 
         // Check constraint for file types if needed, handled in app logic usually
     }

@@ -13,9 +13,10 @@ public interface ILeaveRequestService
         DateTime startDate,
         DateTime endDate,
         string reason,
+        Guid? absenceSubTypeId = null,
         string? diagnosis = null,
         string? treatingDoctor = null,
-        byte[]? attachment = null,
+        System.IO.Stream? fileStream = null,
         string? fileName = null
     );
     Task<AbsenceRequest> ModifyRequestAsync(
@@ -23,16 +24,17 @@ public interface ILeaveRequestService
         DateTime startDate,
         DateTime endDate,
         string reason,
+        Guid? absenceSubTypeId = null,
         string? diagnosis = null,
         string? treatingDoctor = null,
-        byte[]? attachment = null,
+        System.IO.Stream? fileStream = null,
         string? fileName = null
     );
 
-    Task<bool> ApproveRequestAsync(Guid requestId, Guid approverId, string comment);
-    Task<bool> RequestModificationAsync(Guid requestId, Guid approverId, string comment);
-    Task<bool> RejectRequestAsync(Guid requestId, Guid approverId, string comment);
-    Task<bool> CancelRequestAsync(Guid requestId, string reason);
+    Task<AbsenceRequest> ApproveRequestAsync(Guid requestId, Guid approverId, string comment);
+    Task<AbsenceRequest> RequestModificationAsync(Guid requestId, Guid approverId, string comment);
+    Task<AbsenceRequest> RejectRequestAsync(Guid requestId, Guid approverId, string comment);
+    Task<AbsenceRequest> CancelRequestAsync(Guid requestId, string reason);
 
     /// <summary>Returns a paged collection of all absence requests.</summary>
     Task<PaginationResult<AbsenceRequest>> GetAbsenceRequestsAsync(PaginationFilter filter, RequestStatus? status = null);

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { PreloadQuery } from "@/lib/apollo-client";
 import { MY_REQUESTS_QUERY } from "./graphql/MyRequestsQueries";
 import MyRequestsView from "./components/MyRequestsView";
-import MyRequestsSkeleton from "./components/MyRequestsSkeleton";
+import RequestsPageSkeleton from "../components/RequestsPageSkeleton";
 
 /**
  * MyRequests Page (Server Component)
@@ -12,7 +12,7 @@ import MyRequestsSkeleton from "./components/MyRequestsSkeleton";
 export default async function MyRequestsPage() {
   return (
     <PreloadQuery query={MY_REQUESTS_QUERY} variables={{ first: 10 }}>
-      <Suspense fallback={<MyRequestsSkeleton />}>
+      <Suspense fallback={<RequestsPageSkeleton />}>
         <MyRequestsView />
       </Suspense>
     </PreloadQuery>

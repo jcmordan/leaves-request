@@ -32,7 +32,7 @@ public static class UserSeeder
                 Id = adminId,
                 Email = adminEmail,
                 FullName = "Admin User",
-                Role = UserRole.Admin,
+                Roles = [UserRole.Admin],
                 IsActive = true,
                 PasswordHash = hash,
                 CreatedAt = DateTime.UtcNow,

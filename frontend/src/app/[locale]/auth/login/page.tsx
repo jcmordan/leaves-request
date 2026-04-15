@@ -13,7 +13,7 @@ import { Logo } from "@/components/layout/Logo";
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const t = useTranslations("Auth");
+  const t = useTranslations("auth");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();

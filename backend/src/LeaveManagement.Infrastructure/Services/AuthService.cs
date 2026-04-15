@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using LeaveManagement.Domain.Common;
 using LeaveManagement.Domain.Entities;
+using LeaveManagement.Domain.Enums;
 using LeaveManagement.Domain.Interfaces;
 using LeaveManagement.Infrastructure.Data;
 using LeaveManagement.Infrastructure.Interfaces;
@@ -43,8 +44,9 @@ public class AuthService(
 
         var token = GenerateJwtToken(user);
 
+        var roles = GetRolesAsString(user.Roles);
         return Result<AuthResponse>.Success(
-            new AuthResponse(token, user.Email, user.FullName, user.Role.ToString())
+            new AuthResponse(token, user.Email, user.FullName, roles)
         );
     }
 
@@ -54,13 +56,17 @@ public class AuthService(
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString()),
-            new Claim("FullName", user.FullName),
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email),
+            new("FullName", user.FullName),
         };
+
+        foreach (var role in GetRolesAsString(user.Roles))
+        {
+            claims.Add(new(ClaimTypes.Role, role));
+        }
 
         var token = new JwtSecurityToken(
             issuer: jwtSettings["Issuer"],
@@ -71,5 +77,10 @@ public class AuthService(
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    private static IEnumerable<string> GetRolesAsString(IEnumerable<UserRole> roles)
+    {
+        return roles.Select(r => r.ToString());
     }
 }

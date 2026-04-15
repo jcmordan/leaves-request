@@ -260,7 +260,7 @@ public class LeaveRequestService(
 
         // Rule: Only the direct manager can approve (except for Medical leaves which need HR)
         bool isDirectManager = approverId == request.Employee?.ManagerId;
-        bool isHR = approver.User?.Role == UserRole.HRManager;
+        bool isHR = approver.User?.Roles.Contains(UserRole.HRManager) ?? false;
 
         if (request.AbsenceType?.RequiresAttachment == true)
         {

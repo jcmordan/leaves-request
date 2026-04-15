@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useRouter, useParams } from "next/navigation";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
-import { RequestStatus, MyRequests_ItemFieldsFragment } from "@/__generated__/graphql";
+import { RequestStatus, RequestList_ItemFieldsFragment } from "@/__generated__/graphql";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { IconCancel, IconChevronsUpRight } from "@tabler/icons-react";
 import { daysBetween } from "@/utils/dateUtils";
 
-export type RequestItem = MyRequests_ItemFieldsFragment;
+export type RequestItem = RequestList_ItemFieldsFragment;
 
 const StatusCell = ({ row }: CellContext<RequestItem, any>) => {
   const t = useTranslations("requests");
@@ -99,8 +99,10 @@ const DaysCell = ({ row }: CellContext<RequestItem, any>) => {
 const ActionsCell = ({
   row,
   onCancel,
+  basePath = "me",
 }: CellContext<RequestItem, any> & {
   onCancel?: (request: RequestItem) => void;
+  basePath?: "me" | "approvals" | "all";
 }) => {
   const t = useTranslations("requests");
   const router = useRouter();
@@ -108,12 +110,12 @@ const ActionsCell = ({
   const request = row.original;
 
   const handleViewDetails = () => {
-    router.push(`/${locale}/leave-requests/${request.id}`);
+    router.push(`/${locale}/leave-requests/${basePath}/${request.id}`);
   };
 
   return (
     <div className="flex gap-2 justify-end">
-      {request.status === RequestStatus.Pending && (
+      {basePath === "me" && request.status === RequestStatus.Pending && (
         <Button
           variant="ghost"
           className="h-8 w-8 hover:bg-white transition-colors"
@@ -134,7 +136,10 @@ const ActionsCell = ({
   );
 };
 
-export const useRequestColumns = (onCancel?: (request: RequestItem) => void) => {
+export const useRequestColumns = (
+  onCancel?: (request: RequestItem) => void,
+  basePath: "me" | "approvals" | "all" = "me",
+) => {
   const t = useTranslations("requests");
 
   const columns: ColumnDef<RequestItem>[] = [
@@ -171,7 +176,9 @@ export const useRequestColumns = (onCancel?: (request: RequestItem) => void) => 
     {
       id: "actions",
       header: "",
-      cell: (props) => <ActionsCell {...props} onCancel={onCancel} />,
+      cell: (props) => (
+        <ActionsCell {...props} onCancel={onCancel} basePath={basePath} />
+      ),
     },
   ];
 

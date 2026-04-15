@@ -55,7 +55,7 @@ public class CustomClaimsTransformation : IClaimsTransformation
                 ExternalId = oid,
                 Email = email ?? string.Empty,
                 FullName = fullName ?? "New User",
-                Role = UserRole.Employee, // Default local role
+                Roles = [UserRole.Employee], // Default local role
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };
@@ -74,11 +74,14 @@ public class CustomClaimsTransformation : IClaimsTransformation
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, localUserId));
         }
 
-        // Add role if not already present
-        var roleName = user.Role.ToString();
-        if (!identity.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == roleName))
+        // Add role claims for each assigned role
+        foreach (var role in user.Roles)
         {
-            identity.AddClaim(new Claim(ClaimTypes.Role, roleName));
+            var roleName = role.ToString();
+            if (!identity.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == roleName))
+            {
+                identity.AddClaim(new Claim(ClaimTypes.Role, roleName));
+            }
         }
 
         return principal;

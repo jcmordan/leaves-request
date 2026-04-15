@@ -1,11 +1,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * MyRequestsSkeleton Component
+ * RequestsPageSkeleton Component
  * Provides a high-fidelity loading state using skeletons.
  * Mirrors the Sovereign Workspace layout for a seamless transition.
  */
-export default function MyRequestsSkeleton() {
+export default function RequestsPageSkeleton() {
   return (
     <div className="flex-1 p-8 max-w-[1600px] mx-auto overflow-y-auto min-h-screen animate-pulse">
       {/* Page Header Skeleton */}

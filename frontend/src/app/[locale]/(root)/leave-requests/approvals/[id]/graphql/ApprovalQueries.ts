@@ -42,14 +42,37 @@ export const APPROVAL_REQUEST_FIELDS_FRAGMENT = graphql(`
   }
 `);
 
+export const ABSENCE_ANALYSIS_OVERLAPS_FRAGMENT = graphql(`
+  fragment AbsenceAnalysis_Overlaps on AbsenceAnalysisDto {
+    overlappingAbsences {
+      employeeName
+      jobTitle
+      startDate
+      endDate
+    }
+  }
+`);
+
+export const ABSENCE_ANALYSIS_STATS_FRAGMENT = graphql(`
+  fragment AbsenceAnalysis_Stats on AbsenceAnalysisDto {
+    availablePercentage
+    totalTeamMembers
+    membersOnLeave
+    pendingMembersOnLeave
+  }
+`);
+
+
 export const GET_APPROVAL_DETAIL_QUERY = graphql(`
-  query ApprovalDetails_GetRequest($id: UUID!) {
+  query GetApprovalDetail($id: UUID!) {
     request(id: $id) {
       id
       status
-      startDate
-      endDate
       ...ApprovalRequest_Fields
+    }
+    absenceAnalysis(requestId: $id) {
+      ...AbsenceAnalysis_Overlaps
+      ...AbsenceAnalysis_Stats
     }
   }
 `);

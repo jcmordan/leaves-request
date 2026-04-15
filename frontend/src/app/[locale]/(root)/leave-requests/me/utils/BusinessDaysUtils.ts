@@ -15,8 +15,10 @@ export const isHoliday = (date: Date, holidays: string[]): boolean => {
       if (/^\d{4}-\d{2}-\d{2}$/.test(holyday)) {
         return holyday === dateStr;
       }
-      // Otherwise parse (for ISO strings from backend)
-      return format(parseISO(holyday), "yyyy-MM-dd") === dateStr;
+      // For ISO strings, we want to match the date part in UTC to avoid TZ shifts
+      const parsed = parseISO(holyday);
+      return format(parsed, "yyyy-MM-dd") === dateStr || 
+             holyday.startsWith(dateStr);
     } catch {
       return false;
     }

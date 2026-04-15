@@ -20,6 +20,7 @@ vi.mock("next/navigation", () => ({
   })),
   useRouter: vi.fn(),
   usePathname: vi.fn(),
+  useParams: vi.fn(() => ({ locale: "en" })),
 }));
 
 // Mock @/__generated__
@@ -35,7 +36,7 @@ vi.mock("./LeaveBalanceSection", () => ({
 vi.mock("./RequestSummaryCards", () => ({
   RequestSummaryCards: () => <div data-testid="summary-cards" />,
 }));
-vi.mock("./RequestsTable", () => ({
+vi.mock("../../shared/components/RequestsTable", () => ({
   RequestsTable: () => <div data-testid="requests-table" />,
 }));
 

@@ -315,6 +315,9 @@
     "teamOverlapsCount": "{count} team members overlapping",
     "teamCapacity": "Team Capacity",
     "available": "Available",
-    "capacityPercentage": "{percentage}%"
+    "capacityPercentage": "{percentage}%",
+    "totalMembers": "Total Members",
+    "onLeave": "On Leave",
+    "pendingRequests": "Pending Requests"
   }
 }

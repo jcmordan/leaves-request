@@ -10,43 +10,20 @@ import { Button } from "@/components/ui/button";
 
 import { IconCancel, IconChevronsUpRight } from "@tabler/icons-react";
 import { daysBetween } from "@/utils/dateUtils";
+import { RequestStatusBadge } from "./RequestStatusBadge";
 
 export type RequestItem = RequestList_ItemFieldsFragment;
 
 const StatusCell = ({ row }: CellContext<RequestItem, any>) => {
-  const t = useTranslations("requests");
   const status = row.original.status;
 
-  switch (status) {
-    case RequestStatus.Approved:
-      return (
-        <span className="px-3 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-black uppercase rounded-full tracking-tighter">
-          {t("approved")}
-        </span>
-      );
-    case RequestStatus.Pending:
-    case RequestStatus.PendingCoordinatorApproval:
-    case RequestStatus.ModificationRequested:
-      return (
-        <span className="px-3 py-1 bg-surface-container-high text-surface-tint text-[10px] font-black uppercase rounded-full tracking-tighter">
-          {t("pending")}
-        </span>
-      );
-    case RequestStatus.Rejected:
-      return (
-        <span className="px-3 py-1 bg-error-container text-on-error-container text-[10px] font-black uppercase rounded-full tracking-tighter">
-          {t("rejected")}
-        </span>
-      );
-    case RequestStatus.Cancelled:
-      return (
-        <span className="px-3 py-1 bg-surface-container-low text-outline text-[10px] font-black uppercase rounded-full tracking-tighter">
-          {t("cancelled")}
-        </span>
-      );
-    default:
-      return <Badge variant="outline">{status}</Badge>;
-  }
+  return (
+    <RequestStatusBadge
+      status={status}
+      showDot={false}
+      className="text-[10px] font-black uppercase tracking-tighter px-3 py-1"
+    />
+  );
 };
 
 const SubmittedCell = ({ row }: CellContext<RequestItem, any>) => {

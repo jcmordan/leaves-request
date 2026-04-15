@@ -12,6 +12,8 @@ import { ApprovalActionCard } from "./ApprovalActionCard";
 import { OverlapAlertCard } from "./OverlapAlertCard";
 import { TeamCapacityCard } from "./TeamCapacityCard";
 import { ApprovalTimelineCard } from "./ApprovalTimelineCard";
+import { RequesterCommentsCard } from "./RequesterCommentsCard";
+import { RequestStatus } from "@/__generated__/graphql";
 
 /**
  * ApprovalView Client Component
@@ -49,19 +51,23 @@ export default function ApprovalView() {
         <div className="lg:col-span-2 space-y-6">
           <RequestSummaryCard requestRef={request} />
           <MedicalDocumentationCard requestRef={request} />
-          <ApprovalActionCard
-            requestId={request.id}
-            status={request.status}
-          />
+          <RequesterCommentsCard requestRef={request} />
+          {request.status === RequestStatus.Pending && (
+            <ApprovalActionCard
+              requestId={request.id}
+              status={request.status}
+            />
+          )}
         </div>
 
         {/* Right column (sidebar) */}
         <div className="space-y-6">
-          <OverlapAlertCard
-            startDate={request.startDate}
-            endDate={request.endDate}
-          />
-          <TeamCapacityCard />
+          {data.absenceAnalysis && (
+            <>
+              <OverlapAlertCard absenceAnalysisRef={data.absenceAnalysis} />
+              <TeamCapacityCard absenceAnalysisRef={data.absenceAnalysis} />
+            </>
+          )}
           <ApprovalTimelineCard requestRef={request} />
         </div>
       </div>

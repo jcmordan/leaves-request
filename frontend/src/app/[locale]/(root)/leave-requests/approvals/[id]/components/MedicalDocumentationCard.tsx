@@ -44,7 +44,7 @@ export function MedicalDocumentationCard({
               <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest mb-2">
                 {t("diagnosisSummary")}
               </p>
-              <p className="text-on-surface leading-normal text-sm font-medium">
+              <p className="bg-muted text-on-surface leading-normal text-sm font-medium min-h-13 p-2 mt-5">
                 {diagnosis}
               </p>
             </div>
@@ -79,7 +79,9 @@ export function MedicalDocumentationCard({
                 className="group flex items-center justify-between p-3 border border-outline-variant/15 rounded-lg hover:bg-surface-container-low transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3 overflow-hidden">
-                  <FileText className={`h-5 w-5 shrink-0 ${attachment.fileName.endsWith('.pdf') ? 'text-error' : 'text-blue-500'}`} />
+                  <FileText
+                    className={`h-5 w-5 shrink-0 ${attachment.fileName.endsWith(".pdf") ? "text-error" : "text-blue-500"}`}
+                  />
                   <div className="overflow-hidden">
                     <p className="text-sm font-bold text-primary truncate">
                       {attachment.fileName}

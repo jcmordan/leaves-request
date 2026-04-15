@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FragmentType, useFragment } from "@/__generated__";
 import { REQUEST_DETAIL_FRAGMENT } from "../graphql/RequestDetailsQueries";
 import { getInitials } from "@/utils/formatters";
+import { EmployeeAvatar } from "@/components/common/EmployeeAvatar";
 
 interface ApproverCardProps {
   requestRef: FragmentType<typeof REQUEST_DETAIL_FRAGMENT>;
@@ -37,13 +38,10 @@ export function ApproverCard({ requestRef }: ApproverCardProps) {
       </div>
 
       <div className="flex items-center gap-5">
-        <div className="relative h-16 w-16 shrink-0">
-          <div className="absolute inset-0 rounded-full border-2 border-secondary/40 animate-pulse" />
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-4xl font-black text-white shadow-xl">
-            {getInitials(approver.fullName)}
-          </div>
-         
-        </div>
+        <EmployeeAvatar
+          fullName={approver.fullName}
+          avatarClassName="h-25 w-25"
+        />
         <div className="space-y-1">
           <h3 className="headline-md text-white leading-tight">
             {approver.fullName}

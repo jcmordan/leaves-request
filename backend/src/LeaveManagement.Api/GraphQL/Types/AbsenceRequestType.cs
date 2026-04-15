@@ -53,9 +53,7 @@ public class AbsenceRequestType : ObjectType<AbsenceRequest>
 
         descriptor
             .Field(t => t.ApprovalHistories)
-            .ResolveWith<AbsenceRequestResolvers>(r =>
-                r.GetApprovalHistoriesAsync(default!, default!, default)
-            )
-            .Name("approvalHistories");
+            .ResolveWith<AbsenceRequestResolvers>(r => r.GetApprovalHistoriesAsync(default!, default!, default!))
+            .Description("The approval workflow history for this request.");
     }
 }

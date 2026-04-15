@@ -118,4 +118,24 @@ public class LeaveRequestQueriesTests
         result.Should().Be(expectedRequest);
         await _leaveRequestService.Received(1).GetByIdAsync(id);
     }
+
+    [Fact]
+    public async Task GetAbsenceAnalysis_ShouldCallServiceWithCorrectParameters()
+    {
+        // Arrange
+        var requestId = Guid.NewGuid();
+        var managerId = Guid.NewGuid();
+        var expectedAnalysis = new AbsenceAnalysisDto { TotalTeamMembers = 5 };
+
+        _currentUserService.GetCurrentEmployeeIdAsync().Returns(managerId);
+        _leaveRequestService.GetAbsenceAnalysisAsync(requestId, managerId, Arg.Any<CancellationToken>())
+            .Returns(expectedAnalysis);
+
+        // Act
+        var result = await _sut.GetAbsenceAnalysis(requestId, _leaveRequestService, _currentUserService, CancellationToken.None);
+
+        // Assert
+        result.Should().Be(expectedAnalysis);
+        await _leaveRequestService.Received(1).GetAbsenceAnalysisAsync(requestId, managerId, Arg.Any<CancellationToken>());
+    }
 }

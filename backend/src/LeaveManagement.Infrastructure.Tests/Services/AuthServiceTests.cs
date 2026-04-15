@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using FluentAssertions;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Enums;
@@ -55,7 +56,7 @@ public class AuthServiceTests : IDisposable
             Email = email, 
             PasswordHash = hash,
             FullName = "Test User",
-            Role = UserRole.Employee
+            Roles = [UserRole.Employee]
         };
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
@@ -92,7 +93,7 @@ public class AuthServiceTests : IDisposable
         // Arrange
         var email = "user@test.com";
         var hash = "hash";
-        _context.Users.Add(new User { Email = email, PasswordHash = hash, FullName = "Name", Role = UserRole.Employee });
+        _context.Users.Add(new User { Email = email, PasswordHash = hash, FullName = "Name", Roles = [UserRole.Employee] });
         await _context.SaveChangesAsync();
 
         _passwordHasher.VerifyPassword("wrong", hash).Returns(false);
@@ -109,11 +110,47 @@ public class AuthServiceTests : IDisposable
     public async Task LoginAsync_ShouldReturnFailure_WhenPasswordHashMissing()
     {
         var email = "empty@test.com";
-        _context.Users.Add(new User { Email = email, PasswordHash = null, FullName = "Name", Role = UserRole.Employee });
+        _context.Users.Add(new User { Email = email, PasswordHash = null, FullName = "Name", Roles = [UserRole.Employee] });
         await _context.SaveChangesAsync();
 
         var result = await _sut.LoginAsync(email, "any");
 
         result.IsSuccess.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task LoginAsync_ShouldReturnTokenWithMultipleRoles_WhenUserHasMultipleRoles()
+    {
+        // Arrange
+        var email = "admin@test.com";
+        var password = "password123";
+        var hash = "hashed_password";
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = email,
+            PasswordHash = hash,
+            FullName = "Admin User",
+            Roles = [UserRole.Employee, UserRole.Admin]
+        };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        _passwordHasher.VerifyPassword(password, hash).Returns(true);
+
+        // Act
+        var result = await _sut.LoginAsync(email, password);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        
+        // Verify token roles
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(result.Value!.Token);
+        var roleClaims = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
+        
+        roleClaims.Should().Contain("Employee");
+        roleClaims.Should().Contain("Admin");
+        roleClaims.Should().HaveCount(2);
     }
 }

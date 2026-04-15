@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useSuspenseQuery } from "@apollo/client/react";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, XCircle } from "lucide-react";
@@ -13,18 +13,8 @@ import { ApprovalTimelineSection } from "./ApprovalTimelineSection";
 import { ApproverCard } from "./ApproverCard";
 import { AdditionalInfoSection } from "./AdditionalInfoSection";
 import { CancelRequestModal } from "@/components/requests/CancelRequestModal";
+import { RequestStatusBadge } from "../../../shared/components/RequestStatusBadge";
 import { GET_REQUEST_DETAIL_QUERY } from "../graphql/RequestDetailsQueries";
-
-const STATUS_BADGE: Record<string, string> = {
-  PENDING: "bg-surface-tint/10 text-surface-tint border-surface-tint/20",
-  PENDING_COORDINATOR_APPROVAL:
-    "bg-surface-tint/10 text-surface-tint border-surface-tint/20",
-  APPROVED: "bg-secondary-container/30 text-secondary border-secondary/20",
-  REJECTED: "bg-error-container/30 text-error border-error/20",
-  CANCELLED: "bg-outline/10 text-outline border-outline/20",
-  MODIFICATION_REQUESTED:
-    "bg-surface-tint/10 text-surface-tint border-surface-tint/20",
-};
 
 const CANCELLABLE_STATUSES = new Set(["PENDING", "PENDING_COORDINATOR_APPROVAL"]);
 
@@ -54,8 +44,6 @@ export default function RequestDetailView() {
     );
   }
 
-  const statusBadgeClass =
-    STATUS_BADGE[request.status] ?? STATUS_BADGE["PENDING"];
   const canCancel = CANCELLABLE_STATUSES.has(request.status);
 
   return (
@@ -79,12 +67,7 @@ export default function RequestDetailView() {
 
           <div className="flex items-center gap-4">
             <h1 className="headline-md text-primary">{t("detailsTitle")}</h1>
-            <span
-              className={`px-3 py-1 rounded-full border border-transparent flex items-center gap-1.5 label-sm ${statusBadgeClass}`}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-              {t(`status_${request.status}` as any)}
-            </span>
+            <RequestStatusBadge status={request.status} />
           </div>
         </div>
 

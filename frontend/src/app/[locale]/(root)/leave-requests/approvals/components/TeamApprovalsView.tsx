@@ -3,7 +3,7 @@
 import { useSuspenseQuery } from "@apollo/client/react";
 import { TEAM_ABSENCES_QUERY } from "../graphql/ApprovalListQueries";
 import { RequestStatus } from "@/__generated__/graphql";
-import { RequestsTable } from "../../components/RequestsTable";
+import { RequestsTable } from "../../shared/components/RequestsTable";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 

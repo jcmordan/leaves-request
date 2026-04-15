@@ -43,6 +43,7 @@ public class LeaveRequestMutationsTests
         var startDate = DateTime.UtcNow.AddDays(1);
         var endDate = DateTime.UtcNow.AddDays(2);
         var input = new SubmitLeaveRequestInput(
+            EmployeeId: null,
             AbsenceTypeId: absenceTypeId,
             StartDate: startDate,
             EndDate: endDate,

@@ -71,7 +71,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex w-full bg-surface-container-low text-foreground font-sans">
       {/* Sidebar Navigation */}
-      <aside className="w-72 bg-sidebar-primary text-white flex flex-col shadow-ambient z-40 transition-all duration-300 h-dvh">
+      <aside className="w-72 bg-sidebar-primary text-white flex flex-col shadow-ambient z-40 transition-all duration-300 sticky top-0 h-screen overflow-y-auto">
         <div className="p-8 mb-4">
           <Logo />
         </div>
@@ -125,7 +125,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Main Workspace */}
-      <div className="flex-1 flex flex-col overflow-hidden relative">
+      <div className="flex-1 flex flex-col relative">
         {/* TopAppBar */}
         <header className="h-20 bg-surface-container-lowest flex items-center justify-between px-10 z-30 border-b border-outline-variant/15 sticky top-0">
           <div className="flex items-center gap-4">
@@ -184,8 +184,8 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </header>
 
         {/* Workspace Content Area */}
-        <SheetPortalTarget className="flex-1 relative flex flex-col overflow-hidden">
-          <main className="flex-1 p-12 overflow-y-auto bg-surface-container-low/30">
+        <SheetPortalTarget className="flex-1 relative flex flex-col">
+          <main className="flex-1 p-12 bg-surface-container-low/30">
             <div className="max-w-7xl mx-auto">
               {/* Contextual Breadcrumb Path */}
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 mb-8">

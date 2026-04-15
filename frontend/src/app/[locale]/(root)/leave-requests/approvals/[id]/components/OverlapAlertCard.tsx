@@ -1,39 +1,37 @@
+import { FragmentType, useFragment } from "@/__generated__";
 import { AlertTriangle, Calendar } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-interface OverlapMember {
-  name: string;
-  role: string;
-  dates: string;
-}
+import { ABSENCE_ANALYSIS_OVERLAPS_FRAGMENT } from "../graphql/ApprovalQueries";
 
 interface OverlapAlertCardProps {
-  startDate: string;
-  endDate: string;
+  absenceAnalysisRef?: FragmentType<
+    typeof ABSENCE_ANALYSIS_OVERLAPS_FRAGMENT
+  > | null;
 }
-
-// Static data matching the Stitch design — will be replaced with API data
-// when the teamAbsences query supports overlap detection.
-const MOCK_OVERLAPS: readonly OverlapMember[] = [
-  {
-    name: "Sarah Wilson",
-    role: "Product Designer",
-    dates: "Oct 25 – Oct 27",
-  },
-  {
-    name: "Marcus Chen",
-    role: "Frontend Developer",
-    dates: "Oct 24 – Oct 26",
-  },
-] as const;
 
 /**
  * OverlapAlertCard — Warns managers about team members absent during the same period.
- * Currently uses static mock data; will integrate with teamAbsences query when available.
+ * Integrates with real data from the AbsenceRequest fragment.
  */
-export function OverlapAlertCard({ startDate, endDate }: OverlapAlertCardProps) {
+export function OverlapAlertCard({
+  absenceAnalysisRef,
+}: OverlapAlertCardProps) {
+  const overlaps = useFragment(
+    ABSENCE_ANALYSIS_OVERLAPS_FRAGMENT,
+    absenceAnalysisRef,
+  );
   const t = useTranslations("requests");
-  const overlaps = MOCK_OVERLAPS;
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  if (!overlaps?.overlappingAbsences) {
+    return null;
+  }
 
   return (
     <section className="bg-amber-50/60 border border-amber-200/50 rounded-xl p-8 shadow-sm">
@@ -47,32 +45,34 @@ export function OverlapAlertCard({ startDate, endDate }: OverlapAlertCardProps) 
       </div>
 
       <p className="text-xs font-bold text-amber-700 mb-4">
-        {t("teamOverlapsCount", { count: overlaps.length })}
+        {t("teamOverlapsCount", { count: overlaps.overlappingAbsences.length })}
       </p>
 
       <div className="space-y-3">
-        {overlaps.map((member) => (
+        {overlaps.overlappingAbsences.map((member) => (
           <div
-            key={member.name}
+            key={member.employeeName}
             className="flex items-center gap-4 bg-white/60 rounded-lg p-3 border border-amber-100"
           >
             <div className="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 font-bold text-xs shrink-0">
-              {member.name
+              {member.employeeName
                 .split(" ")
                 .map((n) => n[0])
                 .join("")}
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold text-primary truncate">
-                {member.name}
+                {member.employeeName}
               </p>
               <p className="text-[10px] text-on-surface-variant/60 font-medium">
-                {member.role}
+                {member.jobTitle}
               </p>
             </div>
             <div className="ml-auto flex items-center gap-1.5 text-[10px] text-amber-700 font-medium shrink-0">
               <Calendar className="h-3 w-3" />
-              <span>{member.dates}</span>
+              <span>
+                {formatDate(member.startDate)} – {formatDate(member.endDate)}
+              </span>
             </div>
           </div>
         ))}

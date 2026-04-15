@@ -1,10 +1,9 @@
-using System.Threading.Tasks;
 using LeaveManagement.Application.Common.Paging;
 using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Application.Models.Paging;
-using LeaveManagement.Domain.Constants;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Enums;
+using LeaveManagement.Domain.Interfaces;
 using LeaveManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,12 +12,15 @@ namespace LeaveManagement.Application.Services;
 public class LeaveRequestService(
     LeaveManagementDbContext context,
     IHolidayService holidayService,
-    IBalanceService balanceService
+    IBalanceService balanceService,
+    ICurrentUserService currentUserService
     ) : ILeaveRequestService
 {
     private readonly LeaveManagementDbContext _context = context;
     private readonly IHolidayService _holidayService = holidayService;
     private readonly IBalanceService _balanceService = balanceService;
+    private readonly ICurrentUserService _currentUserService = currentUserService;
+
 
     public async Task<AbsenceRequest> SubmitRequestAsync(
         Guid employeeId,
@@ -110,6 +112,8 @@ public class LeaveRequestService(
             throw new Exception("There is already a request for the selected dates.");
         }
 
+        var reqeustedBy = await _currentUserService.GetCurrentEmployeeIdAsync();
+
         var request = new AbsenceRequest
         {
             Id = Guid.NewGuid(),
@@ -124,7 +128,7 @@ public class LeaveRequestService(
             TreatingDoctor = treatingDoctor,
             TotalDaysRequested = totalDays,
             CreatedAt = DateTime.UtcNow,
-            RequesterEmployeeId = employeeId,
+            RequesterEmployeeId = reqeustedBy,
         };
 
         if (fileStream != null && fileName != null)
@@ -414,7 +418,7 @@ public class LeaveRequestService(
     /// <inheritdoc/>
     public async Task<PaginationResult<AbsenceRequest>> GetEmployeeRequestsAsync(Guid employeeId, PaginationFilter filter, RequestStatus? status = null)
     {
-        IQueryable<AbsenceRequest> query = _context.AbsenceRequests.Where(r => r.EmployeeId == employeeId);
+        IQueryable<AbsenceRequest> query = _context.AbsenceRequests.Where(r => r.EmployeeId == employeeId || r.RequesterEmployeeId == employeeId);
         if (status.HasValue)
         {
             query = query.Where(r => r.Status == status.Value);

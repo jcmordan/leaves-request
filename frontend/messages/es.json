@@ -161,7 +161,8 @@
     "page": "Página"
   },
   "loading": {
-    "pleaseWait": "Por favor espere..."
+    "pleaseWait": "Por favor espere...",
+    "loading": "Cargando..."
   },
   "calendar": {
     "previous": "Anterior",
@@ -315,6 +316,10 @@
     "teamOverlapsCount": "{count} miembros del equipo superpuestos",
     "teamCapacity": "Capacidad del Equipo",
     "available": "Disponible",
-    "capacityPercentage": "{percentage}%"
+    "capacityPercentage": "{percentage}%",
+    "requestForSomeoneElse": "Solicitud para alguien más",
+    "employee": "Empleado",
+    "invalidEmployee": "Empleado inválido",
+    "maxDaysError": "Máximo {maxDays} días"
   }
 }

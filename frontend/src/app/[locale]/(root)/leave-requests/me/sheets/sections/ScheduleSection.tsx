@@ -44,7 +44,6 @@ export const ScheduleSection = ({
             name="requestedDays"
             label={t("requestedDays")}
             step="1"
-            min="1"
             max={selectedType?.maxDaysPerYear}
             disabled={!!selectedType?.maxDaysPerYear}
             required

@@ -21,11 +21,11 @@ public class LeaveRequestMutations(ILogger<LeaveRequestMutations> logger)
     {
         _logger.LogInformation(
             "Submitting leave request for employee {EmployeeId}. Type: {AbsenceTypeId}",
-            await currentUserService.GetCurrentEmployeeIdAsync(),
+            input.EmployeeId ?? await currentUserService.GetCurrentEmployeeIdAsync(),
             input.AbsenceTypeId
         );
 
-        var employeeId = await currentUserService.GetCurrentEmployeeIdAsync();
+        var employeeId = input.EmployeeId ?? await currentUserService.GetCurrentEmployeeIdAsync();
 
         System.IO.Stream? fileStream = null;
         string? fileName = null;

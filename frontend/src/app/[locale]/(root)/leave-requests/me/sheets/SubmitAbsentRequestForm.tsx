@@ -6,9 +6,12 @@ import { AbsenceCategorySection } from "./sections/AbsenceCategorySection";
 import { ScheduleSection } from "./sections/ScheduleSection";
 import { MedicalContextSection } from "./sections/MedicalContextSection";
 import { AdditionalNotesSection } from "./sections/AdditionalNotesSection";
-import { FragmentType, useFragment } from "@/__generated__";
+import { FragmentType } from "@/__generated__";
 import { ABSENCE_TYPES_QUERY_FRAGMENT } from "../graphql/MyRequestsQueries";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import EmployeeSelector from "./sections/EmployeeSelector";
+import { FormSwitch } from "@/components/forms";
+import { useTranslations } from "next-intl";
 
 /**
  * Zod schema for absence request submission.
@@ -16,24 +19,25 @@ import { useFormContext, useWatch } from "react-hook-form";
  * @param absenceTypes - List of available absence types with their rules.
  */
 export const getSubmitRequestSchema = (
-  t: (key: string) => string,
+  t: (key: string, ...args: any[]) => string,
   absenceTypes: any[] = [],
 ) =>
   z
     .object({
-      absenceTypeId: z.string().uuid(t("invalidAbsenceType")),
-      absenceSubTypeId: z
-        .string()
-        .uuid(t("invalidSubtype"))
-        .optional()
-        .nullable(),
+      requestForSomeoneElse: z.boolean().default(false),
+      employeeId: z.uuid(t("invalidEmployee")).optional().nullable(),
+      absenceTypeId: z.uuid(t("invalidAbsenceType")),
+      absenceSubTypeId: z.uuid(t("invalidSubtype")).optional().nullable(),
       startDate: z.coerce.date({
-        errorMap: () => ({ message: t("startDateRequired") }),
+        error: () => ({ message: t("startDateRequired") }),
       }),
       endDate: z.coerce.date({
-        errorMap: () => ({ message: t("endDateRequired") }),
+        error: () => ({ message: t("endDateRequired") }),
       }),
-      requestedDays: z.number().min(0.5, t("minDaysError")),
+      requestedDays: z.coerce
+        .number()
+        .min(1, t("minDaysError"))
+        .max(31, t("maxDaysError", { maxDays: 31 })),
       diagnosis: z.string().optional().nullable(),
       treatingDoctor: z.string().optional().nullable(),
       file: z.any().optional().nullable(),
@@ -96,8 +100,22 @@ export const SubmitAbsentRequestForm = ({
     selectedType,
   } = useAbsenceRequestLogic(holidays, absenceTypesRef);
 
+  const t = useTranslations("requests");
+  const forSomeoneElse = useWatch({ name: "requestForSomeoneElse" });
+
   return (
-    <div className="space-y-8 pb-8">
+    <div className="space-y-8 pb-8 pt-8">
+      <div className="col-span-1 mt-2">
+        <div className="rounded-lg">
+          <FormSwitch
+            name="requestForSomeoneElse"
+            labelPosition="top"
+            label={t("requestForSomeoneElse")}
+          />
+        </div>
+      </div>
+
+      {forSomeoneElse && <EmployeeSelector />}
       <AbsenceCategorySection absenceTypes={parentTypes} subTypes={subTypes} />
 
       <ScheduleSection

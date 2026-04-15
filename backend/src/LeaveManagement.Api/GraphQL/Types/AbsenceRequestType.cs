@@ -8,9 +8,9 @@ public class AbsenceRequestType : ObjectType<AbsenceRequest>
 {
     protected override void Configure(IObjectTypeDescriptor<AbsenceRequest> descriptor)
     {
-        descriptor.Field(t => t.Id).Type<NonNullType<IdType>>();
-        descriptor.Field(t => t.EmployeeId).Type<NonNullType<IdType>>();
-        descriptor.Field(t => t.AbsenceTypeId).Type<NonNullType<IdType>>();
+        descriptor.Field(t => t.Id).Type<NonNullType<UuidType>>();
+        descriptor.Field(t => t.EmployeeId).Type<NonNullType<UuidType>>();
+        descriptor.Field(t => t.AbsenceTypeId).Type<NonNullType<UuidType>>();
         descriptor.Field(t => t.StartDate).Type<NonNullType<DateTimeType>>();
         descriptor.Field(t => t.EndDate).Type<NonNullType<DateTimeType>>();
         descriptor
@@ -21,7 +21,7 @@ public class AbsenceRequestType : ObjectType<AbsenceRequest>
         descriptor.Field(t => t.TreatingDoctor).Type<StringType>();
         descriptor.Field(t => t.TotalDaysRequested).Type<NonNullType<IntType>>();
         descriptor.Field(t => t.CreatedAt).Type<NonNullType<DateTimeType>>();
-        descriptor.Field(t => t.RequesterEmployeeId).Type<NonNullType<IdType>>();
+        descriptor.Field(t => t.RequesterEmployeeId).Type<NonNullType<UuidType>>();
 
         descriptor
             .Field(t => t.RequesterEmployee)

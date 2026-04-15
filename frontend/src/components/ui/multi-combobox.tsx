@@ -19,6 +19,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { InputOption } from "../forms/types";
+
+type Props = {
+  options: InputOption[];
+  value?: (string | number)[];
+  onValueChange?: (value: (string | number)[]) => void;
+  onSearchChange?: (search: string) => void;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  emptyText?: string;
+  disabled?: boolean;
+  className?: string;
+};
 
 export function MultiCombobox({
   options,
@@ -30,17 +43,7 @@ export function MultiCombobox({
   emptyText = "No results found.",
   disabled,
   className,
-}: {
-  options: Array<{ label: string; value: string | number }>;
-  value?: (string | number)[];
-  onValueChange?: (value: (string | number)[]) => void;
-  onSearchChange?: (search: string) => void;
-  placeholder?: string;
-  searchPlaceholder?: string;
-  emptyText?: string;
-  disabled?: boolean;
-  className?: string;
-}) {
+}: Props) {
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
 

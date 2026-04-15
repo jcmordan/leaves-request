@@ -4,7 +4,6 @@ import { useQuery, useMutation } from "@apollo/client/react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formatISO } from "date-fns";
 import { toast } from "sonner";
 
 import FormSheet from "@/components/layout/sheets/FormSheet";
@@ -73,6 +72,7 @@ export const SubmitAbsentRequestSheet = () => {
     await submitRequest({
       variables: {
         input: {
+          employeeId: values.employeeId,
           absenceTypeId: values.absenceTypeId,
           absenceSubTypeId: values.absenceSubTypeId,
           startDate,

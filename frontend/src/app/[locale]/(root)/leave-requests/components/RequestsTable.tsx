@@ -5,20 +5,24 @@ import { useState } from "react";
 import { PaginatedDataTable } from "@/components/ui/paginated-data-table";
 import { useRequestColumns, RequestItem } from "./RequestColumns";
 import { FragmentType, useFragment } from "@/__generated__";
-import { MY_REQUESTS_CONNECTION_FRAGMENT } from "../graphql/MyRequestsQueries";
+import { REQUEST_LIST_CONNECTION_FRAGMENT } from "../graphql/RequestFragments";
 import { RequestStatus } from "@/__generated__/graphql";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CancelRequestModal } from "@/components/requests/CancelRequestModal";
 
 interface RequestsTableProps {
-  requestsRef?: FragmentType<typeof MY_REQUESTS_CONNECTION_FRAGMENT> | null;
+  requestsRef?: FragmentType<typeof REQUEST_LIST_CONNECTION_FRAGMENT> | null;
+  basePath?: "me" | "approvals" | "all";
 }
 
 /**
  * RequestsTable Component
  * Displays the recent activity of leave requests in a paginated data table.
  */
-export function RequestsTable({ requestsRef }: RequestsTableProps) {
+export function RequestsTable({
+  requestsRef,
+  basePath = "me",
+}: RequestsTableProps) {
   const t = useTranslations("requests");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -34,8 +38,8 @@ export function RequestsTable({ requestsRef }: RequestsTableProps) {
     setIsCancelModalOpen(true);
   };
 
-  const requests = useFragment(MY_REQUESTS_CONNECTION_FRAGMENT, requestsRef);
-  const columns = useRequestColumns(handleCancelClick);
+  const requests = useFragment(REQUEST_LIST_CONNECTION_FRAGMENT, requestsRef);
+  const columns = useRequestColumns(handleCancelClick, basePath);
 
   const nodes = requests?.nodes || [];
 

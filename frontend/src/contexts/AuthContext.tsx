@@ -18,7 +18,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: Role;
+  roles: Role[];
 }
 
 interface AuthContextType {
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: session.oid || session.user.id || "",
         name: session.user.name || "",
         email: session.user.email || "",
-        role: (session.user.role as Role) || "Employee",
+        roles: (session.user.roles as Role[]) || ["Employee"],
       }
     : null;
 

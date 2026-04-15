@@ -5,7 +5,7 @@ import { MY_REQUESTS_QUERY } from "../graphql/MyRequestsQueries";
 import { RequestStatus } from "@/__generated__/graphql";
 import { RequestSummaryCards } from "./RequestSummaryCards";
 import { LeaveBalanceSection } from "./LeaveBalanceSection";
-import { RequestsTable } from "./RequestsTable";
+import { RequestsTable } from "../../components/RequestsTable";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 

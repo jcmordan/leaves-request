@@ -80,7 +80,7 @@ public class CustomClaimsTransformationTests : IDisposable
             ExternalId = oid,
             Email = "test@example.com",
             FullName = "Test User",
-            Role = UserRole.Admin,
+            Roles = [UserRole.Admin],
             IsActive = true
         };
         _context.Users.Add(user);
@@ -109,7 +109,7 @@ public class CustomClaimsTransformationTests : IDisposable
             ExternalId = oid,
             Email = "test@example.com",
             FullName = "Test User",
-            Role = UserRole.Employee,
+            Roles = [UserRole.Employee],
             IsActive = true
         };
         _context.Users.Add(user);
@@ -160,7 +160,7 @@ public class CustomClaimsTransformationTests : IDisposable
             ExternalId = oid,
             Email = "test@example.com",
             FullName = "Test User",
-            Role = UserRole.Admin,
+            Roles = [UserRole.Admin],
             IsActive = true
         };
         _context.Users.Add(user);
@@ -171,5 +171,35 @@ public class CustomClaimsTransformationTests : IDisposable
 
         // Assert
         result.FindAll(ClaimTypes.Role).Count().Should().Be(1);
+    }
+
+    [Fact]
+    public async Task TransformAsync_MultipleRoles_ShouldAddAllRoleClaims()
+    {
+        // Arrange
+        var oid = "test-oid-multiple";
+        var identity = new ClaimsIdentity("TestAuth");
+        identity.AddClaim(new Claim("oid", oid));
+        var principal = new ClaimsPrincipal(identity);
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            ExternalId = oid,
+            Email = "multiple@example.com",
+            FullName = "Multiple Roles User",
+            Roles = [UserRole.Manager, UserRole.Admin],
+            IsActive = true
+        };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.TransformAsync(principal);
+
+        // Assert
+        result.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Manager").Should().BeTrue();
+        result.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin").Should().BeTrue();
+        result.FindAll(ClaimTypes.Role).Count().Should().Be(2);
     }
 }

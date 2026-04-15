@@ -1,9 +1,11 @@
+using System;
+
 namespace LeaveManagement.Domain.Enums;
 
 public enum UserRole
 {
-    Admin = 0,
-    Employee = 1,
-    Manager = 2,
-    HRManager = 3,
+    Employee = 0,
+    Manager = 1,
+    HRManager = 2,
+    Admin = 3,
 }

@@ -34,3 +34,36 @@ export const SHARED_REQUEST_ITEM_FRAGMENT = graphql(`
     }
   }
 `);
+
+export const REQUEST_LIST_ITEM_FRAGMENT = graphql(`
+  fragment RequestList_ItemFields on AbsenceRequest {
+    id
+    status
+    createdAt
+    startDate
+    endDate
+    absenceType {
+      id
+      name
+    }
+    employee {
+      id
+      fullName
+    }
+  }
+`);
+
+export const REQUEST_LIST_CONNECTION_FRAGMENT = graphql(`
+  fragment RequestList_ConnectionFields on MyRequestsConnection {
+    nodes {
+      ...RequestList_ItemFields
+    }
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+`);

@@ -21,7 +21,7 @@ public class User
     public string? PasswordHash { get; set; }
 
     public string FullName { get; set; } = string.Empty;
-    public UserRole Role { get; set; } = UserRole.Employee;
+    public List<UserRole> Roles { get; set; } = [UserRole.Employee];
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

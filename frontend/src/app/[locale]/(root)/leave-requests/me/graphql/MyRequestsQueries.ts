@@ -5,44 +5,6 @@ import { CANCEL_REQUEST_MUTATION } from "../../graphql/RequestMutations";
 export { SHARED_BALANCE_FRAGMENT as MY_BALANCE_FRAGMENT };
 export { CANCEL_REQUEST_MUTATION };
 
-export const MY_REQUEST_ITEM_FRAGMENT = graphql(`
-  fragment MyRequests_ItemFields on AbsenceRequest {
-    id
-    status
-    createdAt
-    startDate
-    endDate
-    absenceType {
-      id
-      name
-    }
-    employee {
-      id
-      fullName
-    }
-    requesterEmployee {
-      id
-      fullName
-    }
-    ...Shared_RequestItemFields
-  }
-`);
-
-export const MY_REQUESTS_CONNECTION_FRAGMENT = graphql(`
-  fragment MyRequests_ConnectionFields on MyRequestsConnection {
-    nodes {
-      ...MyRequests_ItemFields
-    }
-    totalCount
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-      startCursor
-      endCursor
-    }
-  }
-`);
-
 export const MY_REQUESTS_QUERY = graphql(`
   query MyRequests_GetMyRequests(
     $first: Int
@@ -61,7 +23,7 @@ export const MY_REQUESTS_QUERY = graphql(`
       before: $before
       status: $status
     ) {
-      ...MyRequests_ConnectionFields
+      ...RequestList_ConnectionFields
     }
   }
 `);
@@ -70,7 +32,7 @@ export const SUBMIT_LEAVE_REQUEST_MUTATION = graphql(`
   mutation MyRequests_SubmitMutation($input: SubmitLeaveRequestInput!) {
     submitLeaveRequest(input: $input) {
       request {
-        ...MyRequests_ItemFields
+        ...RequestList_ItemFields
       }
       balance {
         ...Shared_BalanceFields

@@ -17,7 +17,7 @@ public class InputTypesTests
         var reason = "Test reason";
 
         // Act
-        var input = new SubmitLeaveRequestInput(absenceTypeId, startDate, endDate, reason);
+        var input = new SubmitLeaveRequestInput(null, absenceTypeId, startDate, endDate, reason);
 
         // Assert
         input.AbsenceTypeId.Should().Be(absenceTypeId);

@@ -29,7 +29,7 @@ public class AbsenceRequestResolversTests
         var requesterId = Guid.NewGuid();
         var absenceRequest = new AbsenceRequest { RequesterEmployeeId = requesterId };
         var expectedEmployee = new Employee { Id = requesterId, FullName = "Requester" };
-        
+
         var dataLoader = Substitute.For<IEmployeeByIdDataLoader>();
         dataLoader.LoadAsync(requesterId, Arg.Any<CancellationToken>()).Returns(expectedEmployee);
 
@@ -47,7 +47,7 @@ public class AbsenceRequestResolversTests
         var typeId = Guid.NewGuid();
         var absenceRequest = new AbsenceRequest { AbsenceTypeId = typeId };
         var expectedType = new AbsenceType { Id = typeId, Name = "Vacation" };
-        
+
         var dataLoader = Substitute.For<IAbsenceTypeByIdDataLoader>();
         dataLoader.LoadAsync(typeId, Arg.Any<CancellationToken>()).Returns(expectedType);
 
@@ -65,7 +65,7 @@ public class AbsenceRequestResolversTests
         var requestId = Guid.NewGuid();
         var absenceRequest = new AbsenceRequest { Id = requestId };
         var attachments = new[] { new Attachment { Id = Guid.NewGuid(), AbsenceRequestId = requestId } };
-        
+
         var dataLoader = Substitute.For<IAttachmentsByAbsenceRequestIdDataLoader>();
         dataLoader.LoadAsync(requestId, Arg.Any<CancellationToken>()).Returns(attachments);
 
@@ -83,7 +83,7 @@ public class AbsenceRequestResolversTests
         // Arrange
         var requestId = Guid.NewGuid();
         var absenceRequest = new AbsenceRequest { Id = requestId };
-        
+
         var dataLoader = Substitute.For<IAttachmentsByAbsenceRequestIdDataLoader>();
         dataLoader.LoadAsync(requestId, Arg.Any<CancellationToken>()).Returns((Attachment[]?)null);
 
@@ -101,7 +101,7 @@ public class AbsenceRequestResolversTests
         var employeeId = Guid.NewGuid();
         var absenceRequest = new AbsenceRequest { EmployeeId = employeeId };
         var expectedEmployee = new Employee { Id = employeeId, FullName = "Employee" };
-        
+
         var dataLoader = Substitute.For<IEmployeeByIdDataLoader>();
         dataLoader.LoadAsync(employeeId, Arg.Any<CancellationToken>()).Returns(expectedEmployee);
 
@@ -119,7 +119,7 @@ public class AbsenceRequestResolversTests
         var requestId = Guid.NewGuid();
         var absenceRequest = new AbsenceRequest { Id = requestId };
         var histories = new[] { new ApprovalHistory { Id = Guid.NewGuid(), AbsenceRequestId = requestId } };
-        
+
         var dataLoader = Substitute.For<IApprovalHistoriesByAbsenceRequestIdDataLoader>();
         dataLoader.LoadAsync(requestId, Arg.Any<CancellationToken>()).Returns(histories);
 
@@ -137,7 +137,7 @@ public class AbsenceRequestResolversTests
         // Arrange
         var requestId = Guid.NewGuid();
         var absenceRequest = new AbsenceRequest { Id = requestId };
-        
+
         var dataLoader = Substitute.For<IApprovalHistoriesByAbsenceRequestIdDataLoader>();
         dataLoader.LoadAsync(requestId, Arg.Any<CancellationToken>()).Returns((ApprovalHistory[]?)null);
 

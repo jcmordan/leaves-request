@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FragmentType, useFragment } from "@/__generated__";
-import { SHARED_REQUEST_ITEM_FRAGMENT } from "@/app/[locale]/(root)/requests/graphql/RequestFragments";
-import { CANCEL_REQUEST_MUTATION } from "@/app/[locale]/(root)/requests/graphql/RequestMutations";
+import { SHARED_REQUEST_ITEM_FRAGMENT } from "@/app/[locale]/(root)/leave-requests/shared/graphql/RequestFragments";
+import { CANCEL_REQUEST_MUTATION } from "@/app/[locale]/(root)/leave-requests/shared/graphql/RequestMutations";
 
 interface CancelRequestModalProps {
   isOpen: boolean;

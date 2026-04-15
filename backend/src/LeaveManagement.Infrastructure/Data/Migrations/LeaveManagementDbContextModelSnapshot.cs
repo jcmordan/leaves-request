@@ -46,9 +46,6 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("EmployeeId1")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -80,8 +77,6 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.HasIndex("AbsenceTypeId");
 
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("EmployeeId1");
 
                     b.HasIndex("RequesterEmployeeId");
 
@@ -590,9 +585,9 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
 
-                    b.Property<string>("Role")
+                    b.Property<int[]>("Roles")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("integer[]");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -620,14 +615,10 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("LeaveManagement.Domain.Entities.Employee", "Employee")
-                        .WithMany()
+                        .WithMany("AbsenceRequests")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("LeaveManagement.Domain.Entities.Employee", null)
-                        .WithMany("AbsenceRequests")
-                        .HasForeignKey("EmployeeId1");
 
                     b.HasOne("LeaveManagement.Domain.Entities.Employee", "RequesterEmployee")
                         .WithMany()

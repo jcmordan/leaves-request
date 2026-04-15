@@ -9,7 +9,7 @@ public class EmployeeType : ObjectType<Employee>
 {
     protected override void Configure(IObjectTypeDescriptor<Employee> descriptor)
     {
-        descriptor.Field(t => t.Id).Type<NonNullType<IdType>>();
+        descriptor.Field(t => t.Id).Type<NonNullType<UuidType>>();
         descriptor.Field(t => t.FullName).Type<NonNullType<StringType>>();
         descriptor.Field(t => t.Email).Type<StringType>();
         descriptor.Field(t => t.EmployeeCode).Type<NonNullType<StringType>>();

@@ -10,14 +10,23 @@ import {
   Users,
   Building2,
   UserCircle,
-  ClockPlusIcon,
   Plus,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/layout/Logo";
 import { SheetPortalTarget } from "@/components/layout/sheets/SheetPortalTarget";
 import { useSheets } from "@/components/layout/sheets/SheetNavigation";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
@@ -27,24 +36,31 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   const tLayout = useTranslations("layout");
   const tRoles = useTranslations("roles");
 
-  const getNavigation = () => {
+    const getNavigation = () => {
     const baseNav = [
-      { name: t("myRequests"), href: "/requests/me", icon: Clock },
-      { name: t("employees"), href: "/employees", icon: UserCircle },
+      { name: t("myRequests"), href: "/leave-requests/me", icon: Clock },
     ];
 
-    if (user?.role === "Supervisor") {
-      baseNav.push(
-        { name: t("teams"), href: "/team", icon: Users },
-        { name: t("approvals"), href: "/approvals", icon: Calendar },
-      );
+    if (user?.roles.includes("Supervisor") || user?.roles.includes("Manager")) {
+      baseNav.push({
+        name: t("approvals"),
+        href: "/leave-requests/approvals",
+        icon: Calendar,
+      });
+      baseNav.push({ name: t("teams"), href: "/team", icon: Users });
     }
 
-    if (user?.role === "HR_Admin" || user?.role === "Coordinator") {
-      baseNav.push(
-        { name: t("allRequests"), href: "/requests/all", icon: Building2 },
-        { name: t("employees"), href: "/employees", icon: Users },
-      );
+    if (
+      user?.roles.includes("HR_Admin") ||
+      user?.roles.includes("Coordinator") ||
+      user?.roles.includes("HRManager")
+    ) {
+      baseNav.push({
+        name: t("allRequests"),
+        href: "/leave-requests/all",
+        icon: Building2,
+      });
+      baseNav.push({ name: t("employees"), href: "/employees", icon: Users });
     }
 
     return baseNav;
@@ -55,7 +71,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex w-full bg-surface-container-low text-foreground font-sans">
       {/* Sidebar Navigation */}
-      <aside className="w-72 bg-sidebar-primary text-white flex flex-col shadow-ambient z-40 transition-all duration-300 h-dvh">
+      <aside className="w-72 bg-sidebar-primary text-white flex flex-col shadow-ambient z-40 transition-all duration-300 sticky top-0 h-screen overflow-y-auto">
         <div className="p-8 mb-4">
           <Logo />
         </div>
@@ -109,7 +125,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Main Workspace */}
-      <div className="flex-1 flex flex-col overflow-hidden relative">
+      <div className="flex-1 flex flex-col relative">
         {/* TopAppBar */}
         <header className="h-20 bg-surface-container-lowest flex items-center justify-between px-10 z-30 border-b border-outline-variant/15 sticky top-0">
           <div className="flex items-center gap-4">
@@ -118,38 +134,58 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             </span>
           </div>
 
-          <div className="flex items-center gap-8">
-            {/* User Indicator Badge */}
-            <div className="flex items-center gap-4 pr-6 border-r border-outline-variant/15">
-              <div className="flex flex-col items-end">
-                <span className="text-xs font-bold text-primary tracking-tight leading-none mb-1">
-                  {user?.name}
-                </span>
-                <span className="px-2 py-0.5 bg-secondary-container text-on-secondary-container text-[9px] font-black uppercase tracking-widest rounded-full">
-                  {user?.role
-                    ? tRoles(user.role.toLowerCase())
-                    : tRoles("employee")}
-                </span>
-              </div>
-              <div className="h-10 w-10 bg-secondary/10 rounded-full flex items-center justify-center text-secondary font-bold border border-secondary/20 shadow-sm">
-                {user?.name?.charAt(0) || "U"}
-              </div>
-            </div>
-
-            <Button
-              variant="ghost"
-              className="text-muted-foreground hover:text-error hover:bg-error-container/20 p-2 h-auto rounded-full transition-all"
-              onClick={logout}
-              title={tLayout("signout")}
-            >
-              <LogOut className="h-5 w-5" />
-            </Button>
+          <div className="flex items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-4 px-4 h-14 hover:bg-surface-variant/10 transition-all rounded-xl border border-transparent hover:border-outline-variant/30"
+                >
+                  <div className="flex flex-col items-end">
+                    <span className="text-xs font-bold text-primary tracking-tight leading-none mb-1">
+                      {user?.name}
+                    </span>
+                    <span className="px-2 py-0.5 bg-secondary-container text-on-secondary-container text-[9px] font-black uppercase tracking-widest rounded-full">
+                      {user?.roles && user.roles.length > 0
+                        ? tRoles(user.roles[0].toLowerCase())
+                        : tRoles("employee")}
+                    </span>
+                  </div>
+                  <Avatar className="h-10 w-10 border border-secondary/20 shadow-sm transition-transform group-hover:scale-105">
+                    <AvatarFallback className="bg-secondary/10 text-secondary font-bold text-sm">
+                      {user?.name?.charAt(0) || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground/50 transition-transform group-data-[state=open]:rotate-180" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 mt-2">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-bold leading-none">
+                      {user?.name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user?.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-error focus:text-error focus:bg-error-container/20 cursor-pointer"
+                  onClick={logout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>{tLayout("signout")}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
         {/* Workspace Content Area */}
-        <SheetPortalTarget className="flex-1 relative flex flex-col overflow-hidden">
-          <main className="flex-1 p-12 overflow-y-auto bg-surface-container-low/30">
+        <SheetPortalTarget className="flex-1 relative flex flex-col">
+          <main className="flex-1 p-12 bg-surface-container-low/30">
             <div className="max-w-7xl mx-auto">
               {/* Contextual Breadcrumb Path */}
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 mb-8">

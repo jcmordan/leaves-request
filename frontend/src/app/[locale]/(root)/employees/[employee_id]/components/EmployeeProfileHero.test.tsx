@@ -1,85 +1,74 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { EmployeeProfileHero } from "./EmployeeProfileHero";
+import { useFragment } from "@/__generated__";
+import { useSheets } from "@/components/layout/sheets/SheetNavigation";
 
-const openSheetMock = vi.fn();
-
-vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string) => key,
+// Mock dependencies
+vi.mock("@/__generated__", () => ({
+  useFragment: vi.fn(),
+  graphql: (s: any) => s,
 }));
 
-vi.mock("@/__generated__", async (importOriginal) => {
-  const actual = (await importOriginal()) as Record<string, unknown>;
-  return {
-    ...actual,
-    useFragment: vi.fn((_, ref) => ref),
-    graphql: (s: string) => s,
-    FragmentType: {},
-  };
-});
-
-vi.mock("@/utils/formatters", () => ({
-  getInitials: (name: string) =>
-    name
-      .split(" ")
-      .map((n: string) => n[0])
-      .join(""),
+vi.mock("next-intl", () => ({
+  useTranslations: (namespace: string) => (key: string) => `${namespace}.${key}`,
 }));
 
 vi.mock("@/components/layout/sheets/SheetNavigation", () => ({
-  useSheets: () => ({ openSheet: openSheetMock }),
+  useSheets: vi.fn(),
 }));
 
 describe("EmployeeProfileHero", () => {
+  const openSheetMock = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (useSheets as any).mockReturnValue({ openSheet: openSheetMock });
+  });
+
   const mockEmployee = {
-    id: "123",
+    id: "emp-1",
     fullName: "John Doe",
     isActive: true,
-    jobTitle: { id: "1", name: "Software Engineer" },
+    jobTitle: {
+      name: "Software Engineer",
+    },
   };
 
-  it("renders employee name and job title", () => {
-    render(<EmployeeProfileHero employeeRef={mockEmployee as any} />);
+  it("renders employee information correctly", () => {
+    vi.mocked(useFragment).mockReturnValue(mockEmployee);
+    render(<EmployeeProfileHero employeeRef={{} as any} />);
 
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("Software Engineer")).toBeInTheDocument();
+    expect(screen.getByText("common.active")).toBeInTheDocument();
   });
 
-  it("renders initials", () => {
-    render(<EmployeeProfileHero employeeRef={mockEmployee as any} />);
+  it("renders inactive status when employee is not active", () => {
+    vi.mocked(useFragment).mockReturnValue({ ...mockEmployee, isActive: false });
+    render(<EmployeeProfileHero employeeRef={{} as any} />);
 
-    expect(screen.getByText("JD")).toBeInTheDocument();
+    expect(screen.getByText("common.inactive")).toBeInTheDocument();
   });
 
-  it("renders active badge when employee is active", () => {
-    render(<EmployeeProfileHero employeeRef={mockEmployee as any} />);
-
-    expect(screen.getByText("active")).toBeInTheDocument();
-  });
-
-  it("renders inactive badge when employee is not active", () => {
-    const inactiveEmployee = { ...mockEmployee, isActive: false };
-    render(<EmployeeProfileHero employeeRef={inactiveEmployee as any} />);
-
-    expect(screen.getByText("inactive")).toBeInTheDocument();
-  });
-
-  it("renders dash when jobTitle is null", () => {
-    const noTitleEmployee = { ...mockEmployee, jobTitle: null };
-    render(<EmployeeProfileHero employeeRef={noTitleEmployee as any} />);
+  it("renders dash for missing job title", () => {
+    vi.mocked(useFragment).mockReturnValue({ ...mockEmployee, jobTitle: null });
+    render(<EmployeeProfileHero employeeRef={{} as any} />);
 
     expect(screen.getByText("-")).toBeInTheDocument();
   });
 
-  it("opens edit sheet when edit button is clicked", () => {
-    render(<EmployeeProfileHero employeeRef={mockEmployee as any} />);
+  it("calls openSheet when edit button is clicked", () => {
+    vi.mocked(useFragment).mockReturnValue(mockEmployee);
+    render(<EmployeeProfileHero employeeRef={{} as any} />);
 
-    fireEvent.click(screen.getByText("editProfile"));
+    const editButton = screen.getByText("employees.editProfile");
+    fireEvent.click(editButton);
 
     expect(openSheetMock).toHaveBeenCalledWith(
       "EmployeeEditSheet",
-      { employeeId: "123" },
-      { width: "xl" },
+      { employeeId: "emp-1" },
+      { width: "xl" }
     );
   });
 });

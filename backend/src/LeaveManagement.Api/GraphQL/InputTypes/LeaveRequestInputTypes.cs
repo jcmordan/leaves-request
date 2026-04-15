@@ -4,6 +4,7 @@ namespace LeaveManagement.Api.GraphQL.InputTypes;
 
 /// <summary>Input for submitting a new leave request.</summary>
 public record SubmitLeaveRequestInput(
+    Guid? EmployeeId,
     Guid AbsenceTypeId,
     DateTime StartDate,
     DateTime EndDate,

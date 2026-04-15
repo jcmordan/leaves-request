@@ -62,7 +62,7 @@
   },
   "roles": {
     "employee": "Empleado",
-    "supervisor": "Supervisor",
+    "manager": "Supervisor",
     "coordinator": "Coordinador",
     "hr_admin": "RRHH",
     "member": "Miembro",
@@ -161,7 +161,8 @@
     "page": "Página"
   },
   "loading": {
-    "pleaseWait": "Por favor espere..."
+    "pleaseWait": "Por favor espere...",
+    "loading": "Cargando..."
   },
   "calendar": {
     "previous": "Anterior",
@@ -174,6 +175,10 @@
   "requests": {
     "title": "Mis Solicitudes",
     "description": "Ver y gestionar sus solicitudes de permisos y su historial.",
+    "teamApprovalsTitle": "Gestión de Aprobaciones del Equipo",
+    "teamApprovalsDescription": "Revisar y gestionar las solicitudes de permisos de su equipo directo.",
+    "allRequestsTitle": "Administración General de Permisos",
+    "allRequestsDescription": "Vista administrativa de todas las solicitudes de la organización.",
     "totalRequests": "Total de Solicitudes",
     "pending": "Pendiente",
     "pendingApproval": "Pendiente de Aprobación",
@@ -291,6 +296,33 @@
     "additionalInfoSubtitle": "Comentarios del empleado y detalles de cobertura",
     "employeeComment": "Comentario del Empleado",
     "coverageStatus": "Estado de Cobertura",
-    "arranged": "Organizado"
+    "arranged": "Organizado",
+    "approvals": "Aprobaciones",
+    "absenceRequest": "Solicitud de Ausencia",
+    "requestDetails": "Detalles de Solicitud",
+    "duration": "Duración",
+    "submissionDate": "Fecha de Envío",
+    "unknown": "Desconocido",
+    "medicalDocumentation": "Documentación Médica",
+    "diagnosisSummary": "Resumen del Diagnóstico",
+    "attendingPhysician": "Médico Tratante",
+    "attachments": "Adjuntos",
+    "noAttachments": "No se han subido adjuntos.",
+    "managerAction": "Acción del Supervisor",
+    "commentPlaceholder": "Agregar un comentario para el empleado...",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "overlappingAbsences": "Ausencias Superpuestas",
+    "teamOverlapsCount": "{count} miembros del equipo con ausencias en este período",
+    "teamCapacity": "Capacidad del Equipo",
+    "available": "Disponible",
+    "capacityPercentage": "{percentage}%",
+    "totalMembers": "Total Miembros",
+    "onLeave": "En Permiso",
+    "pendingRequests": "Solicitudes Pendientes",
+    "requestForSomeoneElse": "Solicitud para alguien más",
+    "employee": "Empleado",
+    "invalidEmployee": "Empleado inválido",
+    "maxDaysError": "Máximo {maxDays} días"
   }
 }

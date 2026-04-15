@@ -53,6 +53,7 @@ public class LeaveRequestQueries
         var employeeId = await currentUserService.GetCurrentEmployeeIdAsync();
         var filter = new PaginationFilter(first, after, last, before);
         var result = await leaveRequestService.GetEmployeeRequestsAsync(employeeId, filter, status);
+
         return result.ToConnection();
     }
 
@@ -91,5 +92,32 @@ public class LeaveRequestQueries
     )
     {
         return await leaveRequestService.GetByIdAsync(id);
+    }
+
+    [Authorize(Policy = "RequireHR")]
+    [UsePaging(IncludeTotalCount = true)]
+    public async Task<Connection<AbsenceRequest>> GetAbsenceRequests(
+        int? first,
+        string? after,
+        int? last,
+        string? before,
+        RequestStatus? status,
+        [Service] ILeaveRequestService leaveRequestService
+    )
+    {
+        var filter = new PaginationFilter(first, after, last, before);
+        var result = await leaveRequestService.GetAbsenceRequestsAsync(filter, status);
+        return result.ToConnection();
+    }
+
+    public async Task<AbsenceAnalysisDto> GetAbsenceAnalysis(
+        Guid requestId,
+        [Service] ILeaveRequestService leaveRequestService,
+        [Service] ICurrentUserService currentUserService,
+        CancellationToken ct
+    )
+    {
+        var managerId = await currentUserService.GetCurrentEmployeeIdAsync();
+        return await leaveRequestService.GetAbsenceAnalysisAsync(requestId, managerId, ct);
     }
 }

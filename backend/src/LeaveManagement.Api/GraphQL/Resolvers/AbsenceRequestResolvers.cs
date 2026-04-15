@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using HotChocolate;
 using LeaveManagement.Api.GraphQL.DataLoaders;
+using LeaveManagement.Application.DTOs;
+using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Domain.Entities;
 
 namespace LeaveManagement.Api.GraphQL.Resolvers;

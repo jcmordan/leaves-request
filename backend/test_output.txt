@@ -1,0 +1,109 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  LeaveManagement.Domain -> /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Domain/bin/Debug/net10.0/LeaveManagement.Domain.dll
+  LeaveManagement.Infrastructure -> /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure/bin/Debug/net10.0/LeaveManagement.Infrastructure.dll
+  LeaveManagement.Application -> /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application/bin/Debug/net10.0/LeaveManagement.Application.dll
+  LeaveManagement.Application.Tests -> /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application.Tests/bin/Debug/net10.0/LeaveManagement.Application.Tests.dll
+Test run for /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application.Tests/bin/Debug/net10.0/LeaveManagement.Application.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (arm64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.26]     LeaveManagement.Application.Tests.Services.LeaveRequestAnalyticsTests.GetTeamCapacityAsync_ShouldReturnCorrectPercentage [FAIL]
+[xUnit.net 00:00:00.29]     LeaveManagement.Application.Tests.Services.LeaveRequestAnalyticsTests.GetOverlappingAbsencesAsync_ShouldReturnCorrectOverlaps [FAIL]
+  Failed LeaveManagement.Application.Tests.Services.LeaveRequestAnalyticsTests.GetTeamCapacityAsync_ShouldReturnCorrectPercentage [1 ms]
+  Error Message:
+   System.ArgumentException : Cannot compose converter from 'List<UserRole>' to 'int[]' with converter from 'IEnumerable<int>' to 'string' because the output type of the first converter doesn't match the input type of the second converter.
+  Stack Trace:
+     at Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter.ComposeWith(ValueConverter secondConverter)
+   at Microsoft.EntityFrameworkCore.Storage.CoreTypeMapping.CoreTypeMappingParameters.WithComposedConverter(ValueConverter converter, ValueComparer comparer, ValueComparer keyComparer, CoreTypeMapping elementMapping, JsonValueReaderWriter jsonValueReaderWriter)
+   at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryTypeMapping.WithComposedConverter(ValueConverter converter, ValueComparer comparer, ValueComparer keyComparer, CoreTypeMapping elementMapping, JsonValueReaderWriter jsonValueReaderWriter)
+   at Microsoft.EntityFrameworkCore.Storage.TypeMappingSource.<>c.<FindMappingWithConversion>b__3_0(ValueTuple`4 k, TypeMappingSource self)
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd[TArg](TKey key, Func`3 valueFactory, TArg factoryArgument)
+   at Microsoft.EntityFrameworkCore.Storage.TypeMappingSource.FindMappingWithConversion(TypeMappingInfo mappingInfo, Type providerClrType, ValueConverter customConverter)
+   at Microsoft.EntityFrameworkCore.Storage.TypeMappingSource.FindMappingWithConversion(TypeMappingInfo mappingInfo, IReadOnlyList`1 principals)
+   at Microsoft.EntityFrameworkCore.Storage.TypeMappingSource.FindMapping(IProperty property)
+   at Microsoft.EntityFrameworkCore.Metadata.Conventions.ElementMappingConvention.<ProcessModelFinalizing>g__Validate|4_0(IConventionTypeBase typeBase)
+   at Microsoft.EntityFrameworkCore.Metadata.Conventions.ElementMappingConvention.ProcessModelFinalizing(IConventionModelBuilder modelBuilder, IConventionContext`1 context)
+   at Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal.ConventionDispatcher.ImmediateConventionScope.OnModelFinalizing(IConventionModelBuilder modelBuilder)
+   at Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal.ConventionDispatcher.OnModelFinalizing(IConventionModelBuilder modelBuilder)
+   at Microsoft.EntityFrameworkCore.Metadata.Internal.Model.FinalizeModel()
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelRuntimeInitializer.Initialize(IModel model, Boolean designTime, IDiagnosticsLogger`1 validationLogger)
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelSource.CreateModel(DbContext context, ModelCreationDependencies modelCreationDependencies, Boolean designTime)
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelSource.GetModel(DbContext context, ModelCreationDependencies modelCreationDependencies, Boolean designTime)
+   at Microsoft.EntityFrameworkCore.Internal.DbContextServices.CreateModel(Boolean designTime)
+   at Microsoft.EntityFrameworkCore.Internal.DbContextServices.get_Model()
+   at Microsoft.EntityFrameworkCore.Infrastructure.EntityFrameworkServicesBuilder.<>c.<TryAddCoreServices>b__8_4(IServiceProvider p)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at Microsoft.EntityFrameworkCore.DbContext.get_DbContextDependencies()
+   at Microsoft.EntityFrameworkCore.DbContext.get_ContextServices()
+   at Microsoft.EntityFrameworkCore.DbContext.get_InternalServiceProvider()
+   at Microsoft.EntityFrameworkCore.DbContext.get_DbContextDependencies()
+   at Microsoft.EntityFrameworkCore.DbContext.Microsoft.EntityFrameworkCore.Internal.IDbContextDependencies.get_StateManager()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.EntryWithoutDetectChanges(TEntity entity)
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.Add(TEntity entity)
+   at LeaveManagement.Application.Tests.Services.LeaveRequestAnalyticsTests.SeedData() in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application.Tests/Services/LeaveRequestAnalyticsTests.cs:line 44
+   at LeaveManagement.Application.Tests.Services.LeaveRequestAnalyticsTests..ctor() in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application.Tests/Services/LeaveRequestAnalyticsTests.cs:line 33
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+  Failed LeaveManagement.Application.Tests.Services.LeaveRequestAnalyticsTests.GetOverlappingAbsencesAsync_ShouldReturnCorrectOverlaps [1 ms]
+  Error Message:
+   System.ArgumentException : Cannot compose converter from 'List<UserRole>' to 'int[]' with converter from 'IEnumerable<int>' to 'string' because the output type of the first converter doesn't match the input type of the second converter.
+  Stack Trace:
+     at Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter.ComposeWith(ValueConverter secondConverter)
+   at Microsoft.EntityFrameworkCore.Storage.CoreTypeMapping.CoreTypeMappingParameters.WithComposedConverter(ValueConverter converter, ValueComparer comparer, ValueComparer keyComparer, CoreTypeMapping elementMapping, JsonValueReaderWriter jsonValueReaderWriter)
+   at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryTypeMapping.WithComposedConverter(ValueConverter converter, ValueComparer comparer, ValueComparer keyComparer, CoreTypeMapping elementMapping, JsonValueReaderWriter jsonValueReaderWriter)
+   at Microsoft.EntityFrameworkCore.Storage.TypeMappingSource.<>c.<FindMappingWithConversion>b__3_0(ValueTuple`4 k, TypeMappingSource self)
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd[TArg](TKey key, Func`3 valueFactory, TArg factoryArgument)
+   at Microsoft.EntityFrameworkCore.Storage.TypeMappingSource.FindMappingWithConversion(TypeMappingInfo mappingInfo, Type providerClrType, ValueConverter customConverter)
+   at Microsoft.EntityFrameworkCore.Storage.TypeMappingSource.FindMappingWithConversion(TypeMappingInfo mappingInfo, IReadOnlyList`1 principals)
+   at Microsoft.EntityFrameworkCore.Storage.TypeMappingSource.FindMapping(IProperty property)
+   at Microsoft.EntityFrameworkCore.Metadata.Conventions.ElementMappingConvention.<ProcessModelFinalizing>g__Validate|4_0(IConventionTypeBase typeBase)
+   at Microsoft.EntityFrameworkCore.Metadata.Conventions.ElementMappingConvention.ProcessModelFinalizing(IConventionModelBuilder modelBuilder, IConventionContext`1 context)
+   at Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal.ConventionDispatcher.ImmediateConventionScope.OnModelFinalizing(IConventionModelBuilder modelBuilder)
+   at Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal.ConventionDispatcher.OnModelFinalizing(IConventionModelBuilder modelBuilder)
+   at Microsoft.EntityFrameworkCore.Metadata.Internal.Model.FinalizeModel()
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelRuntimeInitializer.Initialize(IModel model, Boolean designTime, IDiagnosticsLogger`1 validationLogger)
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelSource.CreateModel(DbContext context, ModelCreationDependencies modelCreationDependencies, Boolean designTime)
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelSource.GetModel(DbContext context, ModelCreationDependencies modelCreationDependencies, Boolean designTime)
+   at Microsoft.EntityFrameworkCore.Internal.DbContextServices.CreateModel(Boolean designTime)
+   at Microsoft.EntityFrameworkCore.Internal.DbContextServices.get_Model()
+   at Microsoft.EntityFrameworkCore.Infrastructure.EntityFrameworkServicesBuilder.<>c.<TryAddCoreServices>b__8_4(IServiceProvider p)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at Microsoft.EntityFrameworkCore.DbContext.get_DbContextDependencies()
+   at Microsoft.EntityFrameworkCore.DbContext.get_ContextServices()
+   at Microsoft.EntityFrameworkCore.DbContext.get_InternalServiceProvider()
+   at Microsoft.EntityFrameworkCore.DbContext.get_DbContextDependencies()
+   at Microsoft.EntityFrameworkCore.DbContext.Microsoft.EntityFrameworkCore.Internal.IDbContextDependencies.get_StateManager()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.EntryWithoutDetectChanges(TEntity entity)
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.Add(TEntity entity)
+   at LeaveManagement.Application.Tests.Services.LeaveRequestAnalyticsTests.SeedData() in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application.Tests/Services/LeaveRequestAnalyticsTests.cs:line 44
+   at LeaveManagement.Application.Tests.Services.LeaveRequestAnalyticsTests..ctor() in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Application.Tests/Services/LeaveRequestAnalyticsTests.cs:line 33
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+
+Failed!  - Failed:     2, Passed:     0, Skipped:     0, Total:     2, Duration: 226 ms - LeaveManagement.Application.Tests.dll (net10.0)

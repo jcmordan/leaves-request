@@ -17,7 +17,7 @@ public class AbsenceRequestConfiguration : IEntityTypeConfiguration<AbsenceReque
         }
 
         builder.HasOne(ar => ar.Employee)
-            .WithMany()
+            .WithMany(e => e.AbsenceRequests)
             .HasForeignKey(ar => ar.EmployeeId)
             .OnDelete(DeleteBehavior.Restrict);
 

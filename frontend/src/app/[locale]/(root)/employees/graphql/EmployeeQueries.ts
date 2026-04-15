@@ -28,7 +28,7 @@ export const EMPLOYEE_CONNECTION_FRAGMENT = graphql(`
         }
         user {
           id
-          role
+          roles
         }
         jobTitle {
           id

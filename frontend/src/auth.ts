@@ -58,7 +58,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                       token
                       email
                       fullName
-                      role
+                      roles
                     }
                   }
                 }
@@ -110,7 +110,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             id: authResponse.email, // Use email as ID if backend doesn't provide it
             name: authResponse.fullName,
             email: authResponse.email,
-            role: authResponse.role,
+            roles: authResponse.roles,
             accessToken: authResponse.token,
           };
         } catch (error) {
@@ -129,7 +129,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       if (user) {
         token.id = user.id;
-        token.role = user.role;
+        token.roles = user.roles;
         if (user.accessToken) {
           token.accessToken = user.accessToken;
         }
@@ -168,7 +168,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.oid = token.oid as string;
         if (session.user) {
           session.user.id = token.id as string;
-          session.user.role = token.role as string;
+          session.user.roles = token.roles as string[];
         }
       }
       return session;
@@ -188,12 +188,12 @@ declare module "next-auth" {
     oid?: string;
     user: {
       id?: string;
-      role?: string;
+      roles?: string[];
     } & import("next-auth").DefaultSession["user"];
   }
 
   interface User {
-    role?: string;
+    roles?: string[];
     accessToken?: string;
   }
 }
@@ -204,6 +204,6 @@ declare module "next-auth/jwt" {
     idToken?: string;
     oid?: string;
     id?: string;
-    role?: string;
+    roles?: string[];
   }
 }

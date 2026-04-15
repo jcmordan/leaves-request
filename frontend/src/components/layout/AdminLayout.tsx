@@ -10,7 +10,6 @@ import {
   Users,
   Building2,
   UserCircle,
-  ClockPlusIcon,
   Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,20 +28,28 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
   const getNavigation = () => {
     const baseNav = [
-      { name: t("myRequests"), href: "/requests/me", icon: Clock },
+      { name: t("myRequests"), href: "/leave-requests/me", icon: Clock },
       { name: t("employees"), href: "/employees", icon: UserCircle },
     ];
 
     if (user?.role === "Supervisor") {
       baseNav.push(
         { name: t("teams"), href: "/team", icon: Users },
-        { name: t("approvals"), href: "/approvals", icon: Calendar },
+        {
+          name: t("approvals"),
+          href: "/leave-requests/approvals",
+          icon: Calendar,
+        },
       );
     }
 
     if (user?.role === "HR_Admin" || user?.role === "Coordinator") {
       baseNav.push(
-        { name: t("allRequests"), href: "/requests/all", icon: Building2 },
+        {
+          name: t("allRequests"),
+          href: "/leave-requests/all",
+          icon: Building2,
+        },
         { name: t("employees"), href: "/employees", icon: Users },
       );
     }

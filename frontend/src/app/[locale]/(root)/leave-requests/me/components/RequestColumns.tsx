@@ -3,10 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useRouter, useParams } from "next/navigation";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
-import {
-  RequestStatus,
-  MyRequestItemFragmentFragment,
-} from "@/__generated__/graphql";
+import { RequestStatus, MyRequests_ItemFieldsFragment } from "@/__generated__/graphql";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { IconCancel, IconChevronsUpRight } from "@tabler/icons-react";
 import { daysBetween } from "@/utils/dateUtils";
 
-export type RequestItem = MyRequestItemFragmentFragment;
+export type RequestItem = MyRequests_ItemFieldsFragment;
 
 const StatusCell = ({ row }: CellContext<RequestItem, any>) => {
   const t = useTranslations("requests");
@@ -111,7 +108,7 @@ const ActionsCell = ({
   const request = row.original;
 
   const handleViewDetails = () => {
-    router.push(`/${locale}/requests/${request.id}`);
+    router.push(`/${locale}/leave-requests/${request.id}`);
   };
 
   return (

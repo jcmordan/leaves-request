@@ -7,13 +7,24 @@ export { CANCEL_REQUEST_MUTATION };
 
 export const MY_REQUEST_ITEM_FRAGMENT = graphql(`
   fragment MyRequests_ItemFields on AbsenceRequest {
-    ...Shared_RequestItemFields
+    id
     status
     createdAt
+    startDate
+    endDate
+    absenceType {
+      id
+      name
+    }
+    employee {
+      id
+      fullName
+    }
     requesterEmployee {
       id
       fullName
     }
+    ...Shared_RequestItemFields
   }
 `);
 

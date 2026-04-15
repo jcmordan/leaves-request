@@ -34,7 +34,7 @@ export const FormComboboxInput = ({
   disabled,
   options,
   enableLocalFilter = false,
-  loading = false,
+  loading,
   onSearch,
   minSearchLength = 3,
   debounceMs = 300,
@@ -72,6 +72,10 @@ export const FormComboboxInput = ({
 
   const shouldUseLocalFilter = enableLocalFilter || !onSearch;
 
+  const _options = loading
+    ? [{ label: t("loading.loading"), value: "", disabled: true }]
+    : options;
+
   return (
     <Controller
       name={name}
@@ -88,13 +92,13 @@ export const FormComboboxInput = ({
             </FieldLabel>
             {multi ? (
               <MultiCombobox
-                options={options}
+                options={_options}
                 value={field.value ?? []}
                 onValueChange={field.onChange}
                 onSearchChange={
                   shouldUseLocalFilter ? undefined : handleSearchChange
                 }
-                disabled={disabled ?? loading}
+                disabled={disabled}
                 searchPlaceholder={
                   onSearch
                     ? t("combobox.searchPlaceholder", { min: minSearchLength })
@@ -107,7 +111,7 @@ export const FormComboboxInput = ({
               />
             ) : (
               <Combobox
-                options={options}
+                options={_options}
                 value={field.value}
                 onValueChange={field.onChange}
                 onSearchChange={

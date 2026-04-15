@@ -59,6 +59,11 @@ export const ABSENCE_TYPES_QUERY_FRAGMENT = graphql(`
 export const SUBMIT_LEAVE_REQUEST_QUERY = graphql(`
   query MyRequests_GetAbsenceTypesForForm($year: Int!) {
     absenceTypes(first: 20) {
+      nodes {
+        id
+        requiresAttachment
+        requiresDoctor
+      }
       ...MyRequests_TypeFields
     }
     publicHolidays(year: $year) {

@@ -291,6 +291,26 @@
     "additionalInfoSubtitle": "Comentarios del empleado y detalles de cobertura",
     "employeeComment": "Comentario del Empleado",
     "coverageStatus": "Estado de Cobertura",
-    "arranged": "Organizado"
+    "arranged": "Organizado",
+    "approvals": "Aprobaciones",
+    "absenceRequest": "Solicitud de Ausencia",
+    "requestDetails": "Detalles de Solicitud",
+    "duration": "Duración",
+    "submissionDate": "Fecha de Envío",
+    "unknown": "Desconocido",
+    "medicalDocumentation": "Documentación Médica",
+    "diagnosisSummary": "Resumen del Diagnóstico",
+    "attendingPhysician": "Médico Tratante",
+    "attachments": "Adjuntos",
+    "noAttachments": "No se han subido adjuntos.",
+    "managerAction": "Acción del Supervisor",
+    "commentPlaceholder": "Agregar un comentario para el empleado...",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "overlappingAbsences": "Ausencias Superpuestas",
+    "teamOverlapsCount": "{count} miembros del equipo superpuestos",
+    "teamCapacity": "Capacidad del Equipo",
+    "available": "Disponible",
+    "capacityPercentage": "{percentage}%"
   }
 }

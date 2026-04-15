@@ -109,18 +109,7 @@ export function RequestsTable({ requestsRef }: RequestsTableProps) {
       {nodes.length === 0 && (
         <EmptyState
           title={t("emptyStateTitle")}
-          // description={t("emptyStateDescription")}
           icon={Search}
-          // secondaryIcon={User}
-          // action={
-          //   onClearSearch
-          //     ? {
-          //         label: t("clearSearch"),
-          //         onClick: onClearSearch,
-          //         icon: RotateCcw,
-          //       }
-          //     : undefined
-          // }
         />
       )}
 

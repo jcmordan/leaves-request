@@ -1,6 +1,6 @@
 import { graphql } from "@/__generated__";
-import { SHARED_BALANCE_FRAGMENT } from "../../graphql/RequestFragments";
-import { CANCEL_REQUEST_MUTATION } from "../../graphql/RequestMutations";
+import { SHARED_BALANCE_FRAGMENT } from "../../shared/graphql/RequestFragments";
+import { CANCEL_REQUEST_MUTATION } from "../../shared/graphql/RequestMutations";
 
 export { SHARED_BALANCE_FRAGMENT as MY_BALANCE_FRAGMENT };
 export { CANCEL_REQUEST_MUTATION };

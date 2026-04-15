@@ -1,22 +1,58 @@
 import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { FragmentType, useFragment } from "@/__generated__";
+import { ABSENCE_ANALYSIS_STATS_FRAGMENT } from "../graphql/ApprovalQueries";
 
-// Static capacity value per the Stitch design — will be replaced
-// with a real calculation from teamAbsences when the API supports it.
-const CAPACITY_PERCENTAGE = 85;
+interface TeamCapacityCardProps {
+  absenceAnalysisRef?: FragmentType<
+    typeof ABSENCE_ANALYSIS_STATS_FRAGMENT
+  > | null;
+}
 
 const CIRCLE_RADIUS = 54;
 const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS;
 
 /**
  * TeamCapacityCard — Visual representation of team availability as a circular progress chart.
- * Uses static data for now, consistent with the Stitch design.
+ * Integrates with real data from the AbsenceRequest fragment.
  */
-export function TeamCapacityCard() {
+export function TeamCapacityCard({
+  absenceAnalysisRef,
+}: TeamCapacityCardProps) {
   const t = useTranslations("requests");
+  const absenceAnalysys = useFragment(
+    ABSENCE_ANALYSIS_STATS_FRAGMENT,
+    absenceAnalysisRef,
+  );
 
-  const offset =
-    CIRCLE_CIRCUMFERENCE - (CAPACITY_PERCENTAGE / 100) * CIRCLE_CIRCUMFERENCE;
+  if (!absenceAnalysys) {
+    return null;
+  }
+
+  const {
+    availablePercentage, // This is current available (Total - Approved)
+    totalTeamMembers,
+    membersOnLeave,
+    pendingMembersOnLeave,
+  } = absenceAnalysys;
+
+  // Percentage of pending impact
+  const pendingPercentage = totalTeamMembers > 0
+    ? (pendingMembersOnLeave / totalTeamMembers) * 100
+    : 0;
+
+  // Final available percentage if all pending are approved
+  const potentialAvailablePercentage = Math.max(0, availablePercentage - pendingPercentage);
+
+  // Offset for Current Reality (Available + Pending)
+  // This defines the outer boundary of the pending segment
+  const currentRealityOffset =
+    CIRCLE_CIRCUMFERENCE - (availablePercentage / 100) * CIRCLE_CIRCUMFERENCE;
+
+  // Offset for Potential Reality (Only Available after pending)
+  // This defines the boundary of the green segment
+  const potentialRealityOffset =
+    CIRCLE_CIRCUMFERENCE - (potentialAvailablePercentage / 100) * CIRCLE_CIRCUMFERENCE;
 
   return (
     <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
@@ -35,7 +71,7 @@ export function TeamCapacityCard() {
             className="w-full h-full -rotate-90"
             viewBox="0 0 120 120"
             aria-label={t("capacityPercentage", {
-              percentage: CAPACITY_PERCENTAGE,
+              percentage: availablePercentage,
             })}
           >
             {/* Background circle */}
@@ -47,7 +83,7 @@ export function TeamCapacityCard() {
               strokeWidth="10"
               className="stroke-surface-container-high"
             />
-            {/* Progress circle */}
+            {/* Pending segment (impact) */}
             <circle
               cx="60"
               cy="60"
@@ -56,17 +92,58 @@ export function TeamCapacityCard() {
               strokeWidth="10"
               strokeLinecap="round"
               strokeDasharray={CIRCLE_CIRCUMFERENCE}
-              strokeDashoffset={offset}
+              strokeDashoffset={currentRealityOffset}
+              className="stroke-amber-500 transition-all duration-700 ease-out"
+            />
+            {/* Progress circle (Potential Available - purely available) */}
+            <circle
+              cx="60"
+              cy="60"
+              r={CIRCLE_RADIUS}
+              fill="none"
+              strokeWidth="10"
+              strokeLinecap="round"
+              strokeDasharray={CIRCLE_CIRCUMFERENCE}
+              strokeDashoffset={potentialRealityOffset}
               className="stroke-secondary transition-all duration-700 ease-out"
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-2xl font-black text-primary font-heading">
-              {t("capacityPercentage", { percentage: CAPACITY_PERCENTAGE })}
+              {availablePercentage}%
             </span>
-            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">
+            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest text-center">
               {t("available")}
             </span>
+          </div>
+        </div>
+
+        <div className="mt-8 w-full grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-surface-container-low rounded-lg p-3 text-center">
+              <p className="text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-wider mb-1">
+                {t("totalMembers")}
+              </p>
+              <p className="text-lg font-black text-primary font-heading">
+                {totalTeamMembers}
+              </p>
+            </div>
+            <div className="bg-surface-container-low rounded-lg p-3 text-center border-b-2 border-secondary">
+              <p className="text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-wider mb-1">
+                {t("onLeave")}
+              </p>
+              <p className="text-lg font-black text-secondary font-heading">
+                {membersOnLeave}
+              </p>
+            </div>
+            <div className="bg-surface-container-low rounded-lg p-3 text-center border-b-2 border-amber-500">
+              <p className="text-[10px] text-on-surface-variant/60 font-bold uppercase tracking-wider mb-1">
+                {t("pendingRequests")}
+              </p>
+              <p className="text-lg font-black text-amber-500 font-heading">
+                {pendingMembersOnLeave}
+              </p>
+            </div>
           </div>
         </div>
       </div>

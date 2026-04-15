@@ -5,10 +5,11 @@ import { useState } from "react";
 import { PaginatedDataTable } from "@/components/ui/paginated-data-table";
 import { useRequestColumns, RequestItem } from "./RequestColumns";
 import { FragmentType, useFragment } from "@/__generated__";
-import { REQUEST_LIST_CONNECTION_FRAGMENT } from "../graphql/RequestFragments";
 import { RequestStatus } from "@/__generated__/graphql";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CancelRequestModal } from "@/components/requests/CancelRequestModal";
+import { REQUEST_LIST_CONNECTION_FRAGMENT } from "../graphql/RequestFragments";
+import { RequestStatusBadge } from "./RequestStatusBadge";
 
 interface RequestsTableProps {
   requestsRef?: FragmentType<typeof REQUEST_LIST_CONNECTION_FRAGMENT> | null;
@@ -58,20 +59,6 @@ export function RequestsTable({
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const statusColors: Record<RequestStatus, string> = {
-    [RequestStatus.Pending]:
-      "bg-surface-tint/10 text-surface-tint border-surface-tint/20",
-    [RequestStatus.PendingCoordinatorApproval]:
-      "bg-surface-tint/10 text-surface-tint border-surface-tint/20",
-    [RequestStatus.Approved]:
-      "bg-secondary-container/30 text-secondary border-secondary/20",
-    [RequestStatus.Rejected]:
-      "bg-error-container/30 text-error border-error/20",
-    [RequestStatus.Cancelled]: "bg-outline/10 text-outline border-outline/20",
-    [RequestStatus.ModificationRequested]:
-      "bg-surface-tint/10 text-surface-tint border-surface-tint/20",
-  };
-
   return (
     <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col border border-surface-container/50">
       {/* Table Toolbar */}
@@ -82,12 +69,10 @@ export function RequestsTable({
         <div className="flex items-center gap-3">
           {currentStatus && (
             <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
-              <div
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-bold uppercase tracking-tight ${statusColors[currentStatus]}`}
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                {t(currentStatus.toLowerCase())}
-              </div>
+              <RequestStatusBadge
+                status={currentStatus}
+                className="text-[10px] font-bold uppercase tracking-tight px-2.5"
+              />
               <button
                 onClick={handleClear}
                 className="group flex items-center gap-1 text-[10px] font-bold text-on-surface-variant/60 hover:text-error transition-all"

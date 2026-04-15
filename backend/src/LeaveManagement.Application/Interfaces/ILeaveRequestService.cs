@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using LeaveManagement.Application.DTOs;
 using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Enums;
@@ -50,4 +51,7 @@ public interface ILeaveRequestService
 
     /// <summary>Returns a single absence request by ID.</summary>
     Task<AbsenceRequest?> GetByIdAsync(Guid id, CancellationToken ct = default);
+
+    /// <summary>Calculates comprehensive absence analysis (overlaps and capacity) for a specific request using a manager's team context.</summary>
+    Task<AbsenceAnalysisDto> GetAbsenceAnalysisAsync(Guid requestId, Guid managerId, CancellationToken ct = default);
 }

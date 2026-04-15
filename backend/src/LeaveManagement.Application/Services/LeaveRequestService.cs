@@ -1,4 +1,5 @@
 using LeaveManagement.Application.Common.Paging;
+using LeaveManagement.Application.DTOs;
 using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Application.Models.Paging;
 using LeaveManagement.Domain.Entities;
@@ -430,6 +431,90 @@ public class LeaveRequestService(
     public async Task<AbsenceRequest?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         return await _context.AbsenceRequests.FindAsync(new object[] { id }, ct);
+    }
+
+    private async Task<IEnumerable<OverlappingAbsenceDto>> GetOverlappingAbsencesAsync(Guid requestId, Guid managerId, CancellationToken ct = default)
+    {
+        var request = await _context.AbsenceRequests
+            .FirstOrDefaultAsync(r => r.Id == requestId, ct)
+            ?? throw new Exception("Request not found.");
+
+        var startDate = request.StartDate;
+        var endDate = request.EndDate;
+
+        var overlaps = await _context.AbsenceRequests
+            .Include(r => r.Employee)
+            .ThenInclude(e => e!.JobTitle)
+            .Where(r => r.Id != requestId) // Exclude current request
+            .Where(r => r.Employee!.ManagerId == managerId) // Same team
+            .Where(r => r.Status == RequestStatus.Approved || r.Status == RequestStatus.Pending)
+            .Where(r => r.StartDate <= endDate && r.EndDate >= startDate) // Overlap check
+            .Select(r => new OverlappingAbsenceDto
+            {
+                EmployeeName = r.Employee!.FullName,
+                JobTitle = r.Employee.JobTitle != null ? r.Employee.JobTitle.Name : string.Empty,
+                StartDate = r.StartDate,
+                EndDate = r.EndDate
+            })
+            .ToListAsync(ct);
+
+        return overlaps;
+    }
+
+    private async Task<(int Percentage, int Total, int ApprovedCount, int PendingCount)> GetTeamCapacityMetricsAsync(Guid requestId, Guid managerId, CancellationToken ct = default)
+    {
+        var request = await _context.AbsenceRequests
+            .FirstOrDefaultAsync(r => r.Id == requestId, ct)
+            ?? throw new Exception("Request not found.");
+
+        var startDate = request.StartDate;
+        var endDate = request.EndDate;
+
+        // Total active team members under the same manager
+        var teamMembersCount = await _context.Employees
+            .CountAsync(e => e.ManagerId == managerId && e.IsActive, ct);
+
+        if (teamMembersCount == 0) return (100, 0, 0, 0);
+
+        // Employees with Approved requests in this period
+        var approvedAbsentCount = await _context.AbsenceRequests
+            .Where(r => r.Employee!.ManagerId == managerId)
+            .Where(r => r.Status == RequestStatus.Approved)
+            .Where(r => r.StartDate <= endDate && r.EndDate >= startDate)
+            .Select(r => r.EmployeeId)
+            .Distinct()
+            .CountAsync(ct);
+
+        // Employees with Pending requests in this period (excluding those already counted in Approved)
+        var pendingAbsentCount = await _context.AbsenceRequests
+            .Where(r => r.Employee!.ManagerId == managerId)
+            .Where(r => r.Status == RequestStatus.Pending)
+            .Where(r => r.StartDate <= endDate && r.EndDate >= startDate)
+            .Select(r => r.EmployeeId)
+            .Distinct()
+            .CountAsync(ct);
+
+        // Calculate availability percentage based on Approved only (as current reality)
+        var availableCount = Math.Max(0, teamMembersCount - approvedAbsentCount);
+        var percentage = (int)Math.Round((double)availableCount / teamMembersCount * 100);
+
+        return (percentage, teamMembersCount, approvedAbsentCount, pendingAbsentCount);
+    }
+
+    /// <inheritdoc/>
+    public async Task<AbsenceAnalysisDto> GetAbsenceAnalysisAsync(Guid requestId, Guid managerId, CancellationToken ct = default)
+    {
+        var overlaps = await GetOverlappingAbsencesAsync(requestId, managerId, ct);
+        var capacity = await GetTeamCapacityMetricsAsync(requestId, managerId, ct);
+
+        return new AbsenceAnalysisDto
+        {
+            OverlappingAbsences = overlaps,
+            AvailablePercentage = capacity.Percentage,
+            TotalTeamMembers = capacity.Total,
+            MembersOnLeave = capacity.ApprovedCount,
+            PendingMembersOnLeave = capacity.PendingCount
+        };
     }
 
     private async Task<string> SaveFileAsync(System.IO.Stream fileStream, string fileName)

@@ -221,6 +221,7 @@ builder
     .AddTypeExtension<AuthMutations>()
     .AddType<EmployeeType>()
     .AddType<AbsenceRequestType>()
+    .AddType<AbsenceAnalysisType>()
     .AddDataLoader<ICompanyByIdDataLoader, CompanyByIdDataLoader>()
     .AddDataLoader<IDepartmentByIdDataLoader, DepartmentByIdDataLoader>()
     .AddDataLoader<IDepartmentSectionByIdDataLoader, DepartmentSectionByIdDataLoader>()

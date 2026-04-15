@@ -2,6 +2,7 @@ using LeaveManagement.Application.Interfaces;
 using LeaveManagement.Application.Services;
 using LeaveManagement.Domain.Entities;
 using LeaveManagement.Domain.Enums;
+using LeaveManagement.Domain.Interfaces;
 using LeaveManagement.Application.Tests.Helpers;
 using LeaveManagement.Infrastructure.Data;
 using LeaveManagement.Application.DTOs;
@@ -17,6 +18,7 @@ public class AbsenceTypeRulesTests : IDisposable
     private readonly LeaveManagementDbContext _context;
     private readonly IHolidayService _holidayService;
     private readonly IBalanceService _balanceService;
+    private readonly ICurrentUserService _currentUserService;
     private readonly LeaveRequestService _sut;
     private readonly Guid _employeeId = Guid.NewGuid();
 
@@ -25,7 +27,8 @@ public class AbsenceTypeRulesTests : IDisposable
         _context = TestDbContextFactory.Create();
         _holidayService = Substitute.For<IHolidayService>();
         _balanceService = Substitute.For<IBalanceService>();
-        _sut = new LeaveRequestService(_context, _holidayService, _balanceService);
+        _currentUserService = Substitute.For<ICurrentUserService>();
+        _sut = new LeaveRequestService(_context, _holidayService, _balanceService, _currentUserService);
     }
 
     public void Dispose()

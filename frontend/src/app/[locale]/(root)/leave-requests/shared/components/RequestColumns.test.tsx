@@ -4,8 +4,7 @@ import { useRequestColumns } from "./RequestColumns";
 
 // Mock next-intl
 vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string) =>
-    key === "approved" ? "status_approved" : key,
+  useTranslations: () => (key: string) => key,
 }));
 
 // Mock next/navigation
@@ -97,7 +96,7 @@ describe("RequestColumns", () => {
 
   it("renders status badges correctly", () => {
     render(<TestComponent type="APPROVED" />);
-    expect(screen.getByText("status_approved")).toBeInTheDocument();
+    expect(screen.getByText("status_APPROVED")).toBeInTheDocument();
   });
 
   it("renders absence type correctly", () => {
@@ -112,22 +111,22 @@ describe("RequestColumns", () => {
 
   it("renders pending status", () => {
     render(<TestComponent type="PENDING" />);
-    expect(screen.getByText("pending")).toBeInTheDocument();
+    expect(screen.getByText("status_PENDING")).toBeInTheDocument();
   });
 
   it("renders rejected status", () => {
     render(<TestComponent type="REJECTED" />);
-    expect(screen.getByText("rejected")).toBeInTheDocument();
+    expect(screen.getByText("status_REJECTED")).toBeInTheDocument();
   });
 
   it("renders cancelled status", () => {
     render(<TestComponent type="CANCELLED" />);
-    expect(screen.getByText("cancelled")).toBeInTheDocument();
+    expect(screen.getByText("status_CANCELLED")).toBeInTheDocument();
   });
 
   it("renders default badge for unknown status", () => {
     render(<TestComponent type="UNKNOWN_STATUS" />);
-    expect(screen.getByText("UNKNOWN_STATUS")).toBeInTheDocument();
+    expect(screen.getByText("status_UNKNOWN_STATUS")).toBeInTheDocument();
   });
 
   it("renders submitted cell with formatted date", () => {

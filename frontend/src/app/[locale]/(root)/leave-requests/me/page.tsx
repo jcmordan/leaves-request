@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { PreloadQuery } from "@/lib/apollo-client";
 import { MY_REQUESTS_QUERY } from "./graphql/MyRequestsQueries";
 import MyRequestsView from "./components/MyRequestsView";
-import RequestsPageSkeleton from "../components/RequestsPageSkeleton";
+import RequestsPageSkeleton from "../shared/components/RequestsPageSkeleton";
 
 /**
  * MyRequests Page (Server Component)

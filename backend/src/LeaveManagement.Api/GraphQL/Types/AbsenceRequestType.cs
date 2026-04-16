@@ -11,8 +11,8 @@ public class AbsenceRequestType : ObjectType<AbsenceRequest>
         descriptor.Field(t => t.Id).Type<NonNullType<UuidType>>();
         descriptor.Field(t => t.EmployeeId).Type<NonNullType<UuidType>>();
         descriptor.Field(t => t.AbsenceTypeId).Type<NonNullType<UuidType>>();
-        descriptor.Field(t => t.StartDate).Type<NonNullType<DateTimeType>>();
-        descriptor.Field(t => t.EndDate).Type<NonNullType<DateTimeType>>();
+        descriptor.Field(t => t.StartDate).Type<NonNullType<DateType>>();
+        descriptor.Field(t => t.EndDate).Type<NonNullType<DateType>>();
         descriptor
             .Field(t => t.Status)
             .Type<NonNullType<EnumType<LeaveManagement.Domain.Enums.RequestStatus>>>();

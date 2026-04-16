@@ -71,8 +71,8 @@ public class LeaveRequestAnalyticsTests : IDisposable
         var teamMember2 = await _context.Employees.FirstAsync(e => e.FullName == "Member 2");
         var otherTeamMember = await _context.Employees.FirstAsync(e => e.FullName == "Member 4");
 
-        var startDate = new DateTime(2024, 10, 20);
-        var endDate = new DateTime(2024, 10, 25);
+        var startDate = new DateOnly(2024, 10, 20);
+        var endDate = new DateOnly(2024, 10, 25);
 
         var request = new AbsenceRequest
         {
@@ -129,8 +129,8 @@ public class LeaveRequestAnalyticsTests : IDisposable
         var teamMember1 = employees[0];
         var teamMember2 = employees[1];
 
-        var startDate = new DateTime(2024, 10, 20);
-        var endDate = new DateTime(2024, 10, 25);
+        var startDate = new DateOnly(2024, 10, 20);
+        var endDate = new DateOnly(2024, 10, 25);
 
         // Current request impact should be included (2 members absent out of 3 total)
         var request = new AbsenceRequest

@@ -79,12 +79,12 @@ export function DashboardCapacityCard({ summaryRef }: DashboardCapacityCardProps
             </h2>
             <DashboardInfoTooltip content={t("capacityTooltip")} />
           </div>
-          <p className="text-[10px] text-on-surface-variant/60 font-body items-center flex gap-1">
+          <div className="text-[10px] text-on-surface-variant/60 font-body items-center flex gap-1">
             {t("proactiveHorizon")}
             <div
               className={`w-1.5 h-1.5 rounded-full ${isHighRisk ? "bg-red-500 animate-pulse" : "bg-emerald-500"}`}
             />
-          </p>
+          </div>
         </div>
         <Zap
           className={`h-5 w-5 ${isHighRisk ? "text-red-500 animate-bounce" : "text-secondary"} fill-current/20`}

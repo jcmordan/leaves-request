@@ -1,9 +1,9 @@
 "use client";
 
-import { ApolloNextAppProvider } from "@apollo/client-integration-nextjs";
 import { signOut, useSession } from "next-auth/react";
 import { useCallback, useEffect } from "react";
-import { makeClient } from "@/lib/makeClient";
+import { makeClient } from "@/lib/apollo/apollo-client-client";
+import { ApolloNextAppProvider } from "@apollo/client-integration-nextjs";
 
 /**
  * Apollo Wrapper component for Client Components.

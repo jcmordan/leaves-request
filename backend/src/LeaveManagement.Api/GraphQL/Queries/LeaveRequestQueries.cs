@@ -112,7 +112,7 @@ public class LeaveRequestQueries
 
     [GraphQLName("leaveRequestSummary")]
     public async Task<LeaveRequestSummary> GetApprovalsDashboardSummary(
-        DateTime? today,
+        DateOnly? today,
         [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService,
         int forecastDays = 14,

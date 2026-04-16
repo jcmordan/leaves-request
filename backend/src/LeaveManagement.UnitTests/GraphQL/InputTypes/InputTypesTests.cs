@@ -12,8 +12,8 @@ public class InputTypesTests
     {
         // Arrange
         var absenceTypeId = Guid.NewGuid();
-        var startDate = DateTime.UtcNow;
-        var endDate = DateTime.UtcNow.AddDays(1);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
         var reason = "Test reason";
 
         // Act
@@ -61,7 +61,7 @@ public class InputTypesTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var hireDate = DateTime.UtcNow;
+        var hireDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
         // Act
         var input = new CreateEmployeeInput("Full Name", "email@test.com", "CODE", "NID", id, hireDate);
@@ -81,7 +81,7 @@ public class InputTypesTests
         var compId = Guid.NewGuid();
 
         // Act
-        var input = new UpdateEmployeeInput(id, "Name", "e", "C", "N", deptId, DateTime.UtcNow, true, "A", null, null, compId, null);
+        var input = new UpdateEmployeeInput(id, "Name", "e", "C", "N", deptId, DateOnly.FromDateTime(DateTime.UtcNow), true, "A", null, null, compId, null);
 
         // Assert
         input.Id.Should().Be(id);

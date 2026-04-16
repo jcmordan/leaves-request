@@ -18,29 +18,26 @@ public class HolidayService : IHolidayService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<int> CalculateWorkingDaysAsync(DateTime startDate, DateTime endDate)
+    public async Task<int> CalculateWorkingDaysAsync(DateOnly startDate, DateOnly endDate)
     {
         if (startDate > endDate)
         {
             throw new ArgumentException("Start date must be before or equal to end date.");
         }
 
-        var start = DateTime.SpecifyKind(startDate.Date, DateTimeKind.Utc);
-        var end = DateTime.SpecifyKind(endDate.Date, DateTimeKind.Utc);
-
         var holidays = await _context
             .PublicHolidays.AsNoTracking()
-            .Where(h => h.Date >= start && h.Date <= end)
+            .Where(h => h.Date >= startDate && h.Date <= endDate)
             .Select(h => h.Date)
             .ToListAsync();
 
         int workingDays = 0;
-        for (var date = start; date <= end; date = date.AddDays(1))
+        for (var date = startDate; date <= endDate; date = date.AddDays(1))
         {
             if (
                 date.DayOfWeek != DayOfWeek.Saturday
                 && date.DayOfWeek != DayOfWeek.Sunday
-                && !holidays.Any(h => h.Date == date.Date)
+                && !holidays.Contains(date)
             )
             {
                 workingDays++;
@@ -50,20 +47,14 @@ public class HolidayService : IHolidayService
         return workingDays;
     }
 
-    public async Task<bool> IsHolidayAsync(DateTime date)
+    public async Task<bool> IsHolidayAsync(DateOnly date)
     {
-        var utcDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
-        return await _context.PublicHolidays.AsNoTracking().AnyAsync(h => h.Date == utcDate);
+        return await _context.PublicHolidays.AsNoTracking().AnyAsync(h => h.Date == date);
     }
 
-    public bool IsWeekendAsync(DateTime date)
+    public Task<bool> IsWeekendAsync(DateOnly date)
     {
-        return date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
-    }
-
-    Task<bool> IHolidayService.IsWeekendAsync(DateTime date)
-    {
-        return Task.FromResult(IsWeekendAsync(date));
+        return Task.FromResult(date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday);
     }
 
     public async Task<int> SyncPublicHolidaysAsync(int year, string countryCode)
@@ -84,7 +75,7 @@ public class HolidayService : IHolidayService
         int addedCount = 0;
         foreach (var holiday in response)
         {
-            var holidayDate = DateTime.SpecifyKind(holiday.Date.Date, DateTimeKind.Utc);
+            var holidayDate = DateOnly.FromDateTime(holiday.Date);
             if (!existingHolidays.Any(h => h.Date == holidayDate))
             {
                 _context.PublicHolidays.Add(

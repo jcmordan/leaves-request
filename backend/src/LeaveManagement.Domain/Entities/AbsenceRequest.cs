@@ -11,8 +11,8 @@ public class AbsenceRequest
     public Guid AbsenceTypeId { get; set; }
     public Guid? AbsenceSubTypeId { get; set; }
 
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
     public RequestStatus Status { get; set; }
     public string Reason { get; set; } = string.Empty;
     public string? Diagnosis { get; set; }

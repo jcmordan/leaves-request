@@ -15,7 +15,7 @@ public class EmployeeType : ObjectType<Employee>
         descriptor.Field(t => t.EmployeeCode).Type<NonNullType<StringType>>();
         descriptor.Field(t => t.AN8).Type<NonNullType<StringType>>();
         descriptor.Field(t => t.NationalId).Type<NonNullType<StringType>>();
-        descriptor.Field(t => t.HireDate).Type<NonNullType<DateTimeType>>();
+        descriptor.Field(t => t.HireDate).Type<NonNullType<DateType>>();
         descriptor.Field(t => t.IsActive).Type<NonNullType<BooleanType>>();
 
         descriptor

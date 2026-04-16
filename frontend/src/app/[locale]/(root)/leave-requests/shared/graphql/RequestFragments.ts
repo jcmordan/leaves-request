@@ -67,3 +67,24 @@ export const REQUEST_LIST_CONNECTION_FRAGMENT = graphql(`
     }
   }
 `);
+
+export const DASHBOARD_SUMMARY_FIELDS = graphql(`
+  fragment Dashboard_SummaryFields on LeaveRequestSummary {
+    pendingCount
+    rejectedCount
+    avgResponseTimeHours
+    approvedThisMonthCount
+    approvedVsLastYearPercentage
+    insightMessage
+    availablePercentage
+    totalTeamMembers
+    membersOnLeave
+    pendingMembersOnLeave
+    upcomingMinAvailablePercentage
+    upcomingMinAvailableDate
+    trendData {
+      label
+      count
+    }
+  }
+`);

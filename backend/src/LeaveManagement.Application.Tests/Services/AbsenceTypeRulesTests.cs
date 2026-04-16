@@ -59,8 +59,8 @@ public class AbsenceTypeRulesTests : IDisposable
     {
         // Arrange
         var type = await CreateAbsenceTypeAsync("Vacaciones", 26, CalculationType.WorkingDays, deductsFromBalance: true);
-        var startDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var endDate = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc);
+        var startDate = new DateOnly(2026, 1, 1);
+        var endDate = new DateOnly(2026, 2, 1);
         
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(30); // 30 working days
         _balanceService.GetEmployeeBalanceAsync(_employeeId, 2026, type.Id).Returns(new LeaveBalanceDto { Remaining = 40 });
@@ -77,8 +77,8 @@ public class AbsenceTypeRulesTests : IDisposable
     {
         // Arrange
         var type = await CreateAbsenceTypeAsync("Licencia Médica", 0, CalculationType.CalendarDays, requiresDoctor: true, requiresAttachment: true);
-        var startDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var endDate = new DateTime(2026, 1, 5, 0, 0, 0, DateTimeKind.Utc);
+        var startDate = new DateOnly(2026, 1, 1);
+        var endDate = new DateOnly(2026, 1, 5);
 
         // Act
         var act = async () => await _sut.SubmitRequestAsync(_employeeId, type.Id, startDate, endDate, "Sick", diagnosis: "", treatingDoctor: "");
@@ -92,8 +92,8 @@ public class AbsenceTypeRulesTests : IDisposable
     {
         // Arrange
         var type = await CreateAbsenceTypeAsync("Paternidad", 2, CalculationType.WorkingDays, requiresAttachment: true);
-        var startDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var endDate = new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc);
+        var startDate = new DateOnly(2026, 1, 1);
+        var endDate = new DateOnly(2026, 1, 2);
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
 
         // Act
@@ -110,8 +110,8 @@ public class AbsenceTypeRulesTests : IDisposable
         var type = await CreateAbsenceTypeAsync("Vacaciones", 26, CalculationType.WorkingDays, deductsFromBalance: true);
         
         // Friday to Tuesday where Monday is Holiday
-        var startDate = new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc); // Friday
-        var endDate = new DateTime(2026, 1, 6, 0, 0, 0, DateTimeKind.Utc);   // Tuesday
+        var startDate = new DateOnly(2026, 1, 2); // Friday
+        var endDate = new DateOnly(2026, 1, 6);   // Tuesday
         
         // Real working days calculation: Fri(1), Sat(X), Sun(X), Mon-Holiday(X), Tue(1) = 2 days
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
@@ -141,8 +141,8 @@ public class AbsenceTypeRulesTests : IDisposable
         _context.AbsenceTypes.Add(subType);
         await _context.SaveChangesAsync();
 
-        var startDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var endDate = new DateTime(2026, 1, 10, 0, 0, 0, DateTimeKind.Utc);
+        var startDate = new DateOnly(2026, 1, 1);
+        var endDate = new DateOnly(2026, 1, 10);
         
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(8);
 

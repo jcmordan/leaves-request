@@ -15,7 +15,7 @@ public interface IEmployeeService
         string employeeCode,
         string nationalId,
         Guid departmentId,
-        DateTime hireDate,
+        DateOnly hireDate,
         CancellationToken ct = default
     );
 

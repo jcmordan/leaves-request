@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { PreloadQuery } from "@/lib/apollo-client";
+import { PreloadQuery } from "@/lib/apollo/apollo-client-rsc";
 import { GET_APPROVAL_DETAIL_QUERY } from "./graphql/ApprovalQueries";
 import ApprovalView from "./components/ApprovalView";
 import { XCircle } from "lucide-react";

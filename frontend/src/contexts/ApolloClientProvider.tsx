@@ -4,7 +4,7 @@ import { ApolloProvider } from "@apollo/client/react";
 import { useSession } from "next-auth/react";
 import { useRef, useMemo, useEffect } from "react";
 
-import { makeClient } from "@/lib/makeClient";
+import { makeClient } from "@/lib/apollo/apollo-client-client";
 
 export const ApolloClientProvider = ({
   children,

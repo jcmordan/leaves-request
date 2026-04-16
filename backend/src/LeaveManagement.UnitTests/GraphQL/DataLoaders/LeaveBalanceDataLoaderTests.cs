@@ -65,7 +65,7 @@ public class LeaveBalanceDataLoaderTests : IDisposable
         { 
             Id = Guid.NewGuid(), 
             FullName = "Test Employee", 
-            HireDate = DateTime.UtcNow.AddYears(-5) // 5 years tenure
+            HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-5)) // 5 years tenure
         };
         var absenceType = new AbsenceType 
         { 
@@ -109,7 +109,7 @@ public class LeaveBalanceDataLoaderTests : IDisposable
         { 
             Id = Guid.NewGuid(), 
             FullName = "Test Employee", 
-            HireDate = DateTime.UtcNow.AddYears(-1) 
+            HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)) 
         };
         var absenceType = new AbsenceType { Id = Guid.NewGuid(), Name = "Vacation", DeductsFromBalance = true, IsActive = true };
         var manualEntitlement = new LeaveEntitlement 
@@ -140,7 +140,7 @@ public class LeaveBalanceDataLoaderTests : IDisposable
     public async Task LoadBatchAsync_ShouldSubtractApprovedRequests()
     {
         // Arrange
-        var employee = new Employee { Id = Guid.NewGuid(), FullName = "Test Employee", HireDate = DateTime.UtcNow.AddYears(-10) };
+        var employee = new Employee { Id = Guid.NewGuid(), FullName = "Test Employee", HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-10)) };
         var absenceType = new AbsenceType { Id = Guid.NewGuid(), Name = "Vacation", DeductsFromBalance = true, IsActive = true };
         var manualEntitlement = new LeaveEntitlement { Id = Guid.NewGuid(), EmployeeId = employee.Id, AbsenceTypeId = absenceType.Id, Year = DateTime.UtcNow.Year, BaseDays = 20 };
         
@@ -150,8 +150,8 @@ public class LeaveBalanceDataLoaderTests : IDisposable
             EmployeeId = employee.Id, 
             AbsenceTypeId = absenceType.Id, 
             Status = RequestStatus.Approved,
-            StartDate = DateTime.UtcNow,
-            EndDate = DateTime.UtcNow.AddDays(2),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2)),
             TotalDaysRequested = 3
         };
 
@@ -161,8 +161,8 @@ public class LeaveBalanceDataLoaderTests : IDisposable
             EmployeeId = employee.Id, 
             AbsenceTypeId = absenceType.Id, 
             Status = RequestStatus.Pending,
-            StartDate = DateTime.UtcNow,
-            EndDate = DateTime.UtcNow.AddDays(2),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2)),
             TotalDaysRequested = 3
         };
 
@@ -191,7 +191,7 @@ public class LeaveBalanceDataLoaderTests : IDisposable
         // Arrange
         var today = DateTime.UtcNow;
         // Hire date is 5 years ago, but 1 month from now in that year
-        var hireDate = new DateTime(today.Year - 5, today.Month, today.Day).AddMonths(1);
+        var hireDate = DateOnly.FromDateTime(new DateTime(today.Year - 5, today.Month, today.Day).AddMonths(1));
         
         var employee = new Employee { Id = Guid.NewGuid(), FullName = "Tenure Test", HireDate = hireDate };
         var absenceType = new AbsenceType { Id = Guid.NewGuid(), Name = "Vacation", DeductsFromBalance = true, IsActive = true };
@@ -233,7 +233,7 @@ public class LeaveBalanceDataLoaderTests : IDisposable
     public async Task LoadBatchAsync_ShouldHandleNullPolicy_ByAddingZeroEntitlement()
     {
         // Arrange
-        var employee = new Employee { Id = Guid.NewGuid(), FullName = "No Policy Test", HireDate = DateTime.UtcNow };
+        var employee = new Employee { Id = Guid.NewGuid(), FullName = "No Policy Test", HireDate = DateOnly.FromDateTime(DateTime.UtcNow) };
         var absenceType = new AbsenceType { Id = Guid.NewGuid(), Name = "Vacation", DeductsFromBalance = true, IsActive = true };
         // No policies added to DB
 
@@ -254,7 +254,7 @@ public class LeaveBalanceDataLoaderTests : IDisposable
     public async Task LoadBatchAsync_ShouldOnlyIncludeActiveTypesThatDeductFromBalance()
     {
         // Arrange
-        var employee = new Employee { Id = Guid.NewGuid(), FullName = "Filter Test", HireDate = DateTime.UtcNow.AddYears(-10) };
+        var employee = new Employee { Id = Guid.NewGuid(), FullName = "Filter Test", HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-10)) };
         
         var deductType = new AbsenceType { Id = Guid.NewGuid(), Name = "Deduct", DeductsFromBalance = true, IsActive = true };
         var noDeductType = new AbsenceType { Id = Guid.NewGuid(), Name = "NoDeduct", DeductsFromBalance = false, IsActive = true };

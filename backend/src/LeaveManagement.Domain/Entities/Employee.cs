@@ -18,7 +18,7 @@ public class Employee
 
     public Guid? DepartmentSectionId { get; set; }
 
-    public DateTime HireDate { get; set; }
+    public DateOnly HireDate { get; set; }
     public Guid? UserId { get; set; }
     public User? User { get; set; }
     public Guid? ManagerId { get; set; }

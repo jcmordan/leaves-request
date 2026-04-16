@@ -1,25 +1,11 @@
 import { graphql } from "@/__generated__";
+export { 
+    DASHBOARD_SUMMARY_FIELDS, 
+    REQUEST_LIST_ITEM_FRAGMENT 
+} from "../../shared/graphql/RequestFragments";
 
-export const DASHBOARD_SUMMARY_FIELDS = graphql(`
-  fragment Dashboard_SummaryFields on LeaveRequestSummary {
-    pendingCount
-    rejectedCount
-    avgResponseTimeHours
-    approvedThisMonthCount
-    approvedVsLastYearPercentage
-    insightMessage
-    availablePercentage
-    totalTeamMembers
-    membersOnLeave
-    pendingMembersOnLeave
-    upcomingMinAvailablePercentage
-    upcomingMinAvailableDate
-    trendData {
-      label
-      count
-    }
-  }
-`);
+// Using shared fragments from RequestFragments.ts to avoid duplicate registration warnings
+
 
 export const GET_APPROVALS_DASHBOARD_QUERY = graphql(`
   query Approvals_GetDashboard(
@@ -28,7 +14,7 @@ export const GET_APPROVALS_DASHBOARD_QUERY = graphql(`
     $last: Int
     $before: String
     $status: RequestStatus
-    $today: DateTime
+    $today: Date
     $forecastDays: Int
   ) {
     teamAbsences(
@@ -85,7 +71,7 @@ export const TEAM_ABSENCES_QUERY = graphql(`
 `);
 
 export const APPROVALS_DASHBOARD_SUMMARY_QUERY = graphql(`
-  query Approvals_GetDashboardSummary($today: DateTime) {
+  query Approvals_GetDashboardSummary($today: Date) {
     leaveRequestSummary(today: $today) {
       ...Dashboard_SummaryFields
     }

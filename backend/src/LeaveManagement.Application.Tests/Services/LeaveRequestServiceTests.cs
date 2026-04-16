@@ -59,7 +59,7 @@ public class LeaveRequestServiceTests : IDisposable
                 FullName = "Test Employee",
                 EmployeeCode = "EMP001",
                 NationalId = "12345",
-                HireDate = DateTime.UtcNow.AddYears(-1),
+                HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
                 IsActive = true,
             }
         );
@@ -71,7 +71,7 @@ public class LeaveRequestServiceTests : IDisposable
     public async Task SubmitRequestAsync_StartDateInPast_ShouldSaveRequest()
     {
         // Arrange
-        var endDate = DateTime.UtcNow;
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow);
         var startDate = endDate.AddDays(-1);
 
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
@@ -109,8 +109,8 @@ public class LeaveRequestServiceTests : IDisposable
             _sut.SubmitRequestAsync(
                 _employeeId,
                 _absenceTypeId,
-                DateTime.UtcNow.AddDays(2),
-                DateTime.UtcNow.AddDays(1),
+                DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2)),
+                DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
                 "Reason"
             );
 
@@ -126,8 +126,8 @@ public class LeaveRequestServiceTests : IDisposable
             _sut.SubmitRequestAsync(
                 _employeeId,
                 Guid.NewGuid(),
-                DateTime.UtcNow.AddDays(1),
-                DateTime.UtcNow.AddDays(2),
+                DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
+                DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2)),
                 "Reason"
             );
 
@@ -137,8 +137,8 @@ public class LeaveRequestServiceTests : IDisposable
     [Fact]
     public async Task SubmitRequestAsync_InsufficientBalance_ShouldThrowException()
     {
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(5);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5));
 
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(5);
         _balanceService
@@ -163,8 +163,8 @@ public class LeaveRequestServiceTests : IDisposable
     [Fact]
     public async Task SubmitRequestAsync_OverlappingRequest_ShouldThrowException()
     {
-        var startDate = DateTime.UtcNow.AddDays(10);
-        var endDate = DateTime.UtcNow.AddDays(12);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(12));
 
         _context.AbsenceRequests.Add(
             new AbsenceRequest
@@ -203,8 +203,8 @@ public class LeaveRequestServiceTests : IDisposable
     [Fact]
     public async Task SubmitRequestAsync_ValidRequest_ShouldCreateRequest()
     {
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(2);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2));
 
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
         _balanceService
@@ -252,8 +252,8 @@ public class LeaveRequestServiceTests : IDisposable
         });
         await _context.SaveChangesAsync();
 
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(2);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2));
 
         // Act
         var act = () => _sut.SubmitRequestAsync(_employeeId, medicalTypeId, startDate, endDate, "Fever");
@@ -277,8 +277,8 @@ public class LeaveRequestServiceTests : IDisposable
         });
         await _context.SaveChangesAsync();
 
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(2);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2));
 
         // Act
         var act = () => _sut.SubmitRequestAsync(_employeeId, medicalTypeId, startDate, endDate, "Fever");
@@ -292,8 +292,8 @@ public class LeaveRequestServiceTests : IDisposable
     public async Task SubmitRequestAsync_InvalidFileFormat_ShouldThrowArgumentException()
     {
         // Arrange
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(2);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2));
         using var stream = new MemoryStream(new byte[] { 1, 2, 3 });
 
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
@@ -330,8 +330,8 @@ public class LeaveRequestServiceTests : IDisposable
         });
         await _context.SaveChangesAsync();
 
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(2);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2));
 
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
         _balanceService.GetEmployeeBalanceAsync(_employeeId, startDate.Year, medicalTypeId)
@@ -367,8 +367,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = _employeeId,
             AbsenceTypeId = _absenceTypeId,
-            StartDate = DateTime.UtcNow.AddDays(5),
-            EndDate = DateTime.UtcNow.AddDays(7),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)),
             Status = RequestStatus.Pending,
             Employee = employee,
             RequesterEmployeeId = _employeeId,
@@ -400,8 +400,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = employee1.Id,
             AbsenceTypeId = _absenceTypeId,
-            StartDate = DateTime.UtcNow.Date,
-            EndDate = DateTime.UtcNow.Date.AddDays(1),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
             Status = RequestStatus.Approved,
             CreatedAt = DateTime.UtcNow.AddDays(-2),
             RequesterEmployeeId = employee1.Id
@@ -412,8 +412,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = employee2.Id,
             AbsenceTypeId = _absenceTypeId,
-            StartDate = DateTime.UtcNow.Date.AddDays(10),
-            EndDate = DateTime.UtcNow.Date.AddDays(11),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(11)),
             Status = RequestStatus.Pending,
             CreatedAt = DateTime.UtcNow,
             RequesterEmployeeId = employee2.Id
@@ -461,8 +461,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = _employeeId,
             AbsenceTypeId = _absenceTypeId,
-            StartDate = new DateTime(2026, 4, 20, 0, 0, 0, DateTimeKind.Utc),
-            EndDate = new DateTime(2026, 4, 22, 0, 0, 0, DateTimeKind.Utc),
+            StartDate = new DateOnly(2026, 4, 20),
+            EndDate = new DateOnly(2026, 4, 22),
             Status = RequestStatus.Pending,
             RequesterEmployeeId = _employeeId
         };
@@ -473,8 +473,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = employee2.Id,
             AbsenceTypeId = _absenceTypeId,
-            StartDate = new DateTime(2026, 4, 21, 0, 0, 0, DateTimeKind.Utc),
-            EndDate = new DateTime(2026, 4, 23, 0, 0, 0, DateTimeKind.Utc),
+            StartDate = new DateOnly(2026, 4, 21),
+            EndDate = new DateOnly(2026, 4, 23),
             Status = RequestStatus.Approved,
             RequesterEmployeeId = employee2.Id
         };
@@ -527,8 +527,8 @@ public class LeaveRequestServiceTests : IDisposable
                 AbsenceTypeId = _absenceTypeId,
                 Status = RequestStatus.Pending,
                 RequesterEmployeeId = employee.Id,
-                StartDate = DateTime.UtcNow,
-                EndDate = DateTime.UtcNow.AddDays(1)
+                StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1))
             });
         }
         await _context.SaveChangesAsync();
@@ -557,8 +557,8 @@ public class LeaveRequestServiceTests : IDisposable
             AbsenceTypeId = _absenceTypeId,
             Status = RequestStatus.Approved,
             RequesterEmployeeId = employee.Id,
-            StartDate = DateTime.UtcNow,
-            EndDate = DateTime.UtcNow.AddDays(1)
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1))
         });
         await _context.SaveChangesAsync();
 
@@ -590,8 +590,8 @@ public class LeaveRequestServiceTests : IDisposable
                     AbsenceTypeId = _absenceTypeId,
                     Status = RequestStatus.Pending,
                     RequesterEmployeeId = emp.Id,
-                    StartDate = DateTime.UtcNow,
-                    EndDate = DateTime.UtcNow.AddDays(1)
+                    StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                    EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1))
                 });
             }
         }
@@ -622,14 +622,14 @@ public class LeaveRequestServiceTests : IDisposable
             AbsenceTypeId = _absenceTypeId,
             Status = RequestStatus.Approved,
             RequesterEmployeeId = employee.Id,
-            StartDate = new DateTime(referenceYear, 12, 30, 0, 0, 0, DateTimeKind.Utc),
-            EndDate = new DateTime(referenceYear + 1, 1, 2, 0, 0, 0, DateTimeKind.Utc)
+            StartDate = new DateOnly(referenceYear, 12, 30),
+            EndDate = new DateOnly(referenceYear + 1, 1, 2)
         };
         _context.AbsenceRequests.Add(request);
         await _context.SaveChangesAsync();
 
         // Act - Reference date is Dec 31st
-        var result = await _sut.GetApprovalsDashboardSummaryAsync(managerId, new DateTime(referenceYear, 12, 31, 0, 0, 0, DateTimeKind.Utc));
+        var result = await _sut.GetApprovalsDashboardSummaryAsync(managerId, new DateOnly(referenceYear, 12, 31));
 
         // Assert
         // Should only count Dec 30 & Dec 31 in current year trend (2 days)
@@ -646,7 +646,7 @@ public class LeaveRequestServiceTests : IDisposable
         _context.Employees.Add(employee);
 
         // A Sunday (2026-04-12)
-        var sunday = new DateTime(2026, 4, 12, 0, 0, 0, DateTimeKind.Utc);
+        var sunday = new DateOnly(2026, 4, 12);
         _context.AbsenceRequests.Add(new AbsenceRequest
         {
             Id = Guid.NewGuid(),
@@ -679,8 +679,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = _employeeId,
             AbsenceTypeId = _absenceTypeId,
-            StartDate = DateTime.UtcNow.AddDays(5),
-            EndDate = DateTime.UtcNow.AddDays(7),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)),
             Status = RequestStatus.Pending,
             Employee = employee,
             RequesterEmployeeId = _employeeId,
@@ -721,8 +721,8 @@ public class LeaveRequestServiceTests : IDisposable
         });
         await _context.SaveChangesAsync();
 
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(2);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2));
 
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
         _balanceService.GetEmployeeBalanceAsync(_employeeId, startDate.Year, _absenceTypeId)
@@ -762,8 +762,8 @@ public class LeaveRequestServiceTests : IDisposable
 
         await _context.SaveChangesAsync();
 
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(2);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2));
         using var stream = new MemoryStream(new byte[] { 1, 2, 3 });
 
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(2);
@@ -818,8 +818,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = _employeeId,
             AbsenceTypeId = medicalTypeId,
-            StartDate = DateTime.UtcNow.AddDays(5),
-            EndDate = DateTime.UtcNow.AddDays(7),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)),
             Status = RequestStatus.Pending,
             Employee = employee,
             RequesterEmployeeId = _employeeId,
@@ -872,8 +872,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = _employeeId,
             AbsenceTypeId = _absenceTypeId,
-            StartDate = DateTime.UtcNow.AddDays(10),
-            EndDate = DateTime.UtcNow.AddDays(12),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(12)),
             Status = RequestStatus.ModificationRequested,
             TotalDaysRequested = 3,
             RequesterEmployeeId = _employeeId,
@@ -881,8 +881,8 @@ public class LeaveRequestServiceTests : IDisposable
         _context.AbsenceRequests.Add(request);
         await _context.SaveChangesAsync();
 
-        var newStart = DateTime.UtcNow.AddDays(15);
-        var newEnd = DateTime.UtcNow.AddDays(16);
+        var newStart = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(15));
+        var newEnd = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(16));
         _holidayService.CalculateWorkingDaysAsync(newStart, newEnd).Returns(2);
         _balanceService
             .GetEmployeeBalanceAsync(_employeeId, Arg.Any<int>(), _absenceTypeId)
@@ -910,8 +910,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = _employeeId,
             AbsenceTypeId = _absenceTypeId,
-            StartDate = DateTime.UtcNow.AddDays(10),
-            EndDate = DateTime.UtcNow.AddDays(11),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(11)),
             Status = RequestStatus.Pending,
             RequesterEmployeeId = _employeeId,
         };
@@ -956,8 +956,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = _employeeId,
             AbsenceTypeId = _absenceTypeId,
-            StartDate = DateTime.UtcNow.AddDays(10),
-            EndDate = DateTime.UtcNow.AddDays(11),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(11)),
             Status = RequestStatus.Pending,
             RequesterEmployeeId = _employeeId,
         };
@@ -979,8 +979,8 @@ public class LeaveRequestServiceTests : IDisposable
         {
             Id = Guid.NewGuid(),
             EmployeeId = _employeeId,
-            StartDate = DateTime.UtcNow.AddDays(1),
-            EndDate = DateTime.UtcNow.AddDays(2),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2)),
             Status = RequestStatus.Cancelled,
             RequesterEmployeeId = _employeeId,
         };
@@ -988,8 +988,8 @@ public class LeaveRequestServiceTests : IDisposable
         {
             Id = Guid.NewGuid(),
             EmployeeId = _employeeId,
-            StartDate = DateTime.UtcNow.AddDays(3),
-            EndDate = DateTime.UtcNow.AddDays(4),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(3)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(4)),
             Status = RequestStatus.Approved,
             RequesterEmployeeId = _employeeId,
         };
@@ -1020,8 +1020,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = employee.Id,
             Employee = employee,
-            StartDate = DateTime.UtcNow.AddDays(1),
-            EndDate = DateTime.UtcNow.AddDays(2),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2)),
             Status = RequestStatus.Pending,
             RequesterEmployeeId = employee.Id,
         };
@@ -1030,8 +1030,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = employee.Id,
             Employee = employee,
-            StartDate = DateTime.UtcNow.AddDays(3),
-            EndDate = DateTime.UtcNow.AddDays(4),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(3)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(4)),
             Status = RequestStatus.Rejected,
             RequesterEmployeeId = employee.Id,
         };
@@ -1058,8 +1058,8 @@ public class LeaveRequestServiceTests : IDisposable
             Id = Guid.NewGuid(),
             EmployeeId = _employeeId,
             AbsenceTypeId = _absenceTypeId,
-            StartDate = DateTime.UtcNow.AddDays(10),
-            EndDate = DateTime.UtcNow.AddDays(11),
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10)),
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(11)),
             Status = RequestStatus.Pending,
             RequesterEmployeeId = _employeeId,
             Reason = "Valid ID test"
@@ -1100,8 +1100,8 @@ public class LeaveRequestServiceTests : IDisposable
         });
         await _context.SaveChangesAsync();
 
-        var startDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc); // Thursday
-        var endDate = new DateTime(2026, 1, 4, 0, 0, 0, DateTimeKind.Utc);   // Sunday (4 days total)
+        var startDate = new DateOnly(2026, 1, 1); // Thursday
+        var endDate = new DateOnly(2026, 1, 4);   // Sunday (4 days total)
 
         _balanceService.GetEmployeeBalanceAsync(_employeeId, startDate.Year, calendarTypeId)
             .Returns(new LeaveBalanceDto { Remaining = 10 });
@@ -1127,8 +1127,8 @@ public class LeaveRequestServiceTests : IDisposable
         });
         await _context.SaveChangesAsync();
 
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(10);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(10));
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(8);
 
         // Act
@@ -1143,8 +1143,8 @@ public class LeaveRequestServiceTests : IDisposable
     public async Task SubmitRequestAsync_ZeroDays_ShouldThrowException()
     {
         // Arrange
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(1);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
         _holidayService.CalculateWorkingDaysAsync(startDate, endDate).Returns(0);
 
         // Act
@@ -1193,7 +1193,7 @@ public class LeaveRequestServiceTests : IDisposable
         _context.AbsenceRequests.Add(request);
 
         var approverId = Guid.NewGuid();
-        _context.Employees.Add(new Employee { Id = approverId, FullName = "Approver", EmployeeCode = "A1", NationalId = "N1", IsActive = true, HireDate = DateTime.UtcNow });
+        _context.Employees.Add(new Employee { Id = approverId, FullName = "Approver", EmployeeCode = "A1", NationalId = "N1", IsActive = true, HireDate = DateOnly.FromDateTime(DateTime.UtcNow) });
         
         await _context.SaveChangesAsync();
 
@@ -1226,7 +1226,7 @@ public class LeaveRequestServiceTests : IDisposable
         _context.AbsenceRequests.Add(request);
 
         var otherPersonId = Guid.NewGuid();
-        _context.Employees.Add(new Employee { Id = otherPersonId, FullName = "Other", EmployeeCode = "O1", NationalId = "NO1", IsActive = true, HireDate = DateTime.UtcNow });
+        _context.Employees.Add(new Employee { Id = otherPersonId, FullName = "Other", EmployeeCode = "O1", NationalId = "NO1", IsActive = true, HireDate = DateOnly.FromDateTime(DateTime.UtcNow) });
 
         await _context.SaveChangesAsync();
 
@@ -1269,8 +1269,8 @@ public class LeaveRequestServiceTests : IDisposable
         };
         _context.Employees.Add(otherEmployee);
 
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(5);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5));
 
         var request = new AbsenceRequest
         {
@@ -1323,8 +1323,8 @@ public class LeaveRequestServiceTests : IDisposable
             new Employee { Id = Guid.NewGuid(), FullName = "E2", ManagerId = managerId, IsActive = true, EmployeeCode = "E2", NationalId = "N2" }
         );
 
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(5);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5));
 
         var request = new AbsenceRequest
         {

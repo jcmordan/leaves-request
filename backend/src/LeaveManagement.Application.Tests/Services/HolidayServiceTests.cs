@@ -37,8 +37,8 @@ public class HolidayServiceTests : IDisposable
     public async Task CalculateWorkingDaysAsync_ShouldExcludeWeekends()
     {
         // Friday to Monday (Friday, Saturday, Sunday, Monday)
-        var startDate = new DateTime(2024, 1, 5, 0, 0, 0, DateTimeKind.Utc);
-        var endDate = new DateTime(2024, 1, 8, 0, 0, 0, DateTimeKind.Utc);
+        var startDate = new DateOnly(2024, 1, 5);
+        var endDate = new DateOnly(2024, 1, 8);
 
         var result = await _sut.CalculateWorkingDaysAsync(startDate, endDate);
 
@@ -49,7 +49,7 @@ public class HolidayServiceTests : IDisposable
     [Fact]
     public async Task CalculateWorkingDaysAsync_ShouldExcludeHolidays()
     {
-        var date = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc); // Monday
+        var date = new DateOnly(2024, 1, 1); // Monday
         _context.PublicHolidays.Add(new PublicHoliday 
         { 
             Id = Guid.NewGuid(), 
@@ -74,10 +74,10 @@ public class HolidayServiceTests : IDisposable
         // Monday 2024-01-08 (Holiday)
         // Tuesday (Work)
         
-        var startDate = new DateTime(2024, 1, 5, 0, 0, 0, DateTimeKind.Utc);
-        var endDate = new DateTime(2024, 1, 9, 0, 0, 0, DateTimeKind.Utc);
+        var startDate = new DateOnly(2024, 1, 5);
+        var endDate = new DateOnly(2024, 1, 9);
         
-        var holiday = new DateTime(2024, 1, 8, 0, 0, 0, DateTimeKind.Utc);
+        var holiday = new DateOnly(2024, 1, 8);
         _context.PublicHolidays.Add(new PublicHoliday 
         { 
             Id = Guid.NewGuid(), 
@@ -97,7 +97,7 @@ public class HolidayServiceTests : IDisposable
     public async Task CalculateWorkingDaysAsync_ShouldHandleHolidayOnWeekend()
     {
         // Saturday is a holiday
-        var saturday = new DateTime(2024, 1, 6, 0, 0, 0, DateTimeKind.Utc);
+        var saturday = new DateOnly(2024, 1, 6);
         _context.PublicHolidays.Add(new PublicHoliday 
         { 
             Id = Guid.NewGuid(), 
@@ -107,8 +107,8 @@ public class HolidayServiceTests : IDisposable
         });
         await _context.SaveChangesAsync();
 
-        var startDate = new DateTime(2024, 1, 5, 0, 0, 0, DateTimeKind.Utc); // Fri
-        var endDate = new DateTime(2024, 1, 8, 0, 0, 0, DateTimeKind.Utc);   // Mon
+        var startDate = new DateOnly(2024, 1, 5); // Fri
+        var endDate = new DateOnly(2024, 1, 8);   // Mon
 
         var result = await _sut.CalculateWorkingDaysAsync(startDate, endDate);
 
@@ -120,8 +120,8 @@ public class HolidayServiceTests : IDisposable
     [Fact]
     public async Task CalculateWorkingDaysAsync_ShouldThrow_WhenStartAfterEnd()
     {
-        var startDate = new DateTime(2024, 1, 2);
-        var endDate = new DateTime(2024, 1, 1);
+        var startDate = new DateOnly(2024, 1, 2);
+        var endDate = new DateOnly(2024, 1, 1);
 
         var act = async () => await _sut.CalculateWorkingDaysAsync(startDate, endDate);
 
@@ -131,7 +131,7 @@ public class HolidayServiceTests : IDisposable
     [Fact]
     public async Task IsHolidayAsync_ShouldReturnTrue_WhenExists()
     {
-        var date = new DateTime(2024, 12, 25, 0, 0, 0, DateTimeKind.Utc);
+        var date = new DateOnly(2024, 12, 25);
         _context.PublicHolidays.Add(new PublicHoliday 
         { 
             Id = Guid.NewGuid(), 
@@ -176,7 +176,7 @@ public class HolidayServiceTests : IDisposable
         // Arrange
         var year = 2024;
         var countryCode = "US";
-        var date = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var date = new DateOnly(2024, 1, 1);
         
         _context.PublicHolidays.Add(new PublicHoliday 
         { 
@@ -206,23 +206,23 @@ public class HolidayServiceTests : IDisposable
     }
 
     [Fact]
-    public void IsWeekendAsync_ShouldReturnTrue_ForSaturdayAndSunday()
+    public async Task IsWeekendAsync_ShouldReturnTrue_ForSaturdayAndSunday()
     {
-        var saturday = new DateTime(2024, 1, 6); // Saturday
-        var sunday = new DateTime(2024, 1, 7);   // Sunday
-        var monday = new DateTime(2024, 1, 8);   // Monday
+        var saturday = new DateOnly(2024, 1, 6); // Saturday
+        var sunday = new DateOnly(2024, 1, 7);   // Sunday
+        var monday = new DateOnly(2024, 1, 8);   // Monday
 
-        _sut.IsWeekendAsync(saturday).Should().BeTrue();
-        _sut.IsWeekendAsync(sunday).Should().BeTrue();
-        _sut.IsWeekendAsync(monday).Should().BeFalse();
+        (await _sut.IsWeekendAsync(saturday)).Should().BeTrue();
+        (await _sut.IsWeekendAsync(sunday)).Should().BeTrue();
+        (await _sut.IsWeekendAsync(monday)).Should().BeFalse();
     }
 
     [Fact]
     public async Task IHolidayService_IsWeekendAsync_ShouldReturnCorrectValue()
     {
         IHolidayService holidayService = _sut;
-        var saturday = new DateTime(2024, 1, 6);
-        var monday = new DateTime(2024, 1, 8);
+        var saturday = new DateOnly(2024, 1, 6);
+        var monday = new DateOnly(2024, 1, 8);
 
         (await holidayService.IsWeekendAsync(saturday)).Should().BeTrue();
         (await holidayService.IsWeekendAsync(monday)).Should().BeFalse();
@@ -231,7 +231,7 @@ public class HolidayServiceTests : IDisposable
     [Fact]
     public async Task IsHolidayAsync_ShouldReturnFalse_WhenNotExists()
     {
-        var date = new DateTime(2024, 12, 25, 0, 0, 0, DateTimeKind.Utc);
+        var date = new DateOnly(2024, 12, 25);
         
         var result = await _sut.IsHolidayAsync(date);
 
@@ -241,8 +241,8 @@ public class HolidayServiceTests : IDisposable
     [Fact]
     public async Task CalculateWorkingDaysAsync_ShouldReturnZero_WhenOnlyWeekends()
     {
-        var startDate = new DateTime(2024, 1, 6, 0, 0, 0, DateTimeKind.Utc); // Sat
-        var endDate = new DateTime(2024, 1, 7, 0, 0, 0, DateTimeKind.Utc);   // Sun
+        var startDate = new DateOnly(2024, 1, 6); // Sat
+        var endDate = new DateOnly(2024, 1, 7);   // Sun
 
         var result = await _sut.CalculateWorkingDaysAsync(startDate, endDate);
 

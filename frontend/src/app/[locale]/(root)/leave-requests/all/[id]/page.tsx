@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { PreloadQuery } from "@/lib/apollo-client";
+import { PreloadQuery } from "@/lib/apollo/apollo-client-rsc";
 import { GET_REQUEST_DETAIL_QUERY } from "../../me/[id]/graphql/RequestDetailsQueries";
 import RequestDetailView from "../../me/[id]/components/RequestDetailView";
 import { XCircle } from "lucide-react";

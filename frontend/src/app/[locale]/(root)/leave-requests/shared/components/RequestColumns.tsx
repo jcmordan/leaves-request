@@ -18,11 +18,13 @@ const StatusCell = ({ row }: CellContext<RequestItem, any>) => {
   const status = row.original.status;
 
   return (
-    <RequestStatusBadge
-      status={status}
-      showDot={false}
-      className="text-[10px] font-black uppercase tracking-tighter px-3 py-1"
-    />
+    <div className="flex justify-center w-full">
+      <RequestStatusBadge
+        status={status}
+        showDot={false}
+        className="text-[10px] font-black uppercase tracking-tighter px-3 py-1"
+      />
+    </div>
   );
 };
 
@@ -65,7 +67,7 @@ const PeriodCell = ({ row }: CellContext<RequestItem, any>) => {
 const DaysCell = ({ row }: CellContext<RequestItem, any>) => {
   const request = row.original;
   return (
-    <div className="flex flex-col">
+    <div className="flex justify-center w-full">
       <p className="text-sm text-primary font-bold font-heading">
         {daysBetween(request.startDate, request.endDate)}
       </p>
@@ -119,7 +121,7 @@ export const useRequestColumns = (
 ) => {
   const t = useTranslations("requests");
 
-  const columns: ColumnDef<RequestItem>[] = [
+  const columns: (ColumnDef<RequestItem> & { align?: "left" | "right" | "center" })[] = [
     {
       accessorKey: "createdAt",
       header: t("submitted"),
@@ -142,13 +144,19 @@ export const useRequestColumns = (
     },
     {
       id: "days",
-      header: t("days"),
+      header: () => (
+        <div className="text-center w-full">{t("days")}</div>
+      ),
       cell: DaysCell,
+      align: "center",
     },
     {
       accessorKey: "status",
-      header: t("status"),
+      header: () => (
+        <div className="text-center w-full">{t("status")}</div>
+      ),
       cell: StatusCell,
+      align: "center",
     },
     {
       id: "actions",

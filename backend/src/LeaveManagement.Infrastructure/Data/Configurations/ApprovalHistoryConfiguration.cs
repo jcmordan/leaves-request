@@ -19,5 +19,9 @@ public class ApprovalHistoryConfiguration : IEntityTypeConfiguration<ApprovalHis
         builder.HasOne(ah => ah.Approver)
             .WithMany()
             .HasForeignKey(ah => ah.ApproverEmployeeId);
+
+        builder.HasOne(ah => ah.AbsenceRequest)
+            .WithMany(r => r.ApprovalHistories)
+            .HasForeignKey(ah => ah.AbsenceRequestId);
     }
 }

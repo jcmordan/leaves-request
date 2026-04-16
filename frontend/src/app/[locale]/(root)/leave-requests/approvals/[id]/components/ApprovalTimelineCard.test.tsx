@@ -8,6 +8,11 @@ vi.mock("next-intl", () => ({
     if (key === "initiatedBy" && params?.name) return `by ${params.name}`;
     return key;
   },
+  useFormatter: () => ({
+    dateTime: vi.fn((d, options) => new Intl.DateTimeFormat("en-US", options).format(d)),
+    number: vi.fn((n) => n.toString()),
+  }),
+  useLocale: () => "en",
 }));
 
 vi.mock("@/__generated__", () => ({

@@ -7,6 +7,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 import { LoadingSkeleton } from "@/components/card/LoadingCard";
 import {
@@ -66,14 +67,15 @@ export function DataTable<TData, TValue>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="bg-muted/50">
               {headerGroup.headers.map((header) => {
-                const columnDef = columns.find(
-                  (c) => c.id === header.column.id,
-                );
+                const columnDef = header.column.columnDef as any;
 
                 return (
                   <TableHead
                     key={header.id}
-                    className={columnDef?.align === "right" ? "text-right" : ""}
+                    className={cn(
+                      columnDef?.align === "right" && "text-right",
+                      columnDef?.align === "center" && "text-center"
+                    )}
                   >
                     {header.isPlaceholder
                       ? null
@@ -94,11 +96,21 @@ export function DataTable<TData, TValue>({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const columnDef = cell.column.columnDef as any;
+
+                  return (
+                    <TableCell 
+                      key={cell.id}
+                      className={cn(
+                        columnDef?.align === "right" && "text-right",
+                        columnDef?.align === "center" && "text-center"
+                      )}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))
           ) : (

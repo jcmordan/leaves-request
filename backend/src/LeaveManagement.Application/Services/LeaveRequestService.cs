@@ -502,18 +502,179 @@ public class LeaveRequestService(
     }
 
     /// <inheritdoc/>
-    public async Task<AbsenceAnalysisDto> GetAbsenceAnalysisAsync(Guid requestId, Guid managerId, CancellationToken ct = default)
+    public async Task<LeaveRequestSummary> GetAbsenceAnalysisAsync(Guid requestId, Guid managerId, CancellationToken ct = default)
     {
         var overlaps = await GetOverlappingAbsencesAsync(requestId, managerId, ct);
         var capacity = await GetTeamCapacityMetricsAsync(requestId, managerId, ct);
 
-        return new AbsenceAnalysisDto
+        return new LeaveRequestSummary
         {
             OverlappingAbsences = overlaps,
             AvailablePercentage = capacity.Percentage,
             TotalTeamMembers = capacity.Total,
             MembersOnLeave = capacity.ApprovedCount,
             PendingMembersOnLeave = capacity.PendingCount
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<LeaveRequestSummary> GetApprovalsDashboardSummaryAsync(Guid managerId, DateTime? today = null, int forecastDays = 14, CancellationToken ct = default)
+    {
+        var teamMemberIds = await _context.Employees
+            .Where(e => e.ManagerId == managerId)
+            .Select(e => e.Id)
+            .ToListAsync(ct);
+
+        // 1. Pending Count
+        var pendingCount = await _context.AbsenceRequests
+            .CountAsync(r => teamMemberIds.Contains(r.EmployeeId) && r.Status == RequestStatus.Pending, ct);
+
+        // 2. Average Response Time (Simplified: Hours since creation for pending/resolved)
+        // In a real app, this would be based on transition history
+        var avgResponseTime = 24.0; // Stub
+
+        // 3. Approved This Month
+        var startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var approvedThisMonth = await _context.AbsenceRequests
+            .CountAsync(r => teamMemberIds.Contains(r.EmployeeId) && r.Status == RequestStatus.Approved && r.CreatedAt >= startOfMonth, ct);
+
+        // 4. Rejected Count
+        var rejectedCount = await _context.AbsenceRequests
+            .CountAsync(r => teamMemberIds.Contains(r.EmployeeId) && r.Status == RequestStatus.Rejected, ct);
+
+        // 5. Trend Data - Weekday Distribution (Using reference year)
+        var referenceDate = today?.Date ?? DateTime.UtcNow.Date;
+        var currentYear = referenceDate.Year;
+        var yearRequests = await _context.AbsenceRequests
+            .Where(r => teamMemberIds.Contains(r.EmployeeId) &&
+                        (r.Status == RequestStatus.Approved || r.Status == RequestStatus.Pending) &&
+                        (r.StartDate.Year == currentYear || r.EndDate.Year == currentYear))
+            .ToListAsync(ct);
+
+        var weekdayCounts = new Dictionary<DayOfWeek, int>
+        {
+            { DayOfWeek.Monday, 0 },
+            { DayOfWeek.Tuesday, 0 },
+            { DayOfWeek.Wednesday, 0 },
+            { DayOfWeek.Thursday, 0 },
+            { DayOfWeek.Friday, 0 },
+            { DayOfWeek.Saturday, 0 },
+            { DayOfWeek.Sunday, 0 }
+        };
+
+        foreach (var req in yearRequests)
+        {
+            // Only count days within the current year
+            var start = req.StartDate > new DateTime(currentYear, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                ? req.StartDate
+                : new DateTime(currentYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var end = req.EndDate < new DateTime(currentYear, 12, 31, 23, 59, 59, DateTimeKind.Utc)
+                ? req.EndDate
+                : new DateTime(currentYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
+
+            for (var d = start.Date; d <= end.Date; d = d.AddDays(1))
+            {
+                if (d.Year == currentYear)
+                {
+                    weekdayCounts[d.DayOfWeek]++;
+                }
+            }
+        }
+
+        var trendData = weekdayCounts
+            .OrderBy(kvp => kvp.Key == DayOfWeek.Sunday ? 7 : (int)kvp.Key)
+            .Select(kvp => new LeaveTrendDataPointDto
+            {
+                Label = kvp.Key.ToString()[..3],
+                Count = kvp.Value
+            }).ToList();
+
+        // 6. Current Team Capacity (Today)
+        var windowEndDate = referenceDate.AddDays(forecastDays);
+        
+        var approvedAbsentCount = await _context.AbsenceRequests
+            .Where(r => teamMemberIds.Contains(r.EmployeeId) && 
+                        r.Status == RequestStatus.Approved && 
+                        r.StartDate.Date <= referenceDate && 
+                        r.EndDate.Date >= referenceDate)
+            .Select(r => r.EmployeeId)
+            .Distinct()
+            .CountAsync(ct);
+
+        var pendingAbsentCount = await _context.AbsenceRequests
+            .Where(r => teamMemberIds.Contains(r.EmployeeId) && 
+                        r.Status == RequestStatus.Pending && 
+                        r.StartDate.Date <= windowEndDate.Date && 
+                        r.EndDate.Date >= referenceDate.Date)
+            .Select(r => r.EmployeeId)
+            .Distinct()
+            .CountAsync(ct);
+
+        var totalTeamMembers = teamMemberIds.Count;
+        var availableCount = Math.Max(0, totalTeamMembers - approvedAbsentCount);
+        var availablePercentage = totalTeamMembers > 0 ? (int)Math.Round((double)availableCount / totalTeamMembers * 100) : 100;
+
+        // 7. Capacity Horizon (Predictive Analysis)
+        var minAvailablePercentage = availablePercentage;
+        var minAvailableDate = referenceDate;
+        
+        // We fetch requests in the window to perform local calculation (efficiency for small teams)
+        var windowRequests = await _context.AbsenceRequests
+            .Where(r => teamMemberIds.Contains(r.EmployeeId) &&
+                        (r.Status == RequestStatus.Approved || r.Status == RequestStatus.Pending) &&
+                        r.StartDate.Date <= windowEndDate.Date && r.EndDate.Date >= referenceDate.Date)
+            .ToListAsync(ct);
+
+        for (int i = 0; i <= forecastDays; i++)
+        {
+            var checkDate = referenceDate.AddDays(i);
+            // "Worst Case" model: Count both Approved AND Pending to see potential impact
+            var dayImpactedCount = windowRequests
+                .Where(r => (r.Status == RequestStatus.Approved || r.Status == RequestStatus.Pending) && 
+                            r.StartDate.Date <= checkDate.Date && r.EndDate.Date >= checkDate.Date)
+                .Select(r => r.EmployeeId)
+                .Distinct()
+                .Count();
+
+            var dayAvailableCount = Math.Max(0, totalTeamMembers - dayImpactedCount);
+            var dayAvailablePercentage = totalTeamMembers > 0 ? (int)Math.Round((double)dayAvailableCount / totalTeamMembers * 100) : 100;
+
+            if (dayAvailablePercentage < minAvailablePercentage)
+            {
+                minAvailablePercentage = dayAvailablePercentage;
+                minAvailableDate = checkDate;
+            }
+        }
+
+        // 8. Insight Engine
+        string? insightMessage = null;
+        if (pendingCount > 5)
+        {
+            insightMessage = $"You have {pendingCount} pending requests waiting for your review.";
+        }
+        else if (minAvailablePercentage < 60)
+        {
+            insightMessage = $"Critical Capacity Alert: Team availability drops to {minAvailablePercentage}% on {minAvailableDate:MMM dd}.";
+        }
+        else if (pendingAbsentCount > 0 && (availableCount - pendingAbsentCount) < (totalTeamMembers * 0.7))
+        {
+            insightMessage = "Warning: Approving all pending requests will drop team capacity below 70%.";
+        }
+
+        return new LeaveRequestSummary
+        {
+            PendingCount = pendingCount,
+            AvgResponseTimeHours = avgResponseTime,
+            ApprovedThisMonthCount = approvedThisMonth,
+            RejectedCount = rejectedCount,
+            TrendData = trendData,
+            AvailablePercentage = availablePercentage,
+            TotalTeamMembers = totalTeamMembers,
+            MembersOnLeave = approvedAbsentCount,
+            PendingMembersOnLeave = pendingAbsentCount,
+            UpcomingMinAvailablePercentage = minAvailablePercentage,
+            UpcomingMinAvailableDate = minAvailableDate,
+            InsightMessage = insightMessage
         };
     }
 

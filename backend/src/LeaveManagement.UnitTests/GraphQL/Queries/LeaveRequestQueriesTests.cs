@@ -120,22 +120,22 @@ public class LeaveRequestQueriesTests
     }
 
     [Fact]
-    public async Task GetAbsenceAnalysis_ShouldCallServiceWithCorrectParameters()
+    public async Task GetApprovalsDashboardSummary_ShouldCallServiceWithCorrectParameters()
     {
         // Arrange
-        var requestId = Guid.NewGuid();
+        var today = DateTime.UtcNow;
         var managerId = Guid.NewGuid();
-        var expectedAnalysis = new AbsenceAnalysisDto { TotalTeamMembers = 5 };
+        var expectedSummary = new LeaveRequestSummary { TotalTeamMembers = 5 };
 
         _currentUserService.GetCurrentEmployeeIdAsync().Returns(managerId);
-        _leaveRequestService.GetAbsenceAnalysisAsync(requestId, managerId, Arg.Any<CancellationToken>())
-            .Returns(expectedAnalysis);
+        _leaveRequestService.GetApprovalsDashboardSummaryAsync(managerId, today, Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(expectedSummary);
 
         // Act
-        var result = await _sut.GetAbsenceAnalysis(requestId, _leaveRequestService, _currentUserService, CancellationToken.None);
+        var result = await _sut.GetApprovalsDashboardSummary(today, _leaveRequestService, _currentUserService, 14, CancellationToken.None);
 
         // Assert
-        result.Should().Be(expectedAnalysis);
-        await _leaveRequestService.Received(1).GetAbsenceAnalysisAsync(requestId, managerId, Arg.Any<CancellationToken>());
+        result.Should().Be(expectedSummary);
+        await _leaveRequestService.Received(1).GetApprovalsDashboardSummaryAsync(managerId, today, Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 }

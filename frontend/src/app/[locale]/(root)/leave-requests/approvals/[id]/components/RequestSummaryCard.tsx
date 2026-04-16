@@ -1,5 +1,5 @@
 import { Calendar, Clock, MedicalServices } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useFormatter } from "next-intl";
 import { FragmentType, useFragment } from "@/__generated__";
 import { APPROVAL_REQUEST_FIELDS_FRAGMENT } from "../graphql/ApprovalQueries";
 
@@ -7,41 +7,12 @@ interface RequestSummaryCardProps {
   requestRef: FragmentType<typeof APPROVAL_REQUEST_FIELDS_FRAGMENT>;
 }
 
-const formatDate = (dateStr: string) =>
-  new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-
-const formatDateRange = (start: string, end: string) => {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  
-  const startMonth = startDate.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" });
-  const startDay = startDate.toLocaleDateString("en-US", { day: "numeric", timeZone: "UTC" });
-  
-  const endMonth = endDate.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" });
-  const endDay = endDate.toLocaleDateString("en-US", { day: "numeric", timeZone: "UTC" });
-  const endYear = endDate.toLocaleDateString("en-US", { year: "numeric", timeZone: "UTC" });
-
-  return `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${endYear}`;
-};
-
-const formatTime = (dateStr: string) =>
-  new Date(dateStr).toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZoneName: "short",
-    timeZone: "UTC",
-  });
-
 /**
  * RequestSummaryCard component - Displays the core details of the absence request.
  */
 export function RequestSummaryCard({ requestRef }: RequestSummaryCardProps) {
   const t = useTranslations("requests");
+  const format = useFormatter();
   const request = useFragment(APPROVAL_REQUEST_FIELDS_FRAGMENT, requestRef);
 
   if (!request) return null;
@@ -53,6 +24,27 @@ export function RequestSummaryCard({ requestRef }: RequestSummaryCardProps) {
     totalDaysRequested,
     createdAt,
   } = request;
+
+  const formatDate = (dateStr: string) =>
+    format.dateTime(new Date(dateStr), {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
+  const formatDateRange = (start: string, end: string) => {
+    const s = new Date(start);
+    const e = new Date(end);
+    
+    return `${format.dateTime(s, { month: "short", day: "numeric" })} - ${format.dateTime(e, { month: "short", day: "numeric", year: "numeric" })}`;
+  };
+
+  const formatTime = (dateStr: string) =>
+    format.dateTime(new Date(dateStr), {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true, // Matching common patterns
+    });
 
   return (
     <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
@@ -84,7 +76,7 @@ export function RequestSummaryCard({ requestRef }: RequestSummaryCardProps) {
             {formatDateRange(startDate, endDate)}
           </p>
           <p className="text-xs text-on-surface-variant font-medium">
-            {totalDaysRequested} {totalDaysRequested === 1 ? t("day") : t("days")}
+            {t("daysCount", { count: totalDaysRequested })}
           </p>
         </div>
 

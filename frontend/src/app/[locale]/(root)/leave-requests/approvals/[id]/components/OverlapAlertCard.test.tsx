@@ -21,6 +21,10 @@ vi.mock("next-intl", () => ({
       template,
     );
   },
+  useFormatter: () => ({
+    dateTime: vi.fn((d, options) => new Intl.DateTimeFormat("en-US", options).format(d)),
+    number: vi.fn((n) => n.toString()),
+  }),
 }));
 
 describe("OverlapAlertCard", () => {

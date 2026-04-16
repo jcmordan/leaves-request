@@ -1,6 +1,6 @@
 import { FragmentType, useFragment } from "@/__generated__";
 import { AlertTriangle, Calendar } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useFormatter } from "next-intl";
 import { ABSENCE_ANALYSIS_OVERLAPS_FRAGMENT } from "../graphql/ApprovalQueries";
 
 interface OverlapAlertCardProps {
@@ -21,9 +21,10 @@ export function OverlapAlertCard({
     absenceAnalysisRef,
   );
   const t = useTranslations("requests");
+  const format = useFormatter();
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-US", {
+    return format.dateTime(new Date(date), {
       month: "short",
       day: "numeric",
     });

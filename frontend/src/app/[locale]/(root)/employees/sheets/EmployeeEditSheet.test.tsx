@@ -180,12 +180,11 @@ describe("EmployeeEditSheet", () => {
 
     await waitFor(() => {
       expect(screen.getByDisplayValue("John Doe")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("john@example.com")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("EMP001")).toBeInTheDocument();
+      expect(screen.getByText("Developer")).toBeInTheDocument();
+      expect(screen.getByText("Engineering")).toBeInTheDocument();
     });
-
-    expect(screen.getByDisplayValue("john@example.com")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("EMP001")).toBeInTheDocument();
-    expect(screen.getByText("Developer")).toBeInTheDocument();
-    expect(screen.getByText("Engineering")).toBeInTheDocument();
   });
 
   it("validates required fields", async () => {

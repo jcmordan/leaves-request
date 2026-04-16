@@ -11,8 +11,8 @@ public interface ILeaveRequestService
     Task<AbsenceRequest> SubmitRequestAsync(
         Guid employeeId,
         Guid absenceTypeId,
-        DateTime startDate,
-        DateTime endDate,
+        DateOnly startDate,
+        DateOnly endDate,
         string reason,
         Guid? absenceSubTypeId = null,
         string? diagnosis = null,
@@ -22,8 +22,8 @@ public interface ILeaveRequestService
     );
     Task<AbsenceRequest> ModifyRequestAsync(
         Guid requestId,
-        DateTime startDate,
-        DateTime endDate,
+        DateOnly startDate,
+        DateOnly endDate,
         string reason,
         Guid? absenceSubTypeId = null,
         string? diagnosis = null,
@@ -56,5 +56,5 @@ public interface ILeaveRequestService
     Task<LeaveRequestSummary> GetAbsenceAnalysisAsync(Guid requestId, Guid managerId, CancellationToken ct = default);
 
     /// <summary>Returns a comprehensive dashboard summary for the manager's team.</summary>
-    Task<LeaveRequestSummary> GetApprovalsDashboardSummaryAsync(Guid managerId, DateTime? today = null, int forecastDays = 14, CancellationToken ct = default);
+    Task<LeaveRequestSummary> GetApprovalsDashboardSummaryAsync(Guid managerId, DateOnly? today = null, int forecastDays = 14, CancellationToken ct = default);
 }

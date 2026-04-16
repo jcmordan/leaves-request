@@ -3,17 +3,20 @@ using System;
 using LeaveManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace LeaveManagement.Infrastructure.Migrations
+namespace LeaveManagement.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(LeaveManagementDbContext))]
-    partial class LeaveManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260416190828_StandardizeCalendarDates")]
+    partial class StandardizeCalendarDates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,7 +83,7 @@ namespace LeaveManagement.Infrastructure.Migrations
 
                     b.HasIndex("RequesterEmployeeId");
 
-                    b.ToTable("AbsenceRequests", (string)null);
+                    b.ToTable("AbsenceRequests");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.AbsenceType", b =>
@@ -125,7 +128,7 @@ namespace LeaveManagement.Infrastructure.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("AbsenceTypes", (string)null);
+                    b.ToTable("AbsenceTypes");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.ApprovalHistory", b =>
@@ -161,7 +164,7 @@ namespace LeaveManagement.Infrastructure.Migrations
 
                     b.HasIndex("ApproverEmployeeId");
 
-                    b.ToTable("ApprovalHistories", (string)null);
+                    b.ToTable("ApprovalHistories");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.Attachment", b =>
@@ -199,7 +202,7 @@ namespace LeaveManagement.Infrastructure.Migrations
 
                     b.HasIndex("AbsenceRequestId");
 
-                    b.ToTable("Attachments", (string)null);
+                    b.ToTable("Attachments");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.Company", b =>
@@ -221,7 +224,7 @@ namespace LeaveManagement.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.Configuration", b =>
@@ -251,7 +254,7 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("Configurations", (string)null);
+                    b.ToTable("Configurations");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.Department", b =>
@@ -278,7 +281,7 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.DepartmentSection", b =>
@@ -310,7 +313,7 @@ namespace LeaveManagement.Infrastructure.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("DepartmentSections", (string)null);
+                    b.ToTable("DepartmentSections");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.Employee", b =>
@@ -386,7 +389,7 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.EmployeeSupervisor", b =>
@@ -409,7 +412,7 @@ namespace LeaveManagement.Infrastructure.Migrations
 
                     b.HasIndex("SupervisorId");
 
-                    b.ToTable("EmployeeSupervisors", (string)null);
+                    b.ToTable("EmployeeSupervisors");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.EntitlementPolicy", b =>
@@ -477,7 +480,7 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("JobTitles", (string)null);
+                    b.ToTable("JobTitles");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.LeaveEntitlement", b =>
@@ -551,7 +554,7 @@ namespace LeaveManagement.Infrastructure.Migrations
                     b.HasIndex("Date", "CountryCode")
                         .IsUnique();
 
-                    b.ToTable("PublicHolidays", (string)null);
+                    b.ToTable("PublicHolidays");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.User", b =>
@@ -598,7 +601,7 @@ namespace LeaveManagement.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("\"ExternalId\" IS NOT NULL");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("LeaveManagement.Domain.Entities.AbsenceRequest", b =>

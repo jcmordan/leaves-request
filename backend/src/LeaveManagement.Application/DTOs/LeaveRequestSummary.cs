@@ -25,7 +25,7 @@ public class LeaveRequestSummary
 
     // --- Horizon Metrics ---
     public int UpcomingMinAvailablePercentage { get; set; }
-    public DateTime? UpcomingMinAvailableDate { get; set; }
+    public DateOnly? UpcomingMinAvailableDate { get; set; }
 
     // --- Capacity & Analysis Metrics ---
     public IEnumerable<OverlappingAbsenceDto> OverlappingAbsences { get; set; } = [];

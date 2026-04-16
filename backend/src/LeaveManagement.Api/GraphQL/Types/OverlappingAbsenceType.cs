@@ -9,7 +9,7 @@ public class OverlappingAbsenceType : ObjectType<OverlappingAbsenceDto>
     {
         descriptor.Field(t => t.EmployeeName).Type<NonNullType<StringType>>();
         descriptor.Field(t => t.JobTitle).Type<NonNullType<StringType>>();
-        descriptor.Field(t => t.StartDate).Type<NonNullType<DateTimeType>>();
-        descriptor.Field(t => t.EndDate).Type<NonNullType<DateTimeType>>();
+        descriptor.Field(t => t.StartDate).Type<NonNullType<DateType>>();
+        descriptor.Field(t => t.EndDate).Type<NonNullType<DateType>>();
     }
 }

@@ -109,7 +109,7 @@ public class BalanceService(LeaveManagementDbContext context) : IBalanceService
         Guid employeeId,
         int year,
         Guid absenceTypeId,
-        DateTime? referenceDate = null
+        DateOnly? referenceDate = null
     )
     {
         var entitlement = await _context
@@ -128,7 +128,7 @@ public class BalanceService(LeaveManagementDbContext context) : IBalanceService
             ?? throw new Exception("Employee not found.");
 
         // Calculate tenure as of the reference date (or today)
-        var refDate = referenceDate ?? DateTime.UtcNow;
+        var refDate = referenceDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
 
         // Tenure logic: how many FULL years have passed since HireDate as of refDate
         var tenure = refDate.Year - employee.HireDate.Year;

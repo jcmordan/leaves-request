@@ -15,7 +15,7 @@ public record EmployeeUpdateData(
     Guid? JobTitleId,
     Guid DepartmentId,
     Guid? DepartmentSectionId,
-    DateTime HireDate,
+    DateOnly HireDate,
     Guid? ManagerId,
     Guid CompanyId,
     bool IsActive

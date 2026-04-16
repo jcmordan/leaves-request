@@ -26,8 +26,8 @@ public class LeaveRequestService(
     public async Task<AbsenceRequest> SubmitRequestAsync(
         Guid employeeId,
         Guid absenceTypeId,
-        DateTime startDate,
-        DateTime endDate,
+        DateOnly startDate,
+        DateOnly endDate,
         string reason,
         Guid? absenceSubTypeId = null,
         string? diagnosis = null,
@@ -76,7 +76,7 @@ public class LeaveRequestService(
 
         int totalDays =
             absenceType.CalculationType == CalculationType.CalendarDays
-                ? (endDate.Date - startDate.Date).Days + 1
+                ? endDate.DayNumber - startDate.DayNumber + 1
                 : await _holidayService.CalculateWorkingDaysAsync(startDate, endDate);
 
         if (totalDays <= 0)
@@ -121,8 +121,8 @@ public class LeaveRequestService(
             EmployeeId = employeeId,
             AbsenceTypeId = absenceTypeId,
             AbsenceSubTypeId = absenceSubTypeId,
-            StartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc),
-            EndDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc),
+            StartDate = startDate,
+            EndDate = endDate,
             Status = RequestStatus.Pending,
             Reason = reason,
             Diagnosis = diagnosis,
@@ -156,8 +156,8 @@ public class LeaveRequestService(
 
     public async Task<AbsenceRequest> ModifyRequestAsync(
         Guid requestId,
-        DateTime startDate,
-        DateTime endDate,
+        DateOnly startDate,
+        DateOnly endDate,
         string reason,
         Guid? absenceSubTypeId = null,
         string? diagnosis = null,
@@ -187,7 +187,7 @@ public class LeaveRequestService(
         int oldDays = request.TotalDaysRequested;
         int newDays =
             absenceType.CalculationType == CalculationType.CalendarDays
-                ? (endDate.Date - startDate.Date).Days + 1
+                ? endDate.DayNumber - startDate.DayNumber + 1
                 : await _holidayService.CalculateWorkingDaysAsync(startDate, endDate);
 
         // Simple validation check
@@ -201,8 +201,8 @@ public class LeaveRequestService(
             }
         }
 
-        request.StartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
-        request.EndDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+        request.StartDate = startDate;
+        request.EndDate = endDate;
         request.Reason = reason;
         request.TotalDaysRequested = newDays;
         request.Diagnosis = diagnosis;
@@ -518,7 +518,7 @@ public class LeaveRequestService(
     }
 
     /// <inheritdoc/>
-    public async Task<LeaveRequestSummary> GetApprovalsDashboardSummaryAsync(Guid managerId, DateTime? today = null, int forecastDays = 14, CancellationToken ct = default)
+    public async Task<LeaveRequestSummary> GetApprovalsDashboardSummaryAsync(Guid managerId, DateOnly? today = null, int forecastDays = 14, CancellationToken ct = default)
     {
         var teamMemberIds = await _context.Employees
             .Where(e => e.ManagerId == managerId)
@@ -534,7 +534,8 @@ public class LeaveRequestService(
         var avgResponseTime = 24.0; // Stub
 
         // 3. Approved This Month
-        var startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var utcNow = DateTime.UtcNow;
+        var startOfMonth = new DateTime(utcNow.Year, utcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var approvedThisMonth = await _context.AbsenceRequests
             .CountAsync(r => teamMemberIds.Contains(r.EmployeeId) && r.Status == RequestStatus.Approved && r.CreatedAt >= startOfMonth, ct);
 
@@ -543,7 +544,7 @@ public class LeaveRequestService(
             .CountAsync(r => teamMemberIds.Contains(r.EmployeeId) && r.Status == RequestStatus.Rejected, ct);
 
         // 5. Trend Data - Weekday Distribution (Using reference year)
-        var referenceDate = today?.Date ?? DateTime.UtcNow.Date;
+        var referenceDate = today ?? DateOnly.FromDateTime(DateTime.UtcNow);
         var currentYear = referenceDate.Year;
         var yearRequests = await _context.AbsenceRequests
             .Where(r => teamMemberIds.Contains(r.EmployeeId) &&
@@ -562,17 +563,16 @@ public class LeaveRequestService(
             { DayOfWeek.Sunday, 0 }
         };
 
+        var yearStart = new DateOnly(currentYear, 1, 1);
+        var yearEnd = new DateOnly(currentYear, 12, 31);
+
         foreach (var req in yearRequests)
         {
             // Only count days within the current year
-            var start = req.StartDate > new DateTime(currentYear, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                ? req.StartDate
-                : new DateTime(currentYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            var end = req.EndDate < new DateTime(currentYear, 12, 31, 23, 59, 59, DateTimeKind.Utc)
-                ? req.EndDate
-                : new DateTime(currentYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
+            var start = req.StartDate > yearStart ? req.StartDate : yearStart;
+            var end = req.EndDate < yearEnd ? req.EndDate : yearEnd;
 
-            for (var d = start.Date; d <= end.Date; d = d.AddDays(1))
+            for (var d = start; d <= end; d = d.AddDays(1))
             {
                 if (d.Year == currentYear)
                 {
@@ -595,8 +595,8 @@ public class LeaveRequestService(
         var approvedAbsentCount = await _context.AbsenceRequests
             .Where(r => teamMemberIds.Contains(r.EmployeeId) && 
                         r.Status == RequestStatus.Approved && 
-                        r.StartDate.Date <= referenceDate && 
-                        r.EndDate.Date >= referenceDate)
+                        r.StartDate <= referenceDate && 
+                        r.EndDate >= referenceDate)
             .Select(r => r.EmployeeId)
             .Distinct()
             .CountAsync(ct);
@@ -604,8 +604,8 @@ public class LeaveRequestService(
         var pendingAbsentCount = await _context.AbsenceRequests
             .Where(r => teamMemberIds.Contains(r.EmployeeId) && 
                         r.Status == RequestStatus.Pending && 
-                        r.StartDate.Date <= windowEndDate.Date && 
-                        r.EndDate.Date >= referenceDate.Date)
+                        r.StartDate <= windowEndDate && 
+                        r.EndDate >= referenceDate)
             .Select(r => r.EmployeeId)
             .Distinct()
             .CountAsync(ct);
@@ -622,7 +622,7 @@ public class LeaveRequestService(
         var windowRequests = await _context.AbsenceRequests
             .Where(r => teamMemberIds.Contains(r.EmployeeId) &&
                         (r.Status == RequestStatus.Approved || r.Status == RequestStatus.Pending) &&
-                        r.StartDate.Date <= windowEndDate.Date && r.EndDate.Date >= referenceDate.Date)
+                        r.StartDate <= windowEndDate && r.EndDate >= referenceDate)
             .ToListAsync(ct);
 
         for (int i = 0; i <= forecastDays; i++)
@@ -631,7 +631,7 @@ public class LeaveRequestService(
             // "Worst Case" model: Count both Approved AND Pending to see potential impact
             var dayImpactedCount = windowRequests
                 .Where(r => (r.Status == RequestStatus.Approved || r.Status == RequestStatus.Pending) && 
-                            r.StartDate.Date <= checkDate.Date && r.EndDate.Date >= checkDate.Date)
+                            r.StartDate <= checkDate && r.EndDate >= checkDate)
                 .Select(r => r.EmployeeId)
                 .Distinct()
                 .Count();

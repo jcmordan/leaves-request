@@ -123,7 +123,7 @@ public class LeaveRequestQueriesTests
     public async Task GetApprovalsDashboardSummary_ShouldCallServiceWithCorrectParameters()
     {
         // Arrange
-        var today = DateTime.UtcNow;
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var managerId = Guid.NewGuid();
         var expectedSummary = new LeaveRequestSummary { TotalTeamMembers = 5 };
 

@@ -25,7 +25,7 @@ public class HolidayQueriesTests
     {
         // Arrange
         var year = 2026;
-        var expectedHolidays = new List<PublicHoliday> { new() { Name = "New Year", Date = new DateTime(2026, 1, 1) } };
+        var expectedHolidays = new List<PublicHoliday> { new() { Name = "New Year", Date = new DateOnly(2026, 1, 1) } };
         _holidayService.GetPublicHolidaysAsync(year).Returns(expectedHolidays);
 
         // Act

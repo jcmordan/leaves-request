@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { PreloadQuery } from "@/lib/apollo-client";
+import { PreloadQuery } from "@/lib/apollo/apollo-client-rsc";
 import { GET_APPROVALS_DASHBOARD_QUERY } from "./graphql/ApprovalListQueries";
 import TeamApprovalsView from "./components/TeamApprovalsView";
 import RequestsPageSkeleton from "../shared/components/RequestsPageSkeleton";

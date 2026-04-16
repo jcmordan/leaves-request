@@ -40,8 +40,8 @@ public class LeaveRequestMutationsTests
         var employeeId = Guid.NewGuid();
         var absenceTypeId = Guid.NewGuid();
         var absenceSubTypeId = Guid.NewGuid();
-        var startDate = DateTime.UtcNow.AddDays(1);
-        var endDate = DateTime.UtcNow.AddDays(2);
+        var startDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2));
         var input = new SubmitLeaveRequestInput(
             EmployeeId: null,
             AbsenceTypeId: absenceTypeId,

@@ -1,8 +1,13 @@
 import { Check, Clock, CheckCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useFormatter, useLocale } from "next-intl";
 import { FragmentType, useFragment } from "@/__generated__";
 import { APPROVAL_REQUEST_FIELDS_FRAGMENT } from "../graphql/ApprovalQueries";
-import { fromNow, fullDateTime } from "@/utils/dateUtils";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/es";
+import "dayjs/locale/en";
+
+dayjs.extend(relativeTime);
 
 interface ApprovalTimelineCardProps {
   requestRef: FragmentType<typeof APPROVAL_REQUEST_FIELDS_FRAGMENT>;
@@ -27,12 +32,25 @@ export function ApprovalTimelineCard({
   requestRef,
 }: ApprovalTimelineCardProps) {
   const t = useTranslations("requests");
+  const format = useFormatter();
+  const locale = useLocale();
   const request = useFragment(APPROVAL_REQUEST_FIELDS_FRAGMENT, requestRef);
 
   if (!request) return null;
 
   const { createdAt, employee, approvalHistories } = request;
   const hasPendingStep = !approvalHistories || approvalHistories.length === 0;
+
+  const formatFullDateTime = (date: string) => {
+    return format.dateTime(new Date(date), {
+      dateStyle: "full",
+      timeStyle: "short",
+    });
+  };
+
+  const formatRelativeTime = (date: string) => {
+    return dayjs(date).locale(locale).fromNow();
+  };
 
   return (
     <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
@@ -52,7 +70,7 @@ export function ApprovalTimelineCard({
           <div>
             <p className="text-sm font-bold text-primary">{t("submitted")}</p>
             <p className="text-xs text-on-surface-variant/60 font-medium">
-              {`${fullDateTime(createdAt)} (${fromNow(createdAt)})`}
+              {`${formatFullDateTime(createdAt)} (${formatRelativeTime(createdAt)})`}
             </p>
             {employee && (
               <p className="text-[11px] text-on-surface-variant/50 mt-1">
@@ -75,7 +93,7 @@ export function ApprovalTimelineCard({
                 {t(`status_${history.action}` as never)}
               </p>
               <p className="text-xs text-on-surface-variant/60 font-medium lowercase first-letter:uppercase">
-                {`${fullDateTime(history.actionDate)} (${fromNow(history.actionDate)})`}
+                {`${formatFullDateTime(history.actionDate)} (${formatRelativeTime(history.actionDate)})`}
               </p>
               {history.approver && (
                 <p className="text-[11px] text-on-surface-variant/50 mt-0.5">

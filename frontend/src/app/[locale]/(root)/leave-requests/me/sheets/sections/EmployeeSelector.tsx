@@ -1,4 +1,4 @@
-import { FormComboboxInput, FormSwitch } from "@/components/forms";
+import { FormComboboxInput } from "@/components/forms";
 import { FormSection } from "./FormSection";
 import { useTranslations } from "next-intl";
 import { useEmployeeSearch } from "@/app/[locale]/(root)/employees/sheets/hooks/useEmployeeSearch";
@@ -7,7 +7,6 @@ import { useEffect } from "react";
 
 const EmployeeSelector = () => {
   const t = useTranslations("requests");
-
 
   const employeeSearch = useEmployeeSearch();
 
@@ -25,7 +24,6 @@ const EmployeeSelector = () => {
   return (
     <FormSection title={t("employee")}>
       <div className="grid grid-cols-2 gap-4">
-
         <FormComboboxInput
           name="employeeId"
           label={t("employee")}

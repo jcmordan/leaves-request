@@ -5,7 +5,19 @@ import { useFragment } from "@/__generated__";
 
 // Mock dependencies
 vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string) => key,
+  useTranslations: () => (key: string, params?: Record<string, unknown>) => {
+    if (key === "daysCount" && params) return `${params.count} days`;
+    return key;
+  },
+  useFormatter: () => ({
+    dateTime: vi.fn((d, options) => {
+      if (options?.month === "short" && options?.year === "numeric") return "Oct 28, 2023";
+      if (options?.month === "short") return "Oct 24";
+      if (options?.hour === "2-digit") return "10:45 AM";
+      return "Oct 20, 2023";
+    }),
+    number: vi.fn((n) => n.toString()),
+  }),
 }));
 
 vi.mock("@/__generated__", () => ({

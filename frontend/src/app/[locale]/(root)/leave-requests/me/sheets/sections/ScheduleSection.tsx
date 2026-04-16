@@ -22,7 +22,6 @@ export const ScheduleSection = ({
 }: ScheduleSectionProps) => {
   const t = useTranslations("requests");
   const { register, setValue } = useFormContext();
-  const values = useWatch();
 
   useEffect(() => {
     const defaultDayes = selectedType?.maxDaysPerYear ?? 0;
@@ -33,11 +32,7 @@ export const ScheduleSection = ({
   return (
     <FormSection title={t("schedule")}>
       <div className="space-y-4">
-        <input
-          type="hidden"
-          {...register("endDate")}
-          value={endDate?.toISOString()}
-        />
+        <input type="hidden" {...register("endDate")} />
         <div className="grid grid-cols-2 gap-4">
           <FormDateInput name="startDate" label={t("startDate")} required />
           <FormNumberInput

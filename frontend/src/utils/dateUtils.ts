@@ -89,7 +89,7 @@ export const dateTimesMatch = (date1: Date, date2: Date) => {
 };
 
 export const daysBetween = (date1: Date, date2: Date) => {
-  return dayjs(date2).diff(dayjs(date1), "day");
+  return dayjs(date2).diff(dayjs(date1), "day") + 1;
 };
 
 

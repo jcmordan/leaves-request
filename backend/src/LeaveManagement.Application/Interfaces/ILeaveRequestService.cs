@@ -53,5 +53,8 @@ public interface ILeaveRequestService
     Task<AbsenceRequest?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
     /// <summary>Calculates comprehensive absence analysis (overlaps and capacity) for a specific request using a manager's team context.</summary>
-    Task<AbsenceAnalysisDto> GetAbsenceAnalysisAsync(Guid requestId, Guid managerId, CancellationToken ct = default);
+    Task<LeaveRequestSummary> GetAbsenceAnalysisAsync(Guid requestId, Guid managerId, CancellationToken ct = default);
+
+    /// <summary>Returns a comprehensive dashboard summary for the manager's team.</summary>
+    Task<LeaveRequestSummary> GetApprovalsDashboardSummaryAsync(Guid managerId, DateTime? today = null, int forecastDays = 14, CancellationToken ct = default);
 }

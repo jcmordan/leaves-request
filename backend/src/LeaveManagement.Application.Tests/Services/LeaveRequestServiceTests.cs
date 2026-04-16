@@ -355,12 +355,324 @@ public class LeaveRequestServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetAbsenceAnalysisAsync_ValidRequest_ShouldReturnSummary()
+    {
+        // Arrange
+        var managerId = Guid.NewGuid();
+        var employee = await _context.Employees.FindAsync(_employeeId);
+        employee!.ManagerId = managerId;
+
+        var request = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = _employeeId,
+            AbsenceTypeId = _absenceTypeId,
+            StartDate = DateTime.UtcNow.AddDays(5),
+            EndDate = DateTime.UtcNow.AddDays(7),
+            Status = RequestStatus.Pending,
+            Employee = employee,
+            RequesterEmployeeId = _employeeId,
+        };
+        _context.AbsenceRequests.Add(request);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.GetAbsenceAnalysisAsync(request.Id, managerId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeOfType<LeaveRequestSummary>();
+        result.TotalTeamMembers.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task GetApprovalsDashboardSummaryAsync_ShouldReturnMetrics()
+    {
+        // Arrange
+        var managerId = Guid.NewGuid();
+        
+        var employee1 = new Employee { Id = Guid.NewGuid(), ManagerId = managerId, FullName = "Emp 1", EmployeeCode = "E1", NationalId = "N1", IsActive = true };
+        var employee2 = new Employee { Id = Guid.NewGuid(), ManagerId = managerId, FullName = "Emp 2", EmployeeCode = "E2", NationalId = "N2", IsActive = true };
+        _context.Employees.AddRange(employee1, employee2);
+
+        var request = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = employee1.Id,
+            AbsenceTypeId = _absenceTypeId,
+            StartDate = DateTime.UtcNow.Date,
+            EndDate = DateTime.UtcNow.Date.AddDays(1),
+            Status = RequestStatus.Approved,
+            CreatedAt = DateTime.UtcNow.AddDays(-2),
+            RequesterEmployeeId = employee1.Id
+        };
+        
+        var pendingRequest = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = employee2.Id,
+            AbsenceTypeId = _absenceTypeId,
+            StartDate = DateTime.UtcNow.Date.AddDays(10),
+            EndDate = DateTime.UtcNow.Date.AddDays(11),
+            Status = RequestStatus.Pending,
+            CreatedAt = DateTime.UtcNow,
+            RequesterEmployeeId = employee2.Id
+        };
+
+        var history = new ApprovalHistory
+        {
+            Id = Guid.NewGuid(),
+            AbsenceRequestId = request.Id,
+            Action = ApprovalAction.Approved,
+            ActionDate = DateTime.UtcNow.AddDays(-1),
+            ApproverEmployeeId = managerId
+        };
+
+        _context.AbsenceRequests.AddRange(request, pendingRequest);
+        _context.ApprovalHistories.Add(history);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.GetApprovalsDashboardSummaryAsync(managerId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.PendingCount.Should().Be(1);
+        result.TotalTeamMembers.Should().Be(2);
+        result.MembersOnLeave.Should().Be(1); // request is for Today
+        result.AvgResponseTimeHours.Should().BeInRange(23.9, 24.1); // Created -2, Action -1 = 24h
+        result.TrendData.Should().HaveCount(7);
+    }
+
+    [Fact]
+    public async Task GetAbsenceAnalysisAsync_WithOverlaps_ShouldIdentifyOverlappingRequests()
+    {
+        // Arrange
+        var managerId = Guid.NewGuid();
+        var employee1 = await _context.Employees.FindAsync(_employeeId);
+        employee1!.ManagerId = managerId;
+
+        var employee2 = new Employee { Id = Guid.NewGuid(), ManagerId = managerId, FullName = "Other Emp", EmployeeCode = "E2", NationalId = "N2", IsActive = true };
+        _context.Employees.Add(employee2);
+
+        // Requested absence: Next week Mon-Wed
+        var request = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = _employeeId,
+            AbsenceTypeId = _absenceTypeId,
+            StartDate = new DateTime(2026, 4, 20, 0, 0, 0, DateTimeKind.Utc),
+            EndDate = new DateTime(2026, 4, 22, 0, 0, 0, DateTimeKind.Utc),
+            Status = RequestStatus.Pending,
+            RequesterEmployeeId = _employeeId
+        };
+
+        // Overlapping absence: Next week Tue-Thu
+        var overlap = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = employee2.Id,
+            AbsenceTypeId = _absenceTypeId,
+            StartDate = new DateTime(2026, 4, 21, 0, 0, 0, DateTimeKind.Utc),
+            EndDate = new DateTime(2026, 4, 23, 0, 0, 0, DateTimeKind.Utc),
+            Status = RequestStatus.Approved,
+            RequesterEmployeeId = employee2.Id
+        };
+
+        _context.AbsenceRequests.AddRange(request, overlap);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.GetAbsenceAnalysisAsync(request.Id, managerId);
+
+        result.AvailablePercentage.Should().Be(50); // 1 out of 2 members available
+    }
+
+    [Fact]
+    public async Task GetAbsenceAnalysisAsync_RequestNotFound_ShouldThrowException()
+    {
+        // Act & Assert
+        await _sut.Invoking(s => s.GetAbsenceAnalysisAsync(Guid.NewGuid(), Guid.NewGuid()))
+            .Should().ThrowAsync<Exception>()
+            .WithMessage("Request not found.");
+    }
+
+    [Fact]
+    public async Task GetApprovalsDashboardSummaryAsync_WithNoTeam_ShouldReturnEmptyMetrics()
+    {
+        // Act
+        var result = await _sut.GetApprovalsDashboardSummaryAsync(Guid.NewGuid());
+
+        // Assert
+        result.TotalTeamMembers.Should().Be(0);
+        result.AvailablePercentage.Should().Be(100); // Default for no members
+        result.InsightMessage.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetApprovalsDashboardSummaryAsync_WithInsight_ShouldReturnCorrectMessage()
+    {
+        // Arrange
+        var managerId = Guid.NewGuid();
+        var employee = new Employee { Id = Guid.NewGuid(), ManagerId = managerId, FullName = "Emp 1", EmployeeCode = "E1", NationalId = "N1", IsActive = true };
+        _context.Employees.Add(employee);
+
+        // Many pending requests (trigger insight)
+        for (int i = 0; i < 6; i++)
+        {
+            _context.AbsenceRequests.Add(new AbsenceRequest
+            {
+                Id = Guid.NewGuid(),
+                EmployeeId = employee.Id,
+                AbsenceTypeId = _absenceTypeId,
+                Status = RequestStatus.Pending,
+                RequesterEmployeeId = employee.Id,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddDays(1)
+            });
+        }
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.GetApprovalsDashboardSummaryAsync(managerId);
+
+        // Assert
+        result.InsightMessage.Should().NotBeNullOrEmpty();
+        result.InsightMessage.Should().Contain("pending");
+    }
+
+    [Fact]
+    public async Task GetApprovalsDashboardSummaryAsync_WithLowCapacity_ShouldReturnCapacityAlert()
+    {
+        // Arrange
+        var managerId = Guid.NewGuid();
+        var employee = new Employee { Id = Guid.NewGuid(), ManagerId = managerId, FullName = "Emp 1", EmployeeCode = "E1", NationalId = "N1", IsActive = true };
+        _context.Employees.Add(employee);
+
+        // Add 1 approved request (100% leave for 1 person = 0% capacity)
+        _context.AbsenceRequests.Add(new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = employee.Id,
+            AbsenceTypeId = _absenceTypeId,
+            Status = RequestStatus.Approved,
+            RequesterEmployeeId = employee.Id,
+            StartDate = DateTime.UtcNow,
+            EndDate = DateTime.UtcNow.AddDays(1)
+        });
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.GetApprovalsDashboardSummaryAsync(managerId);
+
+        // Assert
+        result.InsightMessage.Should().NotBeNullOrEmpty();
+        result.InsightMessage.Should().Contain("Critical Capacity Alert");
+    }
+
+    [Fact]
+    public async Task GetApprovalsDashboardSummaryAsync_WithPendingRisk_ShouldReturnRiskWarning()
+    {
+        // Arrange
+        // 10 employees, 3 pending requests (70% capacity risk)
+        var managerId = Guid.NewGuid();
+        for (int i = 0; i < 10; i++)
+        {
+            var emp = new Employee { Id = Guid.NewGuid(), ManagerId = managerId, FullName = $"Emp {i}", EmployeeCode = $"E{i}", NationalId = $"N{i}", IsActive = true };
+            _context.Employees.Add(emp);
+            
+            if (i < 4)
+            {
+                _context.AbsenceRequests.Add(new AbsenceRequest
+                {
+                    Id = Guid.NewGuid(),
+                    EmployeeId = emp.Id,
+                    AbsenceTypeId = _absenceTypeId,
+                    Status = RequestStatus.Pending,
+                    RequesterEmployeeId = emp.Id,
+                    StartDate = DateTime.UtcNow,
+                    EndDate = DateTime.UtcNow.AddDays(1)
+                });
+            }
+        }
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.GetApprovalsDashboardSummaryAsync(managerId);
+
+        // Assert
+        result.InsightMessage.Should().NotBeNullOrEmpty();
+        result.InsightMessage.Should().Contain("drop team capacity below 70%");
+    }
+
+    [Fact]
+    public async Task GetApprovalsDashboardSummaryAsync_CrossingYearLimit_ShouldFilterCorrectDays()
+    {
+        // Arrange
+        var managerId = Guid.NewGuid();
+        var employee = new Employee { Id = Guid.NewGuid(), ManagerId = managerId, FullName = "Emp 1", EmployeeCode = "E1", NationalId = "N1", IsActive = true };
+        _context.Employees.Add(employee);
+
+        // Request spanning Year boundary (Dec 30 to Jan 2)
+        var referenceYear = 2026;
+        var request = new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = employee.Id,
+            AbsenceTypeId = _absenceTypeId,
+            Status = RequestStatus.Approved,
+            RequesterEmployeeId = employee.Id,
+            StartDate = new DateTime(referenceYear, 12, 30, 0, 0, 0, DateTimeKind.Utc),
+            EndDate = new DateTime(referenceYear + 1, 1, 2, 0, 0, 0, DateTimeKind.Utc)
+        };
+        _context.AbsenceRequests.Add(request);
+        await _context.SaveChangesAsync();
+
+        // Act - Reference date is Dec 31st
+        var result = await _sut.GetApprovalsDashboardSummaryAsync(managerId, new DateTime(referenceYear, 12, 31, 0, 0, 0, DateTimeKind.Utc));
+
+        // Assert
+        // Should only count Dec 30 & Dec 31 in current year trend (2 days)
+        // Total count across all days in trend data should reflect these 2 days
+        result.TrendData.Sum(d => d.Count).Should().Be(2); 
+    }
+
+    [Fact]
+    public async Task GetApprovalsDashboardSummaryAsync_WithSundayData_ShouldSortCorrectly()
+    {
+        // Arrange
+        var managerId = Guid.NewGuid();
+        var employee = new Employee { Id = Guid.NewGuid(), ManagerId = managerId, FullName = "Emp 1", EmployeeCode = "E1", NationalId = "N1", IsActive = true };
+        _context.Employees.Add(employee);
+
+        // A Sunday (2026-04-12)
+        var sunday = new DateTime(2026, 4, 12, 0, 0, 0, DateTimeKind.Utc);
+        _context.AbsenceRequests.Add(new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = employee.Id,
+            AbsenceTypeId = _absenceTypeId,
+            Status = RequestStatus.Approved,
+            StartDate = sunday,
+            EndDate = sunday,
+            RequesterEmployeeId = employee.Id
+        });
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.GetApprovalsDashboardSummaryAsync(managerId, sunday);
+
+        // Assert
+        result.TrendData.Last().Label.Should().Be("Sun");
+        result.TrendData.Last().Count.Should().Be(1);
+    }
+
+    [Fact]
     public async Task ApproveRequestAsync_DirectManager_ShouldApprove()
     {
         var managerId = Guid.NewGuid();
         var employee = await _context.Employees.FindAsync(_employeeId);
         employee!.ManagerId = managerId;
-        await _context.SaveChangesAsync();
 
         var request = new AbsenceRequest
         {

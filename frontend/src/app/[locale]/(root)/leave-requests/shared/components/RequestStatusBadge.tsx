@@ -46,7 +46,7 @@ export function RequestStatusBadge({
   return (
     <span
       className={cn(
-        "px-3 py-1 rounded-full border border-transparent flex items-center gap-1.5 label-sm whitespace-nowrap",
+        "px-3 py-1 rounded-full border border-transparent flex items-center justify-center gap-1.5 label-sm whitespace-nowrap",
         badgeClass,
         className,
       )}

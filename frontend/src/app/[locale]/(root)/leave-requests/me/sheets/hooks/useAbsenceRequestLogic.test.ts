@@ -58,10 +58,13 @@ describe("useAbsenceRequestLogic", () => {
     ],
   };
 
+  const mockSetValue = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
     (useFormContext as any).mockReturnValue({
       control: {},
+      setValue: mockSetValue,
     });
     (useFragment as any).mockReturnValue(mockAbsenceTypes);
     (calculateEndDate as any).mockReturnValue(new Date("2026-04-20"));
@@ -187,6 +190,19 @@ describe("useAbsenceRequestLogic", () => {
 
     expect(result.current.parentTypes).toHaveLength(0);
     expect(result.current.calculationType).toBe(CalculationType.CalendarDays);
+  });
+
+  it("should sync endDate with form state when it changes", () => {
+    const expectedEndDate = new Date("2026-04-20");
+    (useWatch as any).mockImplementation(({ name }: { name: string }) => {
+      if (name === "startDate") return new Date("2026-04-13");
+      if (name === "requestedDays") return 5;
+      return null;
+    });
+
+    renderHook(() => useAbsenceRequestLogic(mockHolidays, {} as any));
+
+    expect(mockSetValue).toHaveBeenCalledWith("endDate", expectedEndDate);
   });
 });
 

@@ -43,7 +43,7 @@ export const APPROVAL_REQUEST_FIELDS_FRAGMENT = graphql(`
 `);
 
 export const ABSENCE_ANALYSIS_OVERLAPS_FRAGMENT = graphql(`
-  fragment AbsenceAnalysis_Overlaps on AbsenceAnalysisDto {
+  fragment AbsenceAnalysis_Overlaps on LeaveRequestSummary {
     overlappingAbsences {
       employeeName
       jobTitle
@@ -54,7 +54,7 @@ export const ABSENCE_ANALYSIS_OVERLAPS_FRAGMENT = graphql(`
 `);
 
 export const ABSENCE_ANALYSIS_STATS_FRAGMENT = graphql(`
-  fragment AbsenceAnalysis_Stats on AbsenceAnalysisDto {
+  fragment AbsenceAnalysis_Stats on LeaveRequestSummary {
     availablePercentage
     totalTeamMembers
     membersOnLeave
@@ -70,7 +70,7 @@ export const GET_APPROVAL_DETAIL_QUERY = graphql(`
       status
       ...ApprovalRequest_Fields
     }
-    absenceAnalysis(requestId: $id) {
+    leaveRequestSummary {
       ...AbsenceAnalysis_Overlaps
       ...AbsenceAnalysis_Stats
     }

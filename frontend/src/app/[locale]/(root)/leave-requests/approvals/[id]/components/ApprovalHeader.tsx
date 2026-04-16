@@ -14,6 +14,7 @@ interface ApprovalHeaderProps {
  */
 export function ApprovalHeader({ requestRef }: ApprovalHeaderProps) {
   const t = useTranslations("requests");
+  const ct = useTranslations("common");
   const request = useFragment(APPROVAL_REQUEST_FIELDS_FRAGMENT, requestRef);
 
   if (!request) return null;
@@ -39,7 +40,7 @@ export function ApprovalHeader({ requestRef }: ApprovalHeaderProps) {
               {employee?.fullName}
             </h1>
             <p className="text-sm font-medium text-on-surface-variant">
-              {employee?.jobTitle?.name ?? "Team Member"}
+              {employee?.jobTitle?.name ?? ct("teamMember")}
             </p>
           </div>
         </div>

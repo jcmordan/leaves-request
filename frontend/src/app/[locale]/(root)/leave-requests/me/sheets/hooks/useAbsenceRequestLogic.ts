@@ -1,7 +1,7 @@
 "use client";
 
 import { useWatch, useFormContext } from "react-hook-form";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { calculateEndDate } from "../../utils/BusinessDaysUtils";
 import { FragmentType, useFragment } from "@/__generated__";
 import { ABSENCE_TYPES_QUERY_FRAGMENT } from "../../graphql/MyRequestsQueries";
@@ -34,7 +34,7 @@ export const useAbsenceRequestLogic = (
   holidays: string[],
   absenceTypesRef?: FragmentType<typeof ABSENCE_TYPES_QUERY_FRAGMENT> | null,
 ): AbsenceRequestData => {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   const absenceTypesData = useFragment(
     ABSENCE_TYPES_QUERY_FRAGMENT,
@@ -84,7 +84,13 @@ export const useAbsenceRequestLogic = (
         : [],
       reqeustType?.calculationType,
     );
-  }, [watchStartDate, watchRequestedDays, holidays]);
+  }, [watchStartDate, watchRequestedDays, holidays, reqeustType?.calculationType]);
+
+  useEffect(() => {
+    if (endDate) {
+      setValue("endDate", endDate);
+    }
+  }, [endDate, setValue]);
 
   return {
     selectedType: reqeustType,

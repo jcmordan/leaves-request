@@ -20,10 +20,13 @@ vi.mock("@/components/layout/sheets/SheetNavigation", () => ({
   })),
 }));
 
+const mockToastSuccess = vi.fn();
+const mockToastError = vi.fn();
+
 vi.mock("sonner", () => ({
   toast: {
-    success: vi.fn(),
-    error: vi.fn(),
+    success: (...args: any[]) => mockToastSuccess(...args),
+    error: (...args: any[]) => mockToastError(...args),
   },
 }));
 
@@ -65,6 +68,8 @@ describe("SubmitAbsentRequestSheet", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockToastSuccess.mockReset();
+    mockToastError.mockReset();
     (useQuery as any).mockReturnValue({
       data: mockData,
       loading: false,
@@ -104,15 +109,35 @@ describe("SubmitAbsentRequestSheet", () => {
     });
   });
 
-  it("shows loading state when query is loading", () => {
-    (useQuery as any).mockReturnValue({
-      data: null,
-      loading: true,
+  it("triggers success toast and closes sheet on complete", async () => {
+    let onCompletedCallback: any;
+    (useMutation as any).mockImplementation((query: any, options: any) => {
+      onCompletedCallback = options.onCompleted;
+      return [submitRequestMock, { loading: false }];
+    });
+
+    const closeSheetMock = vi.fn();
+    (useSheets as any).mockReturnValue({ closeSheet: closeSheetMock });
+
+    render(<SubmitAbsentRequestSheet />);
+    
+    onCompletedCallback();
+
+    expect(mockToastSuccess).toHaveBeenCalledWith("submitSuccess");
+    expect(closeSheetMock).toHaveBeenCalled();
+  });
+
+  it("triggers error toast on mutation failure", async () => {
+    let onErrorCallback: any;
+    (useMutation as any).mockImplementation((query: any, options: any) => {
+      onErrorCallback = options.onError;
+      return [submitRequestMock, { loading: false }];
     });
 
     render(<SubmitAbsentRequestSheet />);
     
-    // FormSheet title should still be there but maybe we can check for loading prop if we didn't mock it so aggressively
-    expect(screen.getByText("submitNewRequest")).toBeInTheDocument();
+    onErrorCallback(new Error("Failed"));
+
+    expect(mockToastError).toHaveBeenCalledWith("Failed");
   });
 });

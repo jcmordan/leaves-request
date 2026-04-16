@@ -6,6 +6,10 @@ import { useFragment } from "@/__generated__";
 // Mock dependencies
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
+  useFormatter: () => ({
+    dateTime: vi.fn((d, options) => new Intl.DateTimeFormat("en-US", options).format(d)),
+    number: vi.fn((n) => n.toString()),
+  }),
 }));
 
 vi.mock("@/__generated__", () => ({

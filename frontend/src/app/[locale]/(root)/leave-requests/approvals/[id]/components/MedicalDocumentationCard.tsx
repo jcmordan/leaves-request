@@ -1,5 +1,5 @@
 import { FileText, Download, BriefcaseMedical } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useFormatter } from "next-intl";
 import { FragmentType, useFragment } from "@/__generated__";
 import { APPROVAL_REQUEST_FIELDS_FRAGMENT } from "../graphql/ApprovalQueries";
 
@@ -7,28 +7,29 @@ interface MedicalDocumentationCardProps {
   requestRef: FragmentType<typeof APPROVAL_REQUEST_FIELDS_FRAGMENT>;
 }
 
-const formatFileSize = (bytes?: number | null) => {
-  if (!bytes) return "";
-  const mb = bytes / (1024 * 1024);
-  return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
-};
-
-/**
- * MedicalDocumentationCard component - Displays medical evidence and diagnosis.
- * Returns null if no medical data is available.
- */
 export function MedicalDocumentationCard({
   requestRef,
 }: MedicalDocumentationCardProps) {
-  const t = useTranslations("requests");
   const request = useFragment(APPROVAL_REQUEST_FIELDS_FRAGMENT, requestRef);
 
   if (!request) return null;
+
+  const t = useTranslations("requests");
+  const format = useFormatter();
 
   const { diagnosis, treatingDoctor, attachments } = request;
   const hasMedicalData = diagnosis || treatingDoctor || (attachments && attachments.length > 0);
 
   if (!hasMedicalData) return null;
+
+  const formatFileSize = (bytes?: number | null) => {
+    if (!bytes) return "";
+    const mb = bytes / (1024 * 1024);
+    if (mb >= 1) {
+      return `${format.number(mb, { maximumFractionDigits: 1 })} MB`;
+    }
+    return `${format.number(Math.round(bytes / 1024))} KB`;
+  };
 
   return (
     <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm">

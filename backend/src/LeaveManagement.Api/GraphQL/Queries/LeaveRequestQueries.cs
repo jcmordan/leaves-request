@@ -110,14 +110,16 @@ public class LeaveRequestQueries
         return result.ToConnection();
     }
 
-    public async Task<AbsenceAnalysisDto> GetAbsenceAnalysis(
-        Guid requestId,
+    [GraphQLName("leaveRequestSummary")]
+    public async Task<LeaveRequestSummary> GetApprovalsDashboardSummary(
+        DateTime? today,
         [Service] ILeaveRequestService leaveRequestService,
         [Service] ICurrentUserService currentUserService,
-        CancellationToken ct
+        int forecastDays = 14,
+        CancellationToken ct = default
     )
     {
         var managerId = await currentUserService.GetCurrentEmployeeIdAsync();
-        return await leaveRequestService.GetAbsenceAnalysisAsync(requestId, managerId, ct);
+        return await leaveRequestService.GetApprovalsDashboardSummaryAsync(managerId, today, forecastDays, ct);
     }
 }

@@ -44,14 +44,14 @@ public class GraphQLSchemaTests
                 .AddTypeExtension<LeaveRequestMutations>()
                 .AddType<EmployeeType>()
                 .AddType<AbsenceRequestType>()
-                .AddType<AbsenceAnalysisType>()
+                .AddType<LeaveRequestSummaryType>()
                 .AddType<OverlappingAbsenceType>()
                 .AddType<LeaveBalanceType>()
                 .BuildSchemaAsync();
 
             schema.Should().NotBeNull();
             var schemaString = schema.ToString();
-            schemaString.Should().Contain("type AbsenceAnalysis");
+            schemaString.Should().Contain("type LeaveRequestSummary");
             schemaString.Should().Contain("type OverlappingAbsence");
             schemaString.Should().Contain("type AbsenceRequest");
         }

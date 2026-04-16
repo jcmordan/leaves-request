@@ -13,4 +13,6 @@ public class ApprovalHistory
     public string Comment { get; set; } = string.Empty;
     public DateTime ActionDate { get; set; }
     public RequestStatus StatusAfterAction { get; set; }
+
+    public AbsenceRequest? AbsenceRequest { get; set; }
 }

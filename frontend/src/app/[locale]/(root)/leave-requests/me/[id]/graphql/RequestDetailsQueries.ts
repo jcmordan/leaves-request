@@ -60,7 +60,6 @@ export const GET_REQUEST_DETAIL_QUERY = graphql(`
       id
       status
       ...RequestDetails_Fields
-      ...Shared_RequestItemFields
     }
   }
 `);

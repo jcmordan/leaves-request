@@ -6,9 +6,9 @@ import { AbsenceCategorySection } from "./sections/AbsenceCategorySection";
 import { ScheduleSection } from "./sections/ScheduleSection";
 import { MedicalContextSection } from "./sections/MedicalContextSection";
 import { AdditionalNotesSection } from "./sections/AdditionalNotesSection";
-import { FragmentType, useFragment } from "@/__generated__";
+import { FragmentType } from "@/__generated__";
 import { ABSENCE_TYPES_QUERY_FRAGMENT } from "../graphql/MyRequestsQueries";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useWatch } from "react-hook-form";
 import EmployeeSelector from "./sections/EmployeeSelector";
 import { FormSwitch } from "@/components/forms";
 import { useTranslations } from "next-intl";
@@ -102,8 +102,6 @@ export const SubmitAbsentRequestForm = ({
 
   const t = useTranslations("requests");
   const forSomeoneElse = useWatch({ name: "requestForSomeoneElse" });
-  const values = useWatch();
-
 
   return (
     <div className="space-y-8 pb-8 pt-8">
@@ -129,7 +127,6 @@ export const SubmitAbsentRequestForm = ({
       {isSickLeave && <MedicalContextSection />}
 
       <AdditionalNotesSection />
-      <pre>{JSON.stringify(values, null, 2)}</pre>
     </div>
   );
 };

@@ -9,7 +9,7 @@ public record CreateEmployeeInput(
     string EmployeeCode,
     string NationalId,
     Guid DepartmentId,
-    DateTime HireDate
+    DateOnly HireDate
 );
 
 /// <summary>Input for updating an existing employee.</summary>
@@ -20,7 +20,7 @@ public record UpdateEmployeeInput(
     string EmployeeCode,
     string NationalId,
     Guid DepartmentId,
-    DateTime HireDate,
+    DateOnly HireDate,
     bool IsActive,
     string An8,
     Guid? JobTitleId,

@@ -39,7 +39,7 @@ public class BalanceServiceTests : IDisposable
                 EmployeeCode = "EMP001",
                 NationalId = "12345",
                 DepartmentId = _departmentId,
-                HireDate = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                HireDate = new DateOnly(2020, 1, 1),
                 IsActive = true,
             }
         );
@@ -104,8 +104,8 @@ public class BalanceServiceTests : IDisposable
                 Id = Guid.NewGuid(),
                 EmployeeId = _employeeId,
                 AbsenceTypeId = _absenceTypeId,
-                StartDate = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
-                EndDate = new DateTime(2026, 3, 5, 0, 0, 0, DateTimeKind.Utc),
+                StartDate = new DateOnly(2026, 3, 1),
+                EndDate = new DateOnly(2026, 3, 5),
                 Status = RequestStatus.Approved,
                 TotalDaysRequested = 5,
                 Reason = "Vacation",
@@ -143,8 +143,8 @@ public class BalanceServiceTests : IDisposable
                 Id = Guid.NewGuid(),
                 EmployeeId = _employeeId,
                 AbsenceTypeId = _absenceTypeId,
-                StartDate = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
-                EndDate = new DateTime(2026, 3, 5, 0, 0, 0, DateTimeKind.Utc),
+                StartDate = new DateOnly(2026, 3, 1),
+                EndDate = new DateOnly(2026, 3, 5),
                 Status = RequestStatus.Pending,
                 TotalDaysRequested = 5,
                 Reason = "Vacation",
@@ -220,7 +220,7 @@ public class BalanceServiceTests : IDisposable
             _employeeId,
             2026,
             _absenceTypeId,
-            new DateTime(2026, 4, 9, 0, 0, 0, DateTimeKind.Utc)
+            new DateOnly(2026, 4, 9)
         );
 
         result.Should().Be(20); // 6 years tenure >= 5 min tenure
@@ -289,8 +289,8 @@ public class BalanceServiceTests : IDisposable
                 Id = Guid.NewGuid(),
                 EmployeeId = _employeeId,
                 AbsenceTypeId = _absenceTypeId,
-                StartDate = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc),
-                EndDate = new DateTime(2026, 2, 5, 0, 0, 0, DateTimeKind.Utc),
+                StartDate = new DateOnly(2026, 2, 1),
+                EndDate = new DateOnly(2026, 2, 5),
                 Status = RequestStatus.Approved,
                 TotalDaysRequested = 5,
                 Reason = "Trip",

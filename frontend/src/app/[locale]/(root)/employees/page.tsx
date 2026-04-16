@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import LoadingCard from "@/components/card/LoadingCard";
-import { PreloadQuery } from "@/lib/apollo-client";
+import { PreloadQuery } from "@/lib/apollo/apollo-client-rsc";
 import { EmployeeDirectory } from "@/app/[locale]/(root)/employees/components/EmployeeDirectory";
 import { EMPLOYEE_DIRECTORY_QUERY } from "./graphql/EmployeeQueries";
 

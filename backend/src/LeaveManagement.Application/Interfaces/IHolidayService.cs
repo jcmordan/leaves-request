@@ -5,9 +5,9 @@ namespace LeaveManagement.Application.Interfaces;
 
 public interface IHolidayService
 {
-    Task<int> CalculateWorkingDaysAsync(DateTime startDate, DateTime endDate);
-    Task<bool> IsHolidayAsync(DateTime date);
-    Task<bool> IsWeekendAsync(DateTime date);
+    Task<int> CalculateWorkingDaysAsync(DateOnly startDate, DateOnly endDate);
+    Task<bool> IsHolidayAsync(DateOnly date);
+    Task<bool> IsWeekendAsync(DateOnly date);
     Task<int> SyncPublicHolidaysAsync(int year, string countryCode);
     Task<List<LeaveManagement.Domain.Entities.PublicHoliday>> GetPublicHolidaysAsync(int year);
 }

@@ -55,7 +55,7 @@ public class EmployeeServiceTests : IDisposable
                 "DUP001",
                 "NID002",
                 _departmentId,
-                DateTime.UtcNow
+                DateOnly.FromDateTime(DateTime.UtcNow)
             );
 
         await act.Should()
@@ -99,7 +99,7 @@ public class EmployeeServiceTests : IDisposable
             null,
             _departmentId,
             null,
-            DateTime.UtcNow,
+            DateOnly.FromDateTime(DateTime.UtcNow),
             null,
             Guid.NewGuid(),
             true
@@ -142,7 +142,7 @@ public class EmployeeServiceTests : IDisposable
             null,
             _departmentId,
             null,
-            DateTime.UtcNow,
+            DateOnly.FromDateTime(DateTime.UtcNow),
             null,
             companyId,
             true
@@ -217,8 +217,8 @@ public class EmployeeServiceTests : IDisposable
                 Id = Guid.NewGuid(),
                 EmployeeId = employee1.Id,
                 AbsenceTypeId = absenceTypeId,
-                StartDate = DateTime.UtcNow.AddDays(-1),
-                EndDate = DateTime.UtcNow.AddDays(1),
+                StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-1)),
+                EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
                 Status = RequestStatus.Approved,
                 RequesterEmployeeId = employee1.Id,
             }

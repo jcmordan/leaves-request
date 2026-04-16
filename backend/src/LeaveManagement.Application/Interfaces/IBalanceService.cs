@@ -6,5 +6,5 @@ public interface IBalanceService
 {
     Task<LeaveBalanceDto> GetEmployeeBalanceAsync(Guid employeeId, int year, Guid absenceTypeId);
     Task<LeaveBalanceDto> GetEmployeeBalanceSummaryAsync(Guid employeeId, int year);
-    Task<int> AccruedDaysForYearAsync(Guid employeeId, int year, Guid absenceTypeId, DateTime? referenceDate = null);
+    Task<int> AccruedDaysForYearAsync(Guid employeeId, int year, Guid absenceTypeId, DateOnly? referenceDate = null);
 }

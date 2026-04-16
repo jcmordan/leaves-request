@@ -24,7 +24,7 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
         string employeeCode,
         string nationalId,
         Guid departmentId,
-        DateTime hireDate,
+        DateOnly hireDate,
         CancellationToken cancellationToken = default
     )
     {
@@ -48,7 +48,7 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
             EmployeeCode = employeeCode,
             NationalId = nationalId,
             DepartmentId = departmentId,
-            HireDate = DateTime.SpecifyKind(hireDate, DateTimeKind.Utc),
+            HireDate = hireDate,
             IsActive = true,
         };
 
@@ -93,7 +93,7 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
         employee.JobTitleId = data.JobTitleId;
         employee.DepartmentId = data.DepartmentId;
         employee.DepartmentSectionId = data.DepartmentSectionId;
-        employee.HireDate = DateTime.SpecifyKind(data.HireDate, DateTimeKind.Utc);
+        employee.HireDate = data.HireDate;
         employee.ManagerId = data.ManagerId;
         employee.CompanyId = data.CompanyId;
         employee.IsActive = data.IsActive;
@@ -235,9 +235,10 @@ public sealed class EmployeeService(LeaveManagementDbContext context) : IEmploye
         var activeEmployees = await _context.Employees.CountAsync(e => e.IsActive);
         var inactiveEmployees = totalEmployees - activeEmployees;
 
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var onLeaveEmployees = await _context
             .AbsenceRequests.Where(lr =>
-                lr.StartDate <= DateTime.UtcNow && lr.EndDate >= DateTime.UtcNow
+                lr.StartDate <= today && lr.EndDate >= today
             )
             .Where(lr => lr.Status == RequestStatus.Approved)
             .CountAsync();

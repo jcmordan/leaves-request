@@ -33,7 +33,7 @@ public class EmployeeMutationsTests
             "EMP001",
             "NID001",
             Guid.NewGuid(),
-            DateTime.UtcNow
+            DateOnly.FromDateTime(DateTime.UtcNow)
         );
         var expectedEmployee = new Employee { Id = Guid.NewGuid(), FullName = input.FullName };
         _employeeService.CreateAsync(
@@ -73,7 +73,7 @@ public class EmployeeMutationsTests
             EmployeeCode: "EMP002",
             NationalId: "NID002",
             DepartmentId: Guid.NewGuid(),
-            HireDate: DateTime.UtcNow,
+            HireDate: DateOnly.FromDateTime(DateTime.UtcNow),
             IsActive: true,
             An8: "AN8-789",
             JobTitleId: Guid.NewGuid(),

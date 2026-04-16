@@ -88,7 +88,7 @@ public class LeaveBalanceDataLoader(
                 {
                     // Calculate tenure
                     var tenure = currentYear - employee.HireDate.Year;
-                    if (DateTime.UtcNow < employee.HireDate.AddYears(tenure))
+                    if (DateOnly.FromDateTime(DateTime.UtcNow) < employee.HireDate.AddYears(tenure))
                     {
                         tenure--;
                     }

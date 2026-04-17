@@ -33,6 +33,7 @@ export const ScheduleSection = ({
     <FormSection title={t("schedule")}>
       <div className="space-y-4">
         <input type="hidden" {...register("endDate")} />
+        <input type="hidden" {...register("totalUnits")} />
         <div className="grid grid-cols-2 gap-4">
           <FormDateInput name="startDate" label={t("startDate")} required />
           <FormNumberInput

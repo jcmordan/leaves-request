@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { useSheets } from "./SheetNavigation";
 
 interface SheetPortalTargetProps {
   className?: string;
@@ -14,5 +15,21 @@ export const SheetPortalTarget = ({
   className,
   children,
 }: SheetPortalTargetProps) => {
-  return <div className={className}>{children}</div>;
+  const { setPortalTarget } = useSheets();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      setPortalTarget(ref.current);
+    }
+    return () => {
+      setPortalTarget(null);
+    };
+  }, [setPortalTarget]);
+
+  return (
+    <div ref={ref} className={className}>
+      {children}
+    </div>
+  );
 };

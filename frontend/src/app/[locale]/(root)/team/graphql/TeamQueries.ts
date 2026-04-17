@@ -1,4 +1,5 @@
 import { graphql } from "@/__generated__";
+import { DASHBOARD_SUMMARY_FIELDS } from "../../leave-requests/shared/graphql/RequestFragments";
 
 export const GET_TEAM_CALENDAR_QUERY = graphql(`
   query Team_GetCalendarData($today: Date, $forecastDays: Int) {
@@ -20,11 +21,7 @@ export const GET_TEAM_CALENDAR_QUERY = graphql(`
       }
     }
     leaveRequestSummary(today: $today, forecastDays: $forecastDays) {
-      pendingCount
-      membersOnLeave
-      approvedVsLastYearPercentage
-      availablePercentage
-      insightMessage
+      ...Dashboard_SummaryFields
     }
   }
 `);

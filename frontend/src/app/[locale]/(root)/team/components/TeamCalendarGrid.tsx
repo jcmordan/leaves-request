@@ -206,19 +206,19 @@ export function TeamCalendarGrid({ events }: TeamCalendarGridProps) {
         allDayAccessor="allDay"
         className="flex-1"
         messages={{
-          allDay: "Todo el día",
+          allDay: t("allDay"),
           previous: t("previous"),
           next: t("next"),
           today: t("today"),
           month: t("month"),
           week: t("week"),
-          day: "Día",
+          day: t("day"),
           agenda: t("timeline"),
-          date: "Fecha",
-          time: "Hora",
-          event: "Evento",
-          noEventsInRange: "No hay eventos en este rango",
-          showMore: (total) => `+${total} más`,
+          date: t("date"),
+          time: t("time"),
+          event: t("event"),
+          noEventsInRange: t("noEventsInRange"),
+          showMore: (total) => t("showMore", { count: total }),
         }}
       />
     </div>

@@ -40,11 +40,15 @@ const sheetContext = createContext<{
   ) => void;
   setOptions: (options: SheetOptions) => void;
   sheetOptions: SheetOptions;
+  portalTarget: HTMLElement | null;
+  setPortalTarget: (node: HTMLElement | null) => void;
 }>({
   closeSheet: () => ({}),
   openSheet: () => ({}),
   setOptions: () => ({}),
   sheetOptions: {},
+  portalTarget: null,
+  setPortalTarget: () => ({}),
 });
 
 export const useSheets = () => {
@@ -105,6 +109,7 @@ export const SheetProvider = ({ children }: Props) => {
   const { SheetComponent, sheetParams, sheetOptions } = useSheetParams();
 
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
   const handleContainerReady = useCallback((node: HTMLDivElement | null) => {
     setContainer(node);
@@ -243,6 +248,8 @@ export const SheetProvider = ({ children }: Props) => {
         openSheet,
         setOptions,
         sheetOptions,
+        portalTarget,
+        setPortalTarget,
       }}
     >
       {children}
@@ -260,6 +267,7 @@ export const SheetProvider = ({ children }: Props) => {
           className={cn("p-0", customClassName)}
           onPointerDownOutside={handleClickOutside}
           onContainerReady={handleContainerReady}
+          container={portalTarget}
         >
           <SheetPortalProvider container={container}>
             {SheetComponent && <SheetComponent {...sheetParams} />}

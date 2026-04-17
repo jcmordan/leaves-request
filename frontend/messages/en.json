@@ -358,5 +358,23 @@
     "requestIdMissing": "Request ID missing",
     "loading": "Loading...",
     "daysCount": "{count, plural, one {1 day} other {# days}}"
+  },
+  "team": {
+    "title": "Team Calendar",
+    "subtitle": "Operational oversight and capacity management for {period}.",
+    "actionRequired": "Action Required",
+    "activityTracking": "Activity Tracking",
+    "leaveTrends": "Leave Trends",
+    "teamCapacity": "Team Capacity",
+    "activeLeavesThisWeek": "Active Leaves this week",
+    "vsPreviousMonth": "Vs Previous Month",
+    "availablePersonnel": "Available Personnel",
+    "today": "Today",
+    "month": "Month",
+    "week": "Week",
+    "timeline": "Timeline",
+    "filters": "Filters",
+    "newRequest": "New Request",
+    "proTip": "Pro-Tip"
   }
 }

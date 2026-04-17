@@ -362,5 +362,23 @@
     "requestIdMissing": "Falta el ID de la solicitud",
     "loading": "Cargando...",
     "daysCount": "{count, plural, one {1 día} other {# días}}"
+  },
+  "team": {
+    "title": "Calendario del Equipo",
+    "subtitle": "Supervisión operativa y gestión de capacidad para {period}.",
+    "actionRequired": "Acción Requerida",
+    "activityTracking": "Seguimiento de Actividad",
+    "leaveTrends": "Tendencias de Permisos",
+    "teamCapacity": "Capacidad del Equipo",
+    "activeLeavesThisWeek": "Permisos activos esta semana",
+    "vsPreviousMonth": "Vs Mes Anterior",
+    "availablePersonnel": "Personal Disponible",
+    "today": "Hoy",
+    "month": "Mes",
+    "week": "Semana",
+    "timeline": "Cronograma",
+    "filters": "Filtros",
+    "newRequest": "Nueva Solicitud",
+    "proTip": "Pro-Tip"
   }
 }

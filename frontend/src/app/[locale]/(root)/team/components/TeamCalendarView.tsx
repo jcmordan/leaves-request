@@ -1,28 +1,46 @@
 "use client";
 
 import { GET_TEAM_CALENDAR_QUERY } from "../graphql/TeamQueries";
-import { TeamStatsGrid } from "./TeamStatsGrid";
-import { TeamCalendarHeader } from "./TeamCalendarHeader";
-import { TeamCalendarGrid } from "./TeamCalendarGrid";
-import { TeamCapacityInsight } from "./TeamCapacityInsight";
 import { parseISO, startOfDay } from "date-fns";
 import { useSuspenseQuery } from "@apollo/client/react";
+import { useState } from "react";
+import { TeamCalendarHeader } from "./TeamCalendarHeader";
+import { TeamCalendarGrid } from "./TeamCalendarGrid";
+import { DashboardCapacityCard } from "../../leave-requests/shared/components/dashboard/DashboardCapacityCard";
+import { DashboardMetricCards } from "../../leave-requests/shared/components/dashboard/DashboardMetricCards";
+import { DashboardInsightCard } from "../../leave-requests/shared/components/dashboard/DashboardInsightCard";
 
+/**
+ * TeamCalendarView Client Component
+ * Provides a comprehensive team leave calendar with integrated capacity analytics.
+ */
 export function TeamCalendarView() {
+  // Anchoring "Today" to the local date at component mount to ensure consistency with ApprovalsView.
+  const [today] = useState(() => {
+    const now = new Date();
+    const YYYY = now.getFullYear();
+    const MM = String(now.getMonth() + 1).padStart(2, "0");
+    const DD = String(now.getDate()).padStart(2, "0");
+    return `${YYYY}-${MM}-${DD}T00:00:00Z`;
+  });
+
   const { data } = useSuspenseQuery(GET_TEAM_CALENDAR_QUERY, {
     variables: {
-      today: new Date().toISOString().split("T")[0],
+      today,
       forecastDays: 14,
     },
   });
 
   const absences = data?.teamAbsences?.nodes || [];
-  const stats = data?.leaveRequestSummary;
+  const summary = data?.leaveRequestSummary;
 
   const events = absences.map((node) => {
     const start = startOfDay(parseISO(node.startDate));
     const end = startOfDay(parseISO(node.endDate));
-    const duration = Math.max(1, Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+    const duration = Math.max(
+      1,
+      Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1,
+    );
 
     return {
       id: node.id,
@@ -46,16 +64,28 @@ export function TeamCalendarView() {
     <div className="max-w-[1440px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <TeamCalendarHeader onNewRequest={handleNewRequest} />
 
-      <TeamStatsGrid
-        pendingCount={stats?.pendingCount || 0}
-        activeLeaves={stats?.membersOnLeave || 0}
-        trendPercentage={stats?.approvedVsLastYearPercentage || 0}
-        availablePercentage={stats?.availablePercentage || 100}
-      />
+      {/* Synchronized Analytics Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 items-stretch">
+        <div className="lg:col-span-3 flex">
+          {summary && <DashboardCapacityCard summaryRef={summary} compact={true} />}
+        </div>
+        <div className="lg:col-span-9 flex">
+          {summary && (
+            <DashboardMetricCards
+              summaryRef={summary}
+              showRejected={false}
+              variant="horizontal"
+              compact={true}
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="mb-8">
+        {summary && <DashboardInsightCard summaryRef={summary} />}
+      </div>
 
       <TeamCalendarGrid events={events} />
-
-      <TeamCapacityInsight message={stats?.insightMessage} />
     </div>
   );
 }

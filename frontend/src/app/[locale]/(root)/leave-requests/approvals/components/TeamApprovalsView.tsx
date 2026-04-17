@@ -7,9 +7,9 @@ import { RequestStatus } from "@/__generated__/graphql";
 import { RequestsTable } from "../../shared/components/RequestsTable";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { DashboardMetricCards } from "./DashboardMetricCards";
-import { DashboardCapacityCard } from "./DashboardCapacityCard";
-import { DashboardInsightCard } from "./DashboardInsightCard";
+import { DashboardMetricCards } from "../../shared/components/dashboard/DashboardMetricCards";
+import { DashboardCapacityCard } from "../../shared/components/dashboard/DashboardCapacityCard";
+import { DashboardInsightCard } from "../../shared/components/dashboard/DashboardInsightCard";
 
 
 /**

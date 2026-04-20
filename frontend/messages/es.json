@@ -46,7 +46,7 @@
   "navigation": {
     "dashboard": "Panel de Control",
     "requests": "Solicitudes",
-    "teams": "Equipos",
+    "team": "Mi Equipo",
     "approvals": "Aprobaciones",
     "allRequests": "Todas las Solicitudes",
     "employees": "Empleados",
@@ -362,5 +362,32 @@
     "requestIdMissing": "Falta el ID de la solicitud",
     "loading": "Cargando...",
     "daysCount": "{count, plural, one {1 día} other {# días}}"
+  },
+  "team": {
+    "title": "Calendario del Equipo",
+    "subtitle": "Supervisión operativa y gestión de capacidad para {period}.",
+    "actionRequired": "Acción Requerida",
+    "activityTracking": "Seguimiento de Actividad",
+    "leaveTrends": "Tendencias de Permisos",
+    "teamCapacity": "Capacidad del Equipo",
+    "activeLeavesThisWeek": "Permisos activos esta semana",
+    "vsPreviousMonth": "Vs Mes Anterior",
+    "availablePersonnel": "Personal Disponible",
+    "today": "Hoy",
+    "month": "Mes",
+    "week": "Semana",
+    "timeline": "Cronograma",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "allDay": "Todo el día",
+    "day": "Día",
+    "date": "Fecha",
+    "time": "Hora",
+    "event": "Evento",
+    "noEventsInRange": "No hay eventos en este rango",
+    "showMore": "+{count} más",
+    "filters": "Filtros",
+    "newRequest": "Nueva Solicitud",
+    "proTip": "Pro-Tip"
   }
 }

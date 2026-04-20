@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "mrd9999.antigravity-sync",
+        "apollographql.vscode-apollo",
+        "muhammad-sammy.csharp",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "ms-azuretools.vscode-containers",
+        "ms-azuretools.vscode-docker",
+        "nromanov.dotrush",
+        "dbaeumer.vscode-eslint",
+        "graphql.vscode-graphql-syntax",
+        "pkief.material-icon-theme",
+        "esbenp.prettier-vscode"
+    ]
+}

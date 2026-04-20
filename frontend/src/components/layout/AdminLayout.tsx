@@ -47,7 +47,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         href: "/leave-requests/approvals",
         icon: Calendar,
       });
-      baseNav.push({ name: t("teams"), href: "/team", icon: Users });
+      baseNav.push({ name: t("team"), href: "/team", icon: Users });
     }
 
     if (
@@ -69,9 +69,9 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   const navigation = getNavigation();
 
   return (
-    <div className="min-h-screen flex w-full bg-surface-container-low text-foreground font-sans">
+    <div className="h-screen flex w-full bg-surface-container-low text-foreground font-sans overflow-hidden">
       {/* Sidebar Navigation */}
-      <aside className="w-72 bg-sidebar-primary text-white flex flex-col shadow-ambient z-40 transition-all duration-300 sticky top-0 h-screen overflow-y-auto">
+      <aside className="w-72 flex-shrink-0 bg-sidebar-primary text-white flex flex-col shadow-ambient z-40 transition-all duration-300 h-screen overflow-y-auto">
         <div className="p-8 mb-4">
           <Logo />
         </div>
@@ -125,9 +125,9 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Main Workspace */}
-      <div className="flex-1 flex flex-col relative">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* TopAppBar */}
-        <header className="h-20 bg-surface-container-lowest flex items-center justify-between px-10 z-30 border-b border-outline-variant/15 sticky top-0">
+        <header className="flex-shrink-0 h-20 bg-surface-container-lowest flex items-center justify-between px-10 z-30 border-b border-outline-variant/15">
           <div className="flex items-center gap-4">
             <span className="text-xl font-black text-primary font-heading tracking-tight">
               {tLayout("workspace")}
@@ -184,8 +184,8 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </header>
 
         {/* Workspace Content Area */}
-        <SheetPortalTarget className="flex-1 relative flex flex-col">
-          <main className="flex-1 p-12 bg-surface-container-low/30">
+        <SheetPortalTarget className="flex-1 relative flex flex-col min-h-0 overflow-hidden">
+          <main className="flex-1 p-12 bg-surface-container-low/30 overflow-y-auto">
             <div className="max-w-7xl mx-auto">
               {/* Contextual Breadcrumb Path */}
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 mb-8">

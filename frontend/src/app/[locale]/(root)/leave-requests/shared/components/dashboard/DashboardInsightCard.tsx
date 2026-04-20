@@ -3,9 +3,12 @@
 import { Lightbulb } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FragmentType, useFragment } from "@/__generated__";
-import { DASHBOARD_SUMMARY_FIELDS } from "../graphql/ApprovalListQueries";
+import { DASHBOARD_SUMMARY_FIELDS } from "../../graphql/RequestFragments";
 import { DashboardInfoTooltip } from "./DashboardInfoTooltip";
 
+/**
+ * Props for DashboardInsightCard Component.
+ */
 interface DashboardInsightCardProps {
   summaryRef: FragmentType<typeof DASHBOARD_SUMMARY_FIELDS>;
 }

@@ -28,18 +28,31 @@ public class AuthService(
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-        if (user == null || string.IsNullOrEmpty(user.PasswordHash))
+        if (user == null)
         {
-            return Result<AuthResponse>.Failure(
-                new Error("Auth.InvalidCredentials", "The provided credentials are incorrect.")
-            );
-        }
+            var result = await CreateUserFromEmployee(email, password);
+            if (result.IsFailure)
+            {
+                return Result<AuthResponse>.Failure(result.Error);
+            }
 
-        if (!_passwordHasher.VerifyPassword(password, user.PasswordHash))
+            user = result.Value;
+        }
+        else
         {
-            return Result<AuthResponse>.Failure(
-                new Error("Auth.InvalidCredentials", "The provided credentials are incorrect.")
-            );
+            if (string.IsNullOrEmpty(user.PasswordHash))
+            {
+                return Result<AuthResponse>.Failure(
+                    new Error("Auth.InvalidCredentials", "The provided credentials are incorrect.")
+                );
+            }
+
+            if (!_passwordHasher.VerifyPassword(password, user.PasswordHash))
+            {
+                return Result<AuthResponse>.Failure(
+                    new Error("Auth.InvalidCredentials", "The provided credentials are incorrect.")
+                );
+            }
         }
 
         var token = GenerateJwtToken(user);
@@ -48,6 +61,40 @@ public class AuthService(
         return Result<AuthResponse>.Success(
             new AuthResponse(token, user.Email, user.FullName, roles)
         );
+    }
+
+    private async Task<Result<User>> CreateUserFromEmployee(string email, string password)
+    {
+        // Fallback: Search for the employee matching the same email, case insensitive
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(e => e.Email != null && EF.Functions.ILike(e.Email, email));
+
+        if (employee == null || employee.EmployeeCode != password)
+        {
+            return Result<User>.Failure(
+                new Error("Auth.InvalidCredentials", "The provided credentials are incorrect.")
+            );
+        }
+
+        // Create the user using the EmployeeCode as password
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = employee.Email!,
+            FullName = employee.FullName,
+            PasswordHash = _passwordHasher.HashPassword(employee.EmployeeCode),
+            Roles = [UserRole.Employee],
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Users.Add(user);
+        employee.UserId = user.Id;
+        employee.User = user;
+
+        await _context.SaveChangesAsync();
+
+        return Result<User>.Success(user);
     }
 
     private string GenerateJwtToken(User user)

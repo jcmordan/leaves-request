@@ -47,7 +47,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         href: "/leave-requests/approvals",
         icon: Calendar,
       });
-      baseNav.push({ name: t("teams"), href: "/team", icon: Users });
+      baseNav.push({ name: t("team"), href: "/team", icon: Users });
     }
 
     if (

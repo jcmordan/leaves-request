@@ -1,0 +1,69 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  LeaveManagement.Domain -> /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Domain/bin/Debug/net10.0/LeaveManagement.Domain.dll
+  LeaveManagement.Infrastructure -> /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure/bin/Debug/net10.0/LeaveManagement.Infrastructure.dll
+  LeaveManagement.Infrastructure.Tests -> /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure.Tests/bin/Debug/net10.0/LeaveManagement.Infrastructure.Tests.dll
+Test run for /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure.Tests/bin/Debug/net10.0/LeaveManagement.Infrastructure.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (arm64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.44]     LeaveManagement.Infrastructure.Tests.Services.AuthServiceTests.LoginAsync_ShouldReturnFailure_WhenEmployeeExistsButPasswordDoesNotMatchEmployeeCode [FAIL]
+[xUnit.net 00:00:00.49]     LeaveManagement.Infrastructure.Tests.Services.AuthServiceTests.LoginAsync_ShouldHandleCaseInsensitiveEmail_WhenFallingBackToEmployee [FAIL]
+[xUnit.net 00:00:00.51]     LeaveManagement.Infrastructure.Tests.Services.AuthServiceTests.LoginAsync_ShouldCreateUserAndLogin_WhenUserNotFoundButEmployeeExists [FAIL]
+  Failed LeaveManagement.Infrastructure.Tests.Services.AuthServiceTests.LoginAsync_ShouldReturnFailure_WhenEmployeeExistsButPasswordDoesNotMatchEmployeeCode [367 ms]
+  Error Message:
+   System.InvalidOperationException : The 'ILike' method is not supported because the query has switched to client-evaluation. This usually happens when the arguments to the method cannot be translated to server. Rewrite the query to avoid client evaluation of arguments so that method can be translated to server.
+  Stack Trace:
+     at Microsoft.EntityFrameworkCore.NpgsqlDbFunctionsExtensions.ILike(DbFunctions _, String matchExpression, String pattern)
+   at lambda_method246(Closure, ValueBuffer)
+   at System.Linq.Enumerable.ArrayWhereSelectIterator`2.TryGetFirst(ReadOnlySpan`1 source, Func`2 predicate, Func`2 selector, Boolean& found)
+   at System.Linq.Enumerable.ListWhereSelectIterator`2.TryGetFirst(Boolean& found)
+   at lambda_method245(Closure)
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryQueryExpression.ResultEnumerable.GetEnumerator()
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryShapedQueryCompilingExpressionVisitor.QueryingEnumerable`1.Enumerator.MoveNextHelper()
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryShapedQueryCompilingExpressionVisitor.QueryingEnumerable`1.Enumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at LeaveManagement.Infrastructure.Services.AuthService.CreateUserFromEmployee(String email, String password) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure/Services/AuthService.cs:line 69
+   at LeaveManagement.Infrastructure.Services.AuthService.LoginAsync(String email, String password) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure/Services/AuthService.cs:line 33
+   at LeaveManagement.Infrastructure.Tests.Services.AuthServiceTests.LoginAsync_ShouldReturnFailure_WhenEmployeeExistsButPasswordDoesNotMatchEmployeeCode() in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure.Tests/Services/AuthServiceTests.cs:line 239
+--- End of stack trace from previous location ---
+  Failed LeaveManagement.Infrastructure.Tests.Services.AuthServiceTests.LoginAsync_ShouldHandleCaseInsensitiveEmail_WhenFallingBackToEmployee [11 ms]
+  Error Message:
+   System.InvalidOperationException : The 'ILike' method is not supported because the query has switched to client-evaluation. This usually happens when the arguments to the method cannot be translated to server. Rewrite the query to avoid client evaluation of arguments so that method can be translated to server.
+  Stack Trace:
+     at Microsoft.EntityFrameworkCore.NpgsqlDbFunctionsExtensions.ILike(DbFunctions _, String matchExpression, String pattern)
+   at lambda_method246(Closure, ValueBuffer)
+   at System.Linq.Enumerable.ArrayWhereSelectIterator`2.TryGetFirst(ReadOnlySpan`1 source, Func`2 predicate, Func`2 selector, Boolean& found)
+   at System.Linq.Enumerable.ListWhereSelectIterator`2.TryGetFirst(Boolean& found)
+   at lambda_method245(Closure)
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryQueryExpression.ResultEnumerable.GetEnumerator()
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryShapedQueryCompilingExpressionVisitor.QueryingEnumerable`1.Enumerator.MoveNextHelper()
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryShapedQueryCompilingExpressionVisitor.QueryingEnumerable`1.Enumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at LeaveManagement.Infrastructure.Services.AuthService.CreateUserFromEmployee(String email, String password) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure/Services/AuthService.cs:line 69
+   at LeaveManagement.Infrastructure.Services.AuthService.LoginAsync(String email, String password) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure/Services/AuthService.cs:line 33
+   at LeaveManagement.Infrastructure.Tests.Services.AuthServiceTests.LoginAsync_ShouldHandleCaseInsensitiveEmail_WhenFallingBackToEmployee() in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure.Tests/Services/AuthServiceTests.cs:line 215
+--- End of stack trace from previous location ---
+  Failed LeaveManagement.Infrastructure.Tests.Services.AuthServiceTests.LoginAsync_ShouldCreateUserAndLogin_WhenUserNotFoundButEmployeeExists [< 1 ms]
+  Error Message:
+   System.InvalidOperationException : The 'ILike' method is not supported because the query has switched to client-evaluation. This usually happens when the arguments to the method cannot be translated to server. Rewrite the query to avoid client evaluation of arguments so that method can be translated to server.
+  Stack Trace:
+     at Microsoft.EntityFrameworkCore.NpgsqlDbFunctionsExtensions.ILike(DbFunctions _, String matchExpression, String pattern)
+   at lambda_method246(Closure, ValueBuffer)
+   at System.Linq.Enumerable.ArrayWhereSelectIterator`2.TryGetFirst(ReadOnlySpan`1 source, Func`2 predicate, Func`2 selector, Boolean& found)
+   at System.Linq.Enumerable.ListWhereSelectIterator`2.TryGetFirst(Boolean& found)
+   at lambda_method245(Closure)
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryQueryExpression.ResultEnumerable.GetEnumerator()
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryShapedQueryCompilingExpressionVisitor.QueryingEnumerable`1.Enumerator.MoveNextHelper()
+   at Microsoft.EntityFrameworkCore.InMemory.Query.Internal.InMemoryShapedQueryCompilingExpressionVisitor.QueryingEnumerable`1.Enumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at LeaveManagement.Infrastructure.Services.AuthService.CreateUserFromEmployee(String email, String password) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure/Services/AuthService.cs:line 69
+   at LeaveManagement.Infrastructure.Services.AuthService.LoginAsync(String email, String password) in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure/Services/AuthService.cs:line 33
+   at LeaveManagement.Infrastructure.Tests.Services.AuthServiceTests.LoginAsync_ShouldCreateUserAndLogin_WhenUserNotFoundButEmployeeExists() in /Users/jcmordan/code/leave-request/backend/src/LeaveManagement.Infrastructure.Tests/Services/AuthServiceTests.cs:line 179
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     3, Passed:     5, Skipped:     0, Total:     8, Duration: 440 ms - LeaveManagement.Infrastructure.Tests.dll (net10.0)

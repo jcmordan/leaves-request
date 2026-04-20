@@ -7,6 +7,7 @@ using LeaveManagement.Domain.Interfaces;
 using LeaveManagement.Infrastructure.Data;
 using LeaveManagement.Infrastructure.Services;
 using LeaveManagement.Infrastructure.Tests.Helpers;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
 using Xunit;
@@ -153,4 +154,97 @@ public class AuthServiceTests : IDisposable
         roleClaims.Should().Contain("Admin");
         roleClaims.Should().HaveCount(2);
     }
+
+    [Fact]
+    public async Task LoginAsync_ShouldCreateUserAndLogin_WhenUserNotFoundButEmployeeExists()
+    {
+        // Arrange
+        var email = "new_employee@test.com";
+        var employeeCode = "EMP001";
+        var employee = new Employee
+        {
+            Id = Guid.NewGuid(),
+            Email = email,
+            EmployeeCode = employeeCode,
+            FullName = "New Employee",
+            CompanyId = Guid.NewGuid(),
+            DepartmentId = Guid.NewGuid()
+        };
+        _context.Employees.Add(employee);
+        await _context.SaveChangesAsync();
+
+        _passwordHasher.HashPassword(employeeCode).Returns("hashed_code");
+
+        // Act
+        var result = await _sut.LoginAsync(email, employeeCode);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value!.Email.Should().Be(email);
+        
+        // Verify user was created in DB
+        var createdUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        createdUser.Should().NotBeNull();
+        createdUser!.FullName.Should().Be(employee.FullName);
+        
+        // Verify employee is linked to user
+        var updatedEmployee = await _context.Employees.FirstAsync(e => e.Id == employee.Id);
+        updatedEmployee.UserId.Should().Be(createdUser.Id);
+    }
+
+    [Fact]
+    public async Task LoginAsync_ShouldHandleCaseInsensitiveEmail_WhenFallingBackToEmployee()
+    {
+        // Arrange
+        var email = "Employee@Test.Com";
+        var loginEmail = "employee@test.com";
+        var employeeCode = "EMP002";
+        _context.Employees.Add(new Employee
+        {
+            Email = email,
+            EmployeeCode = employeeCode,
+            FullName = "Mixed Case Employee",
+            CompanyId = Guid.NewGuid(),
+            DepartmentId = Guid.NewGuid()
+        });
+        await _context.SaveChangesAsync();
+
+        _passwordHasher.HashPassword(employeeCode).Returns("hashed_code");
+
+        // Act
+        var result = await _sut.LoginAsync(loginEmail, employeeCode);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value!.Email.Should().Be(email);
+    }
+
+    [Fact]
+    public async Task LoginAsync_ShouldReturnFailure_WhenEmployeeExistsButPasswordDoesNotMatchEmployeeCode()
+    {
+        // Arrange
+        var email = "fallback_fail@test.com";
+        var employeeCode = "REAL_CODE";
+        _context.Employees.Add(new Employee
+        {
+            Email = email,
+            EmployeeCode = employeeCode,
+            FullName = "Failed Fallback",
+            CompanyId = Guid.NewGuid(),
+            DepartmentId = Guid.NewGuid()
+        });
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _sut.LoginAsync(email, "WRONG_CODE");
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Code.Should().Be("Auth.InvalidCredentials");
+        
+        // Verify user was NOT created
+        var createdUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        createdUser.Should().BeNull();
+    }
 }
+

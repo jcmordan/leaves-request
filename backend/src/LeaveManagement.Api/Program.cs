@@ -1,43 +1,32 @@
-using System.Text;
 using DotNetEnv;
-using HotChocolate.Data;
-using LeaveManagement.Api.GraphQL;
-using LeaveManagement.Api.GraphQL.DataLoaders;
-using LeaveManagement.Api.GraphQL.Filters;
-using LeaveManagement.Api.GraphQL.Mutations;
-using LeaveManagement.Api.GraphQL.Queries;
-using LeaveManagement.Api.GraphQL.Types;
-using LeaveManagement.Application.Interfaces;
-using LeaveManagement.Application.Services;
-using LeaveManagement.Domain.Interfaces;
+using LeaveManagement.Api.Extensions;
 using LeaveManagement.Infrastructure.Data;
 using LeaveManagement.Infrastructure.Data.Seeders;
-using LeaveManagement.Infrastructure.Interfaces;
-using LeaveManagement.Infrastructure.Repositories;
-using LeaveManagement.Infrastructure.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.Identity.Web;
-using Microsoft.IdentityModel.Tokens;
 using Path = System.IO.Path;
 
-// Load environment variables from .env file, searching up in the directory tree
+// Load environment variables from .env file if it exists, searching up in the directory tree
+var envPath = "";
 var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
-while (currentDir != null && !File.Exists(Path.Combine(currentDir.FullName, ".env")))
+while (currentDir != null)
 {
+    var potentialPath = Path.Combine(currentDir.FullName, ".env");
+    if (File.Exists(potentialPath))
+    {
+        envPath = potentialPath;
+        break;
+    }
     currentDir = currentDir.Parent;
 }
 
-if (currentDir != null)
+if (!string.IsNullOrEmpty(envPath))
 {
-    Env.Load(Path.Combine(currentDir.FullName, ".env"));
+    Env.Load(envPath);
 }
-else
+else if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")))
 {
-    // Fallback if not found, but we should log this or throw if it's required
-    Console.WriteLine("Warning: .env file not found in current or parent directories.");
+    // Only warn if we don't have a connection string already (standard Docker behavior)
+    Console.WriteLine("Note: .env file not found. Relying on existing environment variables.");
 }
 
 
@@ -47,13 +36,23 @@ var builder = WebApplication.CreateBuilder(args);
 var backendUrl = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://localhost:5148";
 builder.WebHost.UseUrls(backendUrl);
 
-// Add services to the container.
-
 // DbContext
 // DB_CONNECTION_STRING from .env takes precedence as the source of truth
 var connectionString =
     Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (!string.IsNullOrEmpty(connectionString))
+{
+    // Mask the password for security in logs
+    var maskedConnectionString = System.Text.RegularExpressions.Regex.Replace(
+        connectionString,
+        @"Password=[^;]*",
+        "Password=********",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase
+    );
+    Console.WriteLine($"[DEBUG] Using Connection String: {maskedConnectionString}");
+}
 
 if (string.IsNullOrEmpty(connectionString))
 {
@@ -63,179 +62,13 @@ if (string.IsNullOrEmpty(connectionString))
     );
 }
 
-builder.Services.AddPooledDbContextFactory<LeaveManagementDbContext>(options =>
-    options.UseNpgsql(connectionString, b => b.MigrationsAssembly("LeaveManagement.Infrastructure"))
-);
-
-builder.Services.AddScoped(sp =>
-    sp.GetRequiredService<IDbContextFactory<LeaveManagementDbContext>>().CreateDbContext()
-);
-
-
-// Authentication
-builder
-    .Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = "Hybrid";
-        options.DefaultChallengeScheme = "Hybrid";
-    })
-    .AddPolicyScheme(
-        "Hybrid",
-        "Hybrid",
-        options =>
-        {
-            options.ForwardDefaultSelector = context =>
-            {
-                var authHeader = context.Request.Headers["Authorization"].ToString();
-                if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                {
-                    var token = authHeader.Substring("Bearer ".Length).Trim();
-                    try
-                    {
-                        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-                        if (handler.CanReadToken(token))
-                        {
-                            var jwtToken = handler.ReadJwtToken(token);
-                            var localIssuer = builder.Configuration.GetSection("Jwt")["Issuer"];
-
-                            if (
-                                !string.IsNullOrEmpty(localIssuer)
-                                && string.Equals(
-                                    jwtToken.Issuer,
-                                    localIssuer,
-                                    StringComparison.OrdinalIgnoreCase
-                                )
-                            )
-                            {
-                                return "LocalBearer";
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        // Ignore parsing errors, fallback to default
-                    }
-                }
-                return JwtBearerDefaults.AuthenticationScheme; // Default to AzureAd Bearer
-            };
-        }
-    )
-    .AddMicrosoftIdentityWebApi(
-        builder.Configuration,
-        "AzureAd",
-        JwtBearerDefaults.AuthenticationScheme
-    );
-
-builder
-    .Services.AddAuthentication()
-    .AddJwtBearer(
-        "LocalBearer",
-        options =>
-        {
-            var jwtSettings = builder.Configuration.GetSection("Jwt");
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings["Issuer"],
-                ValidAudience = jwtSettings["Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(jwtSettings["Key"]!)
-                ),
-            };
-        }
-    );
-
-// Custom Claims Transformation for local roles
-builder.Services.AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
-
-// Authorization Policies
-builder
-    .Services.AddAuthorizationBuilder()
-    .SetDefaultPolicy(
-        new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
-            .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, "LocalBearer")
-            .RequireAuthenticatedUser()
-            .Build()
-    )
-    .AddPolicy("RequireEmployee", policy => policy.RequireRole("Employee", "Manager", "HRManager"))
-    .AddPolicy("RequireManager", policy => policy.RequireRole("Manager", "HRManager"))
-    .AddPolicy("RequireHR", policy => policy.RequireRole("HRManager"));
-
-// Generic Repositories & Unit of Work
-builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// Application Services
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IHolidayService, HolidayService>();
-builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
-builder.Services.AddScoped<IBalanceService, BalanceService>();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-builder.Services.AddScoped<ICompanyService, CompanyService>();
-builder.Services.AddScoped<IDepartmentSectionService, DepartmentSectionService>();
-builder.Services.AddScoped<IJobTitleService, JobTitleService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
-
-// DataLoaders registration in DI
-builder.Services.AddScoped<ICompanyByIdDataLoader, CompanyByIdDataLoader>();
-builder.Services.AddScoped<IDepartmentByIdDataLoader, DepartmentByIdDataLoader>();
-builder.Services.AddScoped<IDepartmentSectionByIdDataLoader, DepartmentSectionByIdDataLoader>();
-builder.Services.AddScoped<ISubordinatesByEmployeeIdDataLoader, SubordinatesByEmployeeIdDataLoader>();
-builder.Services.AddScoped<IJobTitleByIdDataLoader, JobTitleByIdDataLoader>();
-builder.Services.AddScoped<IEmployeeByIdDataLoader, EmployeeByIdDataLoader>();
-builder.Services.AddScoped<IAbsenceTypeByIdDataLoader, AbsenceTypeByIdDataLoader>();
-builder.Services.AddScoped<IAttachmentsByAbsenceRequestIdDataLoader, AttachmentsByAbsenceRequestIdDataLoader>();
-builder.Services.AddScoped<IApprovalHistoriesByAbsenceRequestIdDataLoader, ApprovalHistoriesByAbsenceRequestIdDataLoader>();
-builder.Services.AddScoped<ILeaveBalanceDataLoader, LeaveBalanceDataLoader>();
-
-builder.Services.AddHttpClient();
-builder.Services.AddHttpLogging(logging =>
-{
-    builder.Configuration.GetSection("HttpLogging").Bind(logging);
-});
-
-// HotChocolate GraphQL
-builder
-    .Services.AddGraphQLServer()
-    .AddType<UploadType>()
-    .ModifyCostOptions(o => o.MaxFieldCost = 2000)
-    .AddAuthorization()
-    .AddQueryType<Query>()
-    .AddTypeExtension<LeaveRequestQueries>()
-    .AddTypeExtension<EmployeeQueries>()
-    .AddTypeExtension<DepartmentQueries>()
-    .AddTypeExtension<JobTitleQueries>()
-    .AddTypeExtension<CompanyQueries>()
-    .AddTypeExtension<DepartmentSectionQueries>()
-    .AddTypeExtension<HolidayQueries>()
-    .AddMutationType<Mutation>()
-    .AddTypeExtension<LeaveRequestMutations>()
-    .AddTypeExtension<EmployeeMutations>()
-    .AddTypeExtension<HolidayMutations>()
-    .AddTypeExtension<AuthMutations>()
-    .AddType<EmployeeType>()
-    .AddType<AbsenceRequestType>()
-    .AddType<LeaveRequestSummaryType>()
-    .AddDataLoader<ICompanyByIdDataLoader, CompanyByIdDataLoader>()
-    .AddDataLoader<IDepartmentByIdDataLoader, DepartmentByIdDataLoader>()
-    .AddDataLoader<IDepartmentSectionByIdDataLoader, DepartmentSectionByIdDataLoader>()
-    .AddDataLoader<ISubordinatesByEmployeeIdDataLoader, SubordinatesByEmployeeIdDataLoader>()
-    .AddDataLoader<IJobTitleByIdDataLoader, JobTitleByIdDataLoader>()
-    .AddDataLoader<IEmployeeByIdDataLoader, EmployeeByIdDataLoader>()
-    .AddDataLoader<IAbsenceTypeByIdDataLoader, AbsenceTypeByIdDataLoader>()
-    .AddDataLoader<IAttachmentsByAbsenceRequestIdDataLoader, AttachmentsByAbsenceRequestIdDataLoader>()
-    .AddDataLoader<IApprovalHistoriesByAbsenceRequestIdDataLoader, ApprovalHistoriesByAbsenceRequestIdDataLoader>()
-    .AddDataLoader<ILeaveBalanceDataLoader, LeaveBalanceDataLoader>()
-    .AddProjections()
-    .AddFiltering()
-    .AddSorting()
-    .AddErrorFilter<GraphQLErrorFilter>();
+// Register services via extension methods
+builder.Services
+    .AddDatabaseConfiguration(builder.Configuration, connectionString)
+    .AddAuthenticationAndAuthorization(builder.Configuration)
+    .AddApplicationServices()
+    .AddGraphQLConfiguration()
+    .AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -245,8 +78,6 @@ if (app.Environment.IsDevelopment())
     app.UseHttpLogging();
     app.UseDeveloperExceptionPage();
 }
-
-// app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

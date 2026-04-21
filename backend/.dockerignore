@@ -1,0 +1,12 @@
+**/.DS_Store
+**/bin
+**/obj
+**/TestResults
+backend/FullTestResults.log
+backend/test_error.txt
+backend/test_output.txt
+.git
+.idea
+.vscode
+node_modules
+pnpm-lock.yaml

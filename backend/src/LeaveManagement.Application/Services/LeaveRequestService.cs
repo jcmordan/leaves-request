@@ -680,8 +680,13 @@ public class LeaveRequestService(
 
     private async Task<string> SaveFileAsync(System.IO.Stream fileStream, string fileName)
     {
-        var basePathConfig = await _context.Configurations.FirstOrDefaultAsync(c => c.Key == "AttachmentBasePath");
-        string basePath = basePathConfig?.Value ?? "uploads";
+        string? basePath = Environment.GetEnvironmentVariable("UPLOADS_DIRECTORY");
+        
+        if (string.IsNullOrEmpty(basePath))
+        {
+            var basePathConfig = await _context.Configurations.FirstOrDefaultAsync(c => c.Key == "AttachmentBasePath");
+            basePath = basePathConfig?.Value ?? "uploads";
+        }
 
         if (!System.IO.Directory.Exists(basePath))
         {

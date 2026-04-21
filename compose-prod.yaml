@@ -1,0 +1,87 @@
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: leave-management-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-leavemanagement}
+    # Declaring the port as exposed but not mapped to the host
+    # This allows for manual port forwarding when required (e.g. via podman port)
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    env_file:
+      - .env.docker
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - internal-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: leave-management-api
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env.docker
+    environment:
+      - DB_CONNECTION_STRING=Host=db;Port=5432;Database=${POSTGRES_DB:-leavemanagement};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      - ASPNETCORE_URLS=http://0.0.0.0:5148
+      - UPLOADS_DIRECTORY=${UPLOADS_DIRECTORY_PATH:-/app/uploads}
+      # JWT settings (using __ for nested properties in .NET)
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
+      # Inherit from OS if defined
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_SALT=${ADMIN_SALT}
+    # Declaring the port as exposed but not mapped to the host
+    # This allows for manual port forwarding when required (e.g. via podman port)
+    expose:
+      - 5148
+    volumes:
+      - uploads-data:/app/uploads
+    networks:
+      - internal-net
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        - GRAPHQL_ENDPOINT=http://api:5148/graphql/
+    container_name: leave-management-web
+    depends_on:
+      - api
+    env_file:
+      - .env.docker
+    environment:
+      # Overrides for internal container networking
+      - GRAPHQL_ENDPOINT=${GRAPHQL_ENDPOINT_INTERNAL:-http://api:5148/graphql/}
+      - AUTH_TRUST_HOST=${AUTH_TRUST_HOST:-true}
+      # Inherit from OS if defined
+      - AUTH_SECRET=${AUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+      - AUTH_MICROSOFT_ENTRA_ID_ID=${AUTH_MICROSOFT_ENTRA_ID_ID}
+      - AUTH_MICROSOFT_ENTRA_ID_SECRET=${AUTH_MICROSOFT_ENTRA_ID_SECRET}
+      - AUTH_MICROSOFT_ENTRA_ID_TENANT_ID=${AUTH_MICROSOFT_ENTRA_ID_TENANT_ID}
+    ports:
+      - "3000:3000"
+    networks:
+      - internal-net
+
+networks:
+  internal-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  uploads-data:

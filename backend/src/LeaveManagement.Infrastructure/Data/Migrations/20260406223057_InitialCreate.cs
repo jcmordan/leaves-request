@@ -575,62 +575,6 @@ namespace LeaveManagement.Infrastructure.Migrations
                 }
             );
 
-            migrationBuilder.InsertData(
-                table: "Employees",
-                columns: new[]
-                {
-                    "Id",
-                    "DepartmentId",
-                    "Email",
-                    "EmployeeCode",
-                    "FirstName",
-                    "HireDate",
-                    "IsActive",
-                    "LastName",
-                    "NationalId",
-                    "Role",
-                    "UserId",
-                },
-                values: new object[]
-                {
-                    new Guid("e1111111-1111-1111-1111-111111111111"),
-                    new Guid("d2222222-2222-2222-2222-222222222222"),
-                    "juan.perez@example.do",
-                    "EMP001",
-                    "Juan",
-                    new DateTime(2023, 11, 15, 0, 0, 0, 0, DateTimeKind.Utc),
-                    true,
-                    "Pérez",
-                    "001-0000000-1",
-                    "Admin",
-                    null,
-                }
-            );
-
-            migrationBuilder.InsertData(
-                table: "VacationBalances",
-                columns: new[]
-                {
-                    "Id",
-                    "CarriedOverDays",
-                    "EmployeeId",
-                    "ExpiresAt",
-                    "TotalDays",
-                    "UsedDays",
-                    "Year",
-                },
-                values: new object[]
-                {
-                    new Guid("b1111111-1111-1111-1111-111111111111"),
-                    0,
-                    new Guid("e1111111-1111-1111-1111-111111111111"),
-                    new DateTime(2027, 3, 31, 0, 0, 0, 0, DateTimeKind.Utc),
-                    14,
-                    0,
-                    2026,
-                }
-            );
-
             migrationBuilder.CreateIndex(
                 name: "IX_AbsenceRequests_AbsenceTypeId",
                 table: "AbsenceRequests",

@@ -67,7 +67,7 @@ public class AuthService(
     {
         // Fallback: Search for the employee matching the same email, case insensitive
         var employee = await _context.Employees
-            .FirstOrDefaultAsync(e => e.Email != null && EF.Functions.ILike(e.Email, email));
+            .FirstOrDefaultAsync(e => e.Email != null && e.Email.ToLower() == email.ToLower());
 
         if (employee == null || employee.EmployeeCode != password)
         {

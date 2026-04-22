@@ -352,4 +352,72 @@ public class BalanceServiceTests : IDisposable
         // Only the active type's entitlement should be counted
         result.TotalEntitlement.Should().Be(20);
     }
+    [Fact]
+    public async Task GetEmployeeBalanceAsync_WithSellingRequests_ShouldAggregrateUsage()
+    {
+        // Arrange: Parent type (Vacation) + Selling type (Sell Vacation)
+        var sellingTypeId = Guid.NewGuid();
+        _context.AbsenceTypes.Add(
+            new AbsenceType
+            {
+                Id = sellingTypeId,
+                Name = "Sell Vacation",
+                ParentId = _absenceTypeId,
+                IsSellingType = true,
+                IsActive = true,
+                DeductsFromBalance = true,
+            }
+        );
+
+        _context.LeaveEntitlements.Add(
+            new LeaveEntitlement
+            {
+                Id = Guid.NewGuid(),
+                EmployeeId = _employeeId,
+                AbsenceTypeId = _absenceTypeId,
+                Year = 2026,
+                BaseDays = 20,
+            }
+        );
+
+        // Add some "Taken" vacation (3 days)
+        _context.AbsenceRequests.Add(
+            new AbsenceRequest
+            {
+                Id = Guid.NewGuid(),
+                EmployeeId = _employeeId,
+                AbsenceTypeId = _absenceTypeId,
+                StartDate = new DateOnly(2026, 3, 1),
+                EndDate = new DateOnly(2026, 3, 3),
+                Status = RequestStatus.Approved,
+                TotalDaysRequested = 3,
+                RequesterEmployeeId = _employeeId,
+            }
+        );
+
+        // Add some "Sold" vacation (2 days)
+        _context.AbsenceRequests.Add(
+            new AbsenceRequest
+            {
+                Id = Guid.NewGuid(),
+                EmployeeId = _employeeId,
+                AbsenceTypeId = sellingTypeId,
+                StartDate = new DateOnly(2026, 3, 4),
+                EndDate = new DateOnly(2026, 3, 4),
+                Status = RequestStatus.Approved,
+                TotalDaysRequested = 2,
+                RequesterEmployeeId = _employeeId,
+            }
+        );
+
+        await _context.SaveChangesAsync();
+
+        // Act: Get balance for Vacation (parent)
+        var result = await _sut.GetEmployeeBalanceAsync(_employeeId, 2026, _absenceTypeId);
+
+        // Assert: Total Taken should be 5 (3 taken + 2 sold)
+        result.TotalEntitlement.Should().Be(20);
+        result.Taken.Should().Be(5);
+        result.Remaining.Should().Be(15);
+    }
 }

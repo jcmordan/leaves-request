@@ -52,6 +52,7 @@ export const ABSENCE_TYPES_QUERY_FRAGMENT = graphql(`
       deductsFromBalance
       calculationType
       maxDaysPerYear
+      isSellingType
     }
   }
 `);

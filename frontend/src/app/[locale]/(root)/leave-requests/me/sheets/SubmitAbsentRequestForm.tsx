@@ -36,8 +36,7 @@ export const getSubmitRequestSchema = (
       }),
       requestedDays: z.coerce
         .number()
-        .min(1, t("minDaysError"))
-        .max(31, t("maxDaysError", { maxDays: 31 })),
+        .min(1, t("minDaysError")),
       diagnosis: z.string().optional().nullable(),
       treatingDoctor: z.string().optional().nullable(),
       file: z.any().optional().nullable(),
@@ -70,6 +69,17 @@ export const getSubmitRequestSchema = (
           code: z.ZodIssueCode.custom,
           message: t("attachmentRequired"),
           path: ["file"],
+        });
+      }
+
+      // Dynamic max days validation
+      const isSelling = rule?.isSellingType;
+      const maxDays = isSelling ? rule?.maxSellableDaysPerYear : rule?.maxDaysPerYear;
+      if (maxDays > 0 && data.requestedDays > maxDays) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("maxDaysError", { maxDays }),
+          path: ["requestedDays"],
         });
       }
     });

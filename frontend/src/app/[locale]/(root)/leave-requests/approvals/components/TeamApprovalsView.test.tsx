@@ -7,6 +7,10 @@ import { useSearchParams } from "next/navigation";
 // Mock next-intl
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
+  useFormatter: () => ({
+    number: (v: any) => v,
+    dateTime: (v: any) => v,
+  }),
 }));
 
 // Mock next/navigation

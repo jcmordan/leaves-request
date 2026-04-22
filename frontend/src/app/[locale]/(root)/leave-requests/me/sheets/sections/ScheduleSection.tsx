@@ -22,49 +22,57 @@ export const ScheduleSection = ({
 }: ScheduleSectionProps) => {
   const t = useTranslations("requests");
   const { register, setValue } = useFormContext();
+  const isSelling = selectedType?.isSellingType;
 
   useEffect(() => {
-    const defaultDayes = selectedType?.maxDaysPerYear ?? 0;
-
-    setValue("requestedDays", defaultDayes > 0 ? defaultDayes : 1);
-  }, [selectedType]);
+    if (!isSelling) {
+      const defaultDayes = selectedType?.maxDaysPerYear ?? 0;
+      setValue("requestedDays", defaultDayes > 0 ? defaultDayes : 1);
+    }
+  }, [selectedType, isSelling, setValue]);
 
   return (
-    <FormSection title={t("schedule")}>
+    <FormSection title={isSelling ? t("sellingDetails") : t("schedule")}>
       <div className="space-y-4">
         <input type="hidden" {...register("endDate")} />
         <input type="hidden" {...register("totalUnits")} />
         <div className="grid grid-cols-2 gap-4">
-          <FormDateInput name="startDate" label={t("startDate")} required />
+          <FormDateInput
+            name="startDate"
+            label={isSelling ? t("transactionDate") : t("startDate")}
+            required
+          />
           <FormNumberInput
             name="requestedDays"
-            label={t("requestedDays")}
+            label={isSelling ? t("daysToSell") : t("requestedDays")}
             step="1"
-            max={selectedType?.maxDaysPerYear}
-            disabled={!!selectedType?.maxDaysPerYear}
+            max={isSelling ? selectedType?.maxSellableDaysPerYear : selectedType?.maxDaysPerYear}
+            disabled={!isSelling && !!selectedType?.maxDaysPerYear}
             required
           />
         </div>
 
         {/* Calculation Summary Panel */}
-        <div className="bg-surface-container-high/50 border border-outline-variant/10 p-4 rounded-xl flex justify-between items-center mt-2">
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70">
-              {t("calculatedEndDate")}
-            </span>
-            <span className="text-sm font-bold text-primary">
-              {endDate ? format(endDate, "MMMM d, yyyy") : "---"}
-            </span>
+        {!isSelling && (
+          <div className="bg-surface-container-high/50 border border-outline-variant/10 p-4 rounded-xl flex justify-between items-center mt-2">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70">
+                {t("calculatedEndDate")}
+              </span>
+              <span className="text-sm font-bold text-primary">
+                {endDate ? format(endDate, "MMMM d, yyyy") : "---"}
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70 block">
+                {t("totalUnits")}
+              </span>
+              <span className="text-lg font-black text-secondary">
+                {totalUnits} {totalUnits === 1 ? t("day") : t("days")}
+              </span>
+            </div>
           </div>
-          <div className="text-right">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70 block">
-              {t("totalUnits")}
-            </span>
-            <span className="text-lg font-black text-secondary">
-              {totalUnits} {totalUnits === 1 ? t("day") : t("days")}
-            </span>
-          </div>
-        </div>
+        )}
       </div>
     </FormSection>
   );

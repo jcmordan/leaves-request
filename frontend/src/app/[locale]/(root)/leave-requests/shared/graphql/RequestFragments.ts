@@ -46,6 +46,10 @@ export const REQUEST_LIST_ITEM_FRAGMENT = graphql(`
       id
       name
     }
+    absenceSubType {
+      id
+      name
+    }
     employee {
       id
       fullName

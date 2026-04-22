@@ -5,7 +5,6 @@ import { useRouter, useParams } from "next/navigation";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 import { RequestStatus, RequestList_ItemFieldsFragment } from "@/__generated__/graphql";
 import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import { IconCancel, IconChevronsUpRight } from "@tabler/icons-react";
@@ -37,9 +36,10 @@ const SubmittedCell = ({ row }: CellContext<RequestItem, any>) => {
 };
 
 const TypeCell = ({ row }: CellContext<RequestItem, any>) => {
+  const { absenceType, absenceSubType } = row.original;
   return (
     <span className="px-3 py-1 bg-tertiary-fixed/30 text-primary rounded-full text-[10px] font-bold uppercase tracking-wider font-heading">
-      {row.original.absenceType?.name || "Other"}
+      {`${absenceType?.name || "Other"} ${absenceSubType?.name ? `(${absenceSubType.name})` : ""}`}
     </span>
   );
 };

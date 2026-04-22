@@ -85,4 +85,23 @@ describe("ScheduleSection", () => {
     const numberInput = screen.getByTestId("number-input");
     expect(numberInput.getAttribute("data-disabled")).toBe("true");
   });
+
+  it("renders selling labels and hides calculation summary when in selling mode", () => {
+    render(
+      <Wrapper>
+        <ScheduleSection
+          endDate={new Date()}
+          totalUnits={5}
+          selectedType={{ isSellingType: true } as any}
+        />
+      </Wrapper>
+    );
+
+    // Labels should change
+    expect(screen.getByText("transactionDate")).toBeInTheDocument();
+    expect(screen.getByText("daysToSell")).toBeInTheDocument();
+
+    // Summary section should be hidden (or at least the specific "calculatedEndDate" text)
+    expect(screen.queryByText("calculatedEndDate")).not.toBeInTheDocument();
+  });
 });

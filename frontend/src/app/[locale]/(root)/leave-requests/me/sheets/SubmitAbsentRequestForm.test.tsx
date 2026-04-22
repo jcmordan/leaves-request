@@ -219,6 +219,32 @@ describe("SubmitAbsentRequestForm", () => {
 
       expect(result.success).toBe(true);
     });
+
+    it("validates maxSellableDaysPerYear for selling types", () => {
+      const sellingTypeId = "7ba7b810-9dad-11d1-80b4-00c04fd430c9";
+      const types = [
+        {
+          id: sellingTypeId,
+          isSellingType: true,
+          maxSellableDaysPerYear: 5,
+        },
+      ];
+      const schema = getSubmitRequestSchema(t, types as any);
+
+      // Attempt to sell 6 days (limit is 5)
+      const result = schema.safeParse({
+        ...validData,
+        absenceTypeId: sellingTypeId,
+        requestedDays: 6,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(
+          result.error.issues.some((i) => i.message === "maxDaysError"),
+        ).toBe(true);
+      }
+    });
   });
 });
 

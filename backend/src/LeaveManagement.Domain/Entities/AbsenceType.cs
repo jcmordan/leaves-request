@@ -14,8 +14,10 @@ public class AbsenceType
     public bool RequiresDoctor { get; set; }
     public int MaxDaysPerYear { get; set; }
     public bool DeductsFromBalance { get; set; }
+    public bool IsSellingType { get; set; }
+    public int MaxSellableDaysPerYear { get; set; }
     public Guid? ParentId { get; set; }
     public AbsenceType? Parent { get; set; }
-    public ICollection<AbsenceType> Children { get; set; } = new List<AbsenceType>();
+    public ICollection<AbsenceType> Children { get; set; } = [];
     public bool IsActive { get; set; } = true;
 }

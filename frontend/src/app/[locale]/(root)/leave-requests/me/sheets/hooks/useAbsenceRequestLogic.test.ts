@@ -204,5 +204,31 @@ describe("useAbsenceRequestLogic", () => {
 
     expect(mockSetValue).toHaveBeenCalledWith("endDate", expectedEndDate);
   });
+
+  it("should identify selling type correctly", () => {
+    const mockSellingType = {
+      nodes: [
+        {
+          id: "4",
+          parentId: null,
+          name: "Venta Vacaciones",
+          isSellingType: true,
+          deductsFromBalance: true,
+          calculationType: CalculationType.WorkingDays,
+        },
+      ],
+    };
+    (useFragment as any).mockReturnValue(mockSellingType);
+    (useWatch as any).mockImplementation(({ name }: { name: string }) => {
+      if (name === "absenceTypeId") return "4";
+      return null;
+    });
+
+    const { result } = renderHook(() =>
+      useAbsenceRequestLogic(mockHolidays, {} as any),
+    );
+
+    expect(result.current.isSellingType).toBe(true);
+  });
 });
 

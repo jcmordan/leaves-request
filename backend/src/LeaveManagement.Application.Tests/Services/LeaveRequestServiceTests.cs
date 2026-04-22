@@ -1375,4 +1375,96 @@ public class LeaveRequestServiceTests : IDisposable
         result.MembersOnLeave.Should().Be(1); // Approved
         result.PendingMembersOnLeave.Should().Be(2); // Pending (including the current request)
     }
+
+    [Fact]
+    public async Task SubmitRequestAsync_SellingType_ShouldEnforceMaxSellableLimit()
+    {
+        // Arrange
+        var sellingTypeId = Guid.NewGuid();
+        _context.AbsenceTypes.Add(
+            new AbsenceType
+            {
+                Id = sellingTypeId,
+                Name = "Sell Vacation",
+                IsSellingType = true,
+                MaxSellableDaysPerYear = 10,
+                IsActive = true,
+                DeductsFromBalance = true,
+            }
+        );
+        await _context.SaveChangesAsync();
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        
+        // Mock 11 days calculation
+        _holidayService.CalculateWorkingDaysAsync(today, today.AddDays(10)).Returns(11);
+
+        // Act
+        var act = () =>
+            _sut.SubmitRequestAsync(
+                _employeeId,
+                sellingTypeId,
+                today,
+                today.AddDays(10), // Resulting in 11 days
+                "Selling 11 days"
+            );
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<Exception>()
+            .WithMessage("The requested 11 days to sell exceed the maximum of 10 days allowed per year.");
+    }
+
+    [Fact]
+    public async Task SubmitRequestAsync_SellingType_ShouldSkipOverlapCheck()
+    {
+        // Arrange
+        var sellingTypeId = Guid.NewGuid();
+        _context.AbsenceTypes.Add(
+            new AbsenceType
+            {
+                Id = sellingTypeId,
+                Name = "Sell Vacation",
+                IsSellingType = true,
+                IsActive = true,
+                DeductsFromBalance = true,
+            }
+        );
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        // Existing approved vacation on the same day
+        _context.AbsenceRequests.Add(
+            new AbsenceRequest
+            {
+                Id = Guid.NewGuid(),
+                EmployeeId = _employeeId,
+                AbsenceTypeId = _absenceTypeId,
+                StartDate = today,
+                EndDate = today,
+                Status = RequestStatus.Approved,
+                RequesterEmployeeId = _employeeId,
+            }
+        );
+        await _context.SaveChangesAsync();
+
+        _holidayService.CalculateWorkingDaysAsync(today, today).Returns(2); // Just any number
+
+        _balanceService
+            .GetEmployeeBalanceAsync(_employeeId, today.Year, sellingTypeId)
+            .Returns(new LeaveBalanceDto { Remaining = 10 });
+
+        // Act
+        var result = await _sut.SubmitRequestAsync(
+            _employeeId,
+            sellingTypeId,
+            today,
+            today,
+            "Selling vacation on same day as taking it"
+        );
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Status.Should().Be(RequestStatus.Pending);
+    }
 }

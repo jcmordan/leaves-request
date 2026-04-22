@@ -47,6 +47,15 @@ public class LeaveRequestService(
             await _context.AbsenceTypes.FindAsync(absenceTypeId)
             ?? throw new Exception("Absence type not found.");
 
+        AbsenceType? subType = null;
+        if (absenceSubTypeId.HasValue)
+        {
+            subType = await _context.AbsenceTypes.FindAsync(absenceSubTypeId.Value)
+                      ?? throw new Exception("Absence sub-type not found.");
+        }
+
+        bool isSelling = subType?.IsSellingType ?? absenceType.IsSellingType;
+
         if (
             absenceType.RequiresDoctor
             && (string.IsNullOrWhiteSpace(diagnosis) || string.IsNullOrWhiteSpace(treatingDoctor))
@@ -84,10 +93,17 @@ public class LeaveRequestService(
             throw new Exception("The selected dates do not result in any days.");
         }
 
-        if (absenceType.MaxDaysPerYear > 0 && totalDays > absenceType.MaxDaysPerYear)
+        if (absenceType.MaxDaysPerYear > 0 && totalDays > absenceType.MaxDaysPerYear && !absenceType.IsSellingType)
         {
             throw new Exception(
                 $"The requested {totalDays} days exceed the maximum of {absenceType.MaxDaysPerYear} days allowed for {absenceType.Name}."
+            );
+        }
+
+        if (absenceType.IsSellingType && absenceType.MaxSellableDaysPerYear > 0 && totalDays > absenceType.MaxSellableDaysPerYear)
+        {
+            throw new Exception(
+                $"The requested {totalDays} days to sell exceed the maximum of {absenceType.MaxSellableDaysPerYear} days allowed per year."
             );
         }
 
@@ -100,13 +116,18 @@ public class LeaveRequestService(
             );
         }
 
-        var overlapping = await _context.AbsenceRequests.AnyAsync(r =>
-            r.EmployeeId == employeeId
-            && r.Status != RequestStatus.Cancelled
-            && r.Status != RequestStatus.Rejected
-            && r.StartDate <= endDate
-            && r.EndDate >= startDate
-        );
+        bool overlapping = false;
+        if (!isSelling)
+        {
+            overlapping = await _context.AbsenceRequests.AnyAsync(r =>
+                r.EmployeeId == employeeId
+                && r.Status != RequestStatus.Cancelled
+                && r.Status != RequestStatus.Rejected
+                && r.StartDate <= endDate
+                && r.EndDate >= startDate
+                && !(r.AbsenceSubType != null ? r.AbsenceSubType.IsSellingType : r.AbsenceType!.IsSellingType)
+            );
+        }
 
         if (overlapping)
         {
@@ -244,6 +265,7 @@ public class LeaveRequestService(
         var request =
             await _context
                 .AbsenceRequests.Include(r => r.AbsenceType)
+                .Include(r => r.AbsenceSubType)
                 .Include(r => r.Employee)
                 .Include(r => r.ApprovalHistories)
                 .FirstOrDefaultAsync(r => r.Id == requestId)
@@ -294,6 +316,30 @@ public class LeaveRequestService(
         };
         
         _context.ApprovalHistories.Add(history);
+        
+        // Vacation Sync Logic
+        var effectiveType = request.AbsenceSubType ?? request.AbsenceType;
+        if (effectiveType != null && effectiveType.IsSellingType)
+        {
+            var syncRecord = new VacationSync
+            {
+                Id = Guid.NewGuid(),
+                EmployeeId = request.EmployeeId,
+                EmployeeCode = request.Employee?.EmployeeCode ?? string.Empty,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                TotalDays = request.TotalDaysRequested,
+                // Determine sync type: 1 = Sell if the subtype has IsSellingType = true, 
+                // However, based on user's new configuration:
+                // We use the effectiveType.IsSellingType as the trigger.
+                // If it's a selling variant, sync type 1. 
+                // We can use the ParentId to know if it's a subtype (variant) or main type.
+                Type = effectiveType.ParentId != null ? 1 : 0, 
+                CreatedAt = DateTime.UtcNow
+            };
+            
+            _context.VacationSyncs.Add(syncRecord);
+        }
 
         await _context.SaveChangesAsync();
 

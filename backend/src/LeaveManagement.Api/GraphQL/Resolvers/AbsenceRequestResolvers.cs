@@ -39,6 +39,17 @@ public class AbsenceRequestResolvers
         return dataLoader.LoadAsync(absenceRequest.AbsenceTypeId, cancellationToken);
     }
 
+    public Task<AbsenceType?> GetAbsenceSubTypeAsync(
+        [Parent] AbsenceRequest absenceRequest,
+        IAbsenceTypeByIdDataLoader dataLoader,
+        CancellationToken cancellationToken
+    )
+    {
+        return absenceRequest.AbsenceSubTypeId.HasValue ?
+        dataLoader.LoadAsync(absenceRequest.AbsenceSubTypeId.Value, cancellationToken)
+        : Task.FromResult<AbsenceType?>(null);
+    }
+
     public async Task<IEnumerable<Attachment>> GetAttachmentsAsync(
         [Parent] AbsenceRequest absenceRequest,
         IAttachmentsByAbsenceRequestIdDataLoader dataLoader,

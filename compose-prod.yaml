@@ -34,7 +34,7 @@ services:
       - .env.docker
     environment:
       - DB_CONNECTION_STRING=Host=db;Port=5432;Database=${POSTGRES_DB:-leavemanagement};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
-      - ASPNETCORE_URLS=http://0.0.0.0:5148
+      - ASPNETCORE_URLS=http://[::]:5148
       - UPLOADS_DIRECTORY=${UPLOADS_DIRECTORY_PATH:-/app/uploads}
       # JWT settings (using __ for nested properties in .NET)
       - Jwt__Key=${JWT_KEY}

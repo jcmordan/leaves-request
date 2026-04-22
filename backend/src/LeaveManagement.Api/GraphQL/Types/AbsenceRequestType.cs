@@ -45,6 +45,13 @@ public class AbsenceRequestType : ObjectType<AbsenceRequest>
             .Name("absenceType");
 
         descriptor
+            .Field(t => t.AbsenceSubType)
+            .ResolveWith<AbsenceRequestResolvers>(r =>
+                r.GetAbsenceSubTypeAsync(default!, default!, default)
+            )
+            .Name("absenceSubType");
+
+        descriptor
             .Field(t => t.Attachments)
             .ResolveWith<AbsenceRequestResolvers>(r =>
                 r.GetAttachmentsAsync(default!, default!, default)

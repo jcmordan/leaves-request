@@ -24,6 +24,7 @@ public class LeaveManagementDbContext(DbContextOptions<LeaveManagementDbContext>
     public DbSet<Attachment> Attachments { get; set; }
     public DbSet<ApprovalHistory> ApprovalHistories { get; set; }
     public DbSet<Configuration> Configurations { get; set; }
+    public DbSet<VacationSync> VacationSyncs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

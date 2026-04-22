@@ -22,6 +22,7 @@ type AbsenceRequestData = {
   totalUnits: number;
   deductsFromBalance: boolean;
   calculationType: CalculationType;
+  isSellingType: boolean;
 };
 
 /**
@@ -100,6 +101,7 @@ export const useAbsenceRequestLogic = (
     calculationType:
       reqeustType?.calculationType ?? CalculationType.CalendarDays,
     isSickLeave,
+    isSellingType: reqeustType?.isSellingType ?? false,
     endDate,
     totalUnits: watchRequestedDays || reqeustType?.maxDaysPerYear,
   };

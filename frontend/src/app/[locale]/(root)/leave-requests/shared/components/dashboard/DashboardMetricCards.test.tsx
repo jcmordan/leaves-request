@@ -12,7 +12,7 @@ vi.mock("./LeaveTrendsCard", () => ({
   LeaveTrendsCard: () => <div data-testid="trends-card" />,
 }));
 vi.mock("./RejectedCountCard", () => ({
-  default: () => <div data-testid="rejected-card" />,
+  RejectedCountCard: () => <div data-testid="rejected-card" />,
 }));
 
 describe("DashboardMetricCards", () => {

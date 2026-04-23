@@ -33,15 +33,15 @@ vi.mock("../../shared/components/RequestsTable", () => ({
   RequestsTable: ({ basePath }: any) => <div data-testid="requests-table">basePath: {basePath}</div>,
 }));
 
-vi.mock("./DashboardMetricCards", () => ({
+vi.mock("../../shared/components/dashboard/DashboardMetricCards", () => ({
   DashboardMetricCards: () => <div data-testid="metric-cards" />,
 }));
 
-vi.mock("./DashboardCapacityCard", () => ({
+vi.mock("../../shared/components/dashboard/DashboardCapacityCard", () => ({
   DashboardCapacityCard: () => <div data-testid="capacity-card" />,
 }));
 
-vi.mock("./DashboardInsightCard", () => ({
+vi.mock("../../shared/components/dashboard/DashboardInsightCard", () => ({
   DashboardInsightCard: () => <div data-testid="insight-card" />,
 }));
 

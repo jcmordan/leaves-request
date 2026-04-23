@@ -7,7 +7,9 @@
     "test:fe": "pnpm --filter @leave-request/frontend test",
     "test:be": "./backend/test.sh",
     "dev": "pnpm --filter @leave-request/frontend dev",
-    "codegen": "pnpm --filter @leave-request/frontend codegen"
+    "codegen": "pnpm --filter @leave-request/frontend codegen",
+    "build:prod": "node scripts/build-prod.mjs",
+    "start:prod": "node scripts/start-prod.mjs"
   },
   "keywords": [],
   "author": "",

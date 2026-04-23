@@ -14,11 +14,11 @@ public class AbsenceTypeByIdDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : BatchDataLoader<Guid, AbsenceType>(batchScheduler, options), IAbsenceTypeByIdDataLoader
+) : BatchDataLoader<Guid, AbsenceType?>(batchScheduler, options), IAbsenceTypeByIdDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 
-    protected override async Task<IReadOnlyDictionary<Guid, AbsenceType>> LoadBatchAsync(
+    protected override async Task<IReadOnlyDictionary<Guid, AbsenceType?>> LoadBatchAsync(
         IReadOnlyList<Guid> keys,
         CancellationToken cancellationToken
     )
@@ -26,6 +26,6 @@ public class AbsenceTypeByIdDataLoader(
         await using var context = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
         return await context
             .AbsenceTypes.Where(t => keys.Contains(t.Id))
-            .ToDictionaryAsync(t => t.Id, cancellationToken);
+            .ToDictionaryAsync(t => t.Id, t => (AbsenceType?)t, cancellationToken);
     }
 }

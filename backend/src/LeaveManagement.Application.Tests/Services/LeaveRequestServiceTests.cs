@@ -1467,4 +1467,104 @@ public class LeaveRequestServiceTests : IDisposable
         result.Should().NotBeNull();
         result.Status.Should().Be(RequestStatus.Pending);
     }
+
+    [Fact]
+    public async Task SubmitRequestAsync_NormalRequest_ShouldNotBeBlockedByExistingSellingSubTypeRequest()
+    {
+        // Arrange
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var sellingSubTypeId = Guid.NewGuid();
+        
+        // 1. Create a selling sub-type
+        _context.AbsenceTypes.Add(new AbsenceType
+        {
+            Id = sellingSubTypeId,
+            ParentId = _absenceTypeId,
+            Name = "Selling SubType",
+            IsSellingType = true,
+            IsActive = true
+        });
+
+        // 2. Add an existing selling sub-type request for "today"
+        _context.AbsenceRequests.Add(new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = _employeeId,
+            AbsenceTypeId = _absenceTypeId,
+            AbsenceSubTypeId = sellingSubTypeId,
+            StartDate = today,
+            EndDate = today,
+            Status = RequestStatus.Approved,
+            TotalDaysRequested = 1,
+            RequesterEmployeeId = _employeeId
+        });
+        await _context.SaveChangesAsync();
+
+        _holidayService.CalculateWorkingDaysAsync(today, today).Returns(1);
+        _balanceService.GetEmployeeBalanceAsync(_employeeId, today.Year, _absenceTypeId)
+            .Returns(new LeaveBalanceDto { Remaining = 10 });
+
+        // Act - Submit a NORMAL request for the SAME day
+        var result = await _sut.SubmitRequestAsync(
+            _employeeId,
+            _absenceTypeId,
+            today,
+            today,
+            "Normal request on same day as selling"
+        );
+
+        // Assert - Should NOT be blocked by the selling request
+        result.Should().NotBeNull();
+        result.Status.Should().Be(RequestStatus.Pending);
+    }
+
+    [Fact]
+    public async Task SubmitRequestAsync_SellingSubTypeRequest_ShouldNotBeBlockedByExistingNormalRequest()
+    {
+        // Arrange
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var sellingSubTypeId = Guid.NewGuid();
+
+        _context.AbsenceTypes.Add(new AbsenceType
+        {
+            Id = sellingSubTypeId,
+            ParentId = _absenceTypeId,
+            Name = "Selling SubType",
+            IsSellingType = true,
+            IsActive = true
+        });
+
+        // 1. Existing normal request for today
+        _context.AbsenceRequests.Add(new AbsenceRequest
+        {
+            Id = Guid.NewGuid(),
+            EmployeeId = _employeeId,
+            AbsenceTypeId = _absenceTypeId,
+            StartDate = today,
+            EndDate = today,
+            Status = RequestStatus.Approved,
+            TotalDaysRequested = 1,
+            RequesterEmployeeId = _employeeId
+        });
+        await _context.SaveChangesAsync();
+
+        _holidayService.CalculateWorkingDaysAsync(today, today).Returns(1);
+        _balanceService.GetEmployeeBalanceAsync(_employeeId, today.Year, _absenceTypeId)
+            .Returns(new LeaveBalanceDto { Remaining = 10 });
+
+        // Act - Submit a SELLING sub-type request for the SAME day
+        var result = await _sut.SubmitRequestAsync(
+            _employeeId,
+            _absenceTypeId,
+            today,
+            today,
+            "Selling request on same day as vacation",
+            absenceSubTypeId: sellingSubTypeId
+        );
+
+        // Assert - Should NOT be blocked
+        result.Should().NotBeNull();
+        result.Status.Should().Be(RequestStatus.Pending);
+        result.AbsenceSubTypeId.Should().Be(sellingSubTypeId);
+    }
 }

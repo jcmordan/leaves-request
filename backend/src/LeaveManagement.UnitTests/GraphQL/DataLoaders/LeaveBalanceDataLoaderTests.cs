@@ -51,7 +51,7 @@ public class LeaveBalanceDataLoaderTests : IDisposable
         IDbContextFactory<LeaveManagementDbContext> dbContextFactory
     ) : LeaveBalanceDataLoader(batchScheduler, options, dbContextFactory)
     {
-        public new Task<IReadOnlyDictionary<Guid, LeaveBalanceDto>> LoadBatchAsync(
+        public new Task<IReadOnlyDictionary<Guid, LeaveBalanceDto?>> LoadBatchAsync(
             IReadOnlyList<Guid> keys,
             CancellationToken cancellationToken
         ) => base.LoadBatchAsync(keys, cancellationToken);

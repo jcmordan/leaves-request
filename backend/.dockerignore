@@ -10,3 +10,11 @@ backend/test_output.txt
 .vscode
 node_modules
 pnpm-lock.yaml
+dist
+build
+*.log
+*.md
+.env
+__pycache__
+*.pyc
+.venv

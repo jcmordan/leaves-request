@@ -1,0 +1,21 @@
+[Unit]
+Description=Leave Management Database
+
+[Container]
+ContainerName=leave-management-db
+Image=postgres:18-alpine
+Network=leave-management.network
+Volume=leave-management-db-data.volume:/var/lib/postgresql/data:Z
+EnvironmentFile=/Users/jcmordan/code/leave-request/.env.docker
+# Overrides/Defaults
+Environment=POSTGRES_USER=postgres
+Environment=POSTGRES_PASSWORD=postgres
+Environment=POSTGRES_DB=leavemanagement
+PublishPort=5432:5432
+HealthCmd=pg_isready -U postgres
+HealthInterval=10s
+HealthRetries=5
+HealthTimeout=5s
+
+[Install]
+WantedBy=default.target

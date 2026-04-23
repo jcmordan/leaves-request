@@ -18,8 +18,7 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 RUN npm install -g pnpm
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY --from=deps /app ./
 COPY frontend ./frontend
 
 # Build-time environment variables (if any)
@@ -58,6 +57,6 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
+# ENV HOSTNAME="[::]"
 
 CMD ["node", "frontend/server.js"]

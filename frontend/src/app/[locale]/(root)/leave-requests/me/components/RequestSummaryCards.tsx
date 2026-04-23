@@ -8,7 +8,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { FragmentType, useFragment } from "@/__generated__";
 import { MY_BALANCE_FRAGMENT } from "../graphql/MyRequestsQueries";
 
@@ -26,7 +26,7 @@ export function RequestSummaryCards({
 }: RequestSummaryCardsProps) {
   const t = useTranslations("requests");
   const router = useRouter();
-  const { locale } = useParams();
+  const pathname = usePathname();
 
   const myBalance = useFragment(MY_BALANCE_FRAGMENT, myBalanceRef);
 
@@ -81,7 +81,7 @@ export function RequestSummaryCards({
   ];
 
   const handleFilter = (status: RequestStatus) => {
-    router.push(`/${locale}/requests/me?status=${status}`);
+    router.push(`${pathname}?status=${status}`);
   };
 
   return (

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { PendingCountCard } from "./PendingCountCard";
-import RejectedCountCard from "./RejectedCountCard";
+import { RejectedCountCard } from "./RejectedCountCard";
 import { DashboardInsightCard } from "./DashboardInsightCard";
 import { useFragment } from "@/__generated__";
 

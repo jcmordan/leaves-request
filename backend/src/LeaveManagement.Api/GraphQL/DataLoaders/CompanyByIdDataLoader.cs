@@ -15,18 +15,19 @@ public class CompanyByIdDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : BatchDataLoader<Guid, Company>(batchScheduler, options), ICompanyByIdDataLoader
+) : BatchDataLoader<Guid, Company?>(batchScheduler, options), ICompanyByIdDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 
-    protected override async Task<IReadOnlyDictionary<Guid, Company>> LoadBatchAsync(
+    protected override async Task<IReadOnlyDictionary<Guid, Company?>> LoadBatchAsync(
         IReadOnlyList<Guid> keys,
         CancellationToken cancellationToken
     )
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
+
         return await context
             .Companies.Where(c => keys.Contains(c.Id))
-            .ToDictionaryAsync(c => c.Id, cancellationToken);
+            .ToDictionaryAsync(c => c.Id, c => (Company?)c, cancellationToken);
     }
 }

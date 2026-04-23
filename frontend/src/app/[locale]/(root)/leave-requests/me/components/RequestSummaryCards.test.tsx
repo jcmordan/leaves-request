@@ -17,6 +17,7 @@ vi.mock("next/navigation", () => ({
   useParams: () => ({
     locale: "en",
   }),
+  usePathname: () => "/en/leave-requests/me",
 }));
 
 // Mock @/__generated__

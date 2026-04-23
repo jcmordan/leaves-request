@@ -1,0 +1,23 @@
+[Unit]
+Description=Leave Management API
+After=leave-management-db.service
+Requires=leave-management-db.service
+
+[Container]
+ContainerName=leave-management-api
+Image=leave-management-api
+Network=leave-management.network
+Volume=leave-management-uploads.volume:/app/uploads:Z
+EnvironmentFile=/Users/jcmordan/code/leave-request/.env.docker
+# Ensure backend connects to the DB container name in the shared network
+Environment=DB_CONNECTION_STRING=Host=leave-management-db;Port=5432;Database=leavemanagement;Username=postgres;Password=postgres
+Environment=ASPNETCORE_URLS=http://[::]:5148
+# We expose but don't map to host by default, per compose-prod.yaml comments
+# Use PublishPort if host mapping is needed later
+
+[Build]
+Context=/Users/jcmordan/code/leave-request/backend
+File=/Users/jcmordan/code/leave-request/backend/Dockerfile
+
+[Install]
+WantedBy=default.target

@@ -95,7 +95,7 @@ public class BalanceService(LeaveManagementDbContext context) : IBalanceService
 
         var requests = await _context
             .AbsenceRequests.AsNoTracking()
-            .Where(r => r.EmployeeId == employeeId && r.StartDate.Year == year)
+            .Where(r => (r.EmployeeId == employeeId || r.RequesterEmployeeId == employeeId) && r.StartDate.Year == year)
             .ToListAsync();
 
         return new LeaveBalanceDto

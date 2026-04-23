@@ -10,11 +10,11 @@ public class LeaveBalanceDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IDbContextFactory<LeaveManagementDbContext> dbContextFactory
-) : BatchDataLoader<Guid, LeaveBalanceDto>(batchScheduler, options), ILeaveBalanceDataLoader
+) : BatchDataLoader<Guid, LeaveBalanceDto?>(batchScheduler, options), ILeaveBalanceDataLoader
 {
     private readonly IDbContextFactory<LeaveManagementDbContext> _dbContextFactory = dbContextFactory;
 
-    protected override async Task<IReadOnlyDictionary<Guid, LeaveBalanceDto>> LoadBatchAsync(
+    protected override async Task<IReadOnlyDictionary<Guid, LeaveBalanceDto?>> LoadBatchAsync(
         IReadOnlyList<Guid> keys,
         CancellationToken cancellationToken
     )
@@ -49,8 +49,8 @@ public class LeaveBalanceDataLoader(
         // 5. Fetch Absence Request Summaries
         var requests = await context.AbsenceRequests
             .AsNoTracking()
-            .Where(r => 
-                keys.Contains(r.EmployeeId) && 
+            .Where(r =>
+                keys.Contains(r.EmployeeId) &&
                 r.StartDate.Year == currentYear && 
                 r.Status == RequestStatus.Approved)
             .GroupBy(r => new { r.EmployeeId, r.AbsenceTypeId })
@@ -62,7 +62,7 @@ public class LeaveBalanceDataLoader(
             })
             .ToListAsync(cancellationToken);
 
-        var result = new Dictionary<Guid, LeaveBalanceDto>();
+        var result = new Dictionary<Guid, LeaveBalanceDto?>();
 
         foreach (var employeeId in keys)
         {

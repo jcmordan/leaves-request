@@ -1,0 +1,22 @@
+[Unit]
+Description=Leave Management Web
+After=leave-management-api.service
+Requires=leave-management-api.service
+
+[Container]
+ContainerName=leave-management-web
+Image=leave-management-web
+Network=leave-management.network
+EnvironmentFile=/Users/jcmordan/code/leave-request/.env.docker
+Environment=GRAPHQL_ENDPOINT=http://leave-management-api:5148/graphql/
+Environment=AUTH_TRUST_HOST=true
+Environment=AUTH_URL=http://localhost:3000
+PublishPort=3000:3000
+
+[Build]
+Context=/Users/jcmordan/code/leave-request
+File=/Users/jcmordan/code/leave-request/frontend/Dockerfile
+SetArg=GRAPHQL_ENDPOINT=http://leave-management-api:5148/graphql/
+
+[Install]
+WantedBy=default.target
